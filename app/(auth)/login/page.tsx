@@ -11,10 +11,6 @@ import { fetchAppSettings } from '@/app/admin/system/actions';
 import { getActiveAuthProvides } from '@/app/(auth)/actions';
 import SpinLoading from '@/app/components/loading/SpinLoading';
 import { useTranslations } from 'next-intl';
-import { Suspense } from "react"
-import { redirect } from "next/navigation"
-import { auth } from "@/auth"
-import { loginServer } from "../server"
 
 interface LoginFormValues {
   email: string;
