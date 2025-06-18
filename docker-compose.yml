@@ -1,13 +1,13 @@
 services:
   app:
-    container_name: hivechat
-    image: hivenexus/hivechat:latest
+    container_name: fivechat
+    image: hivenexus/fivechat:latest
     ports:
       - "${HOST_PORT}:3000"
     depends_on:
       - db
     environment:
-      DATABASE_URL: "postgres://postgres:postgres@db:5432/hivechat"
+      DATABASE_URL: "postgres://postgres:postgres@db:5432/fivechat"
       AUTH_SECRET: ${AUTH_SECRET}
       ADMIN_CODE: ${ADMIN_CODE}
       NEXTAUTH_URL: ${NEXTAUTH_URL}
@@ -28,18 +28,18 @@ services:
       - my-network
 
   db:
-    container_name: hivechat-db
+    container_name: fivechat-db
     image: postgres:16.8-alpine
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: hivechat
+      POSTGRES_DB: fivechat
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./docker:/docker-entrypoint-initdb.d/
     restart: unless-stopped
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres -d hivechat" ]
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d fivechat" ]
       interval: 5s
       timeout: 5s
       retries: 5

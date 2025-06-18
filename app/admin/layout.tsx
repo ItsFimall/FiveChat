@@ -53,8 +53,8 @@ export default function RootLayout({
       )}>
         <div className="flex items-center flex-row flex-grow-0 mb-2 h-10 justify-between">
           <Link href="/" className='flex items-center'>
-            <Image src={logo} className="ml-1" alt="HiveChat logo" width={24} height={24} />
-            <span className='text-xl ml-2'>Hivechat Admin</span>
+            <Image src={logo} className="ml-1" alt="FiveChat logo" width={24} height={24} />
+            <span className='text-xl ml-2'>FiveChat Admin</span>
           </Link>
           <Button
             icon={<ToggleSidebar style={{ 'color': '#999', 'fontSize': '20px', 'verticalAlign': 'middle' }} />}

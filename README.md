@@ -292,8 +292,3 @@ DINGDING_CLIENT_SECRET="3vk9-VFCExNckqNUk_CL2F-HEgz7qGN-BimH0lZ1gUx6hWO7g_an2lnk
 * [企业微信登录配置说明](https://www.hivechat.net/docs/auth/wecom)
 * [钉钉登录配置说明](https://www.hivechat.net/docs/auth/dingding)
 * [飞书登录配置说明](https://www.hivechat.net/docs/auth/feishu)
-
-### 交流群
-<img src="https://jiantuku.oss-cn-beijing.aliyuncs.com/share/hivechat/qrcode.JPG" width="300"/>
-
-群聊过期可加微信 wuhaoworld 拉你入群。

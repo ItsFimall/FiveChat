@@ -7,7 +7,7 @@ import { signIn } from "next-auth/react";
 import { fetchAppSettings } from '@/app/admin/system/actions';
 import { getActiveAuthProvides } from '@/app/(auth)/actions';
 import logo from "@/app/images/logo.png";
-import Hivechat from "@/app/images/hivechat.svg";
+import Fivechat from "@/app/images/fivechat.svg";
 import Link from 'next/link';
 import Image from "next/image";
 import FeishuLogin from "@/app/components/FeishuLoginButton"
@@ -82,8 +82,8 @@ export default function LoginModal() {
       width={420}
     >
       <div className="flex items-center justify-center flex-row mb-6 mt-4">
-        <Image src={logo} className="ml-1" alt="HiveChat logo" width={28} height={28} />
-        <Hivechat className="ml-1" alt="HiveChat text" width={120} />
+        <Image src={logo} className="ml-1" alt="FiveChat logo" width={28} height={28} />
+        <Fivechat className="ml-1" alt="FiveChat text" width={120} />
         <span className="text-center text-xl">{t('login')}</span>
       </div>
       {isPending ? <div className='mt-4 mb-6'>

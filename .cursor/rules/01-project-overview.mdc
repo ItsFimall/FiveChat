@@ -3,9 +3,9 @@ description:
 globs: 
 alwaysApply: false
 ---
-# HiveChat Project Overview
+# FiveChat Project Overview
 
-HiveChat is a chat application built with Next.js. The project follows a modern web application architecture with a clear separation of concerns.
+FiveChat is a chat application built with Next.js. The project follows a modern web application architecture with a clear separation of concerns.
 
 ## Key Files and Directories
 

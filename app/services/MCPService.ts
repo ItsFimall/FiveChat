@@ -31,7 +31,7 @@ class MCPService {
       }
     }
 
-    const client = new Client({ name: 'Hivechat', version: '0.1.0' }, { capabilities: {} })
+    const client = new Client({ name: 'Fivechat', version: '0.1.0' }, { capabilities: {} })
     let transport: SSEClientTransport | StreamableHTTPClientTransport;
     try {
       if (server.type === 'streamableHttp') {
