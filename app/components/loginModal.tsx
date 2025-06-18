@@ -21,7 +21,6 @@ import {
 } from '@ant-design/icons';
 import { useToast } from "@/app/hooks/use-toast";
 import dynamic from "next/dynamic";
-import EmailLogin from './EmailLogin';
 
 interface LoginFormValues {
   email: string;
@@ -95,9 +94,52 @@ export default function LoginModal() {
       {isPending ? <div className='mt-4 mb-6'>
         <Skeleton title={false} active paragraph={{ rows: 3 }} />
       </div> : <>
-        <div className="px-4">
-          <EmailLogin onSuccess={handleSubmit} />
-        </div>
+        {authProviders.includes('email') &&
+          <div className='px-4 pb-2'>
+            {error && <Alert message={error} style={{ 'marginBottom': '1rem' }} type="error" />}
+            <Form
+              form={form}
+              layout="vertical"
+              onFinish={handleSubmit}
+              requiredMark='optional'
+            >
+              <Form.Item
+                name="email"
+                label={<span className="font-medium">Email</span>}
+                rules={[{ required: true, message: t('emailNotice') }]}
+              >
+                <Input size='large' />
+              </Form.Item>
+              <Form.Item
+                name="password"
+                label={<span className="font-medium">{t('password')}</span>}
+                rules={[{ required: true, message: t('passwordNotice') }]}
+              >
+                <Input.Password size='large' />
+              </Form.Item>
+              <Form.Item>
+                <Button
+                  size='large'
+                  type="primary"
+                  htmlType="submit"
+                  loading={loading}
+                  block
+                >
+                  {t('login')}
+                </Button>
+              </Form.Item>
+              {isRegistrationOpen && <div className='flex -mt-4'>
+                <Link href='/register'>
+                  <Button
+                    type='link'
+                    className='text-sm text-gray-400'
+                    style={{ 'padding': '0' }}
+                  >{t('register')}</Button>
+                </Link>
+              </div>
+              }
+            </Form>
+          </div>}
       </>}
     </Modal>
   );

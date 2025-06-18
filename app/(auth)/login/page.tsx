@@ -15,10 +15,6 @@ import { Suspense } from "react"
 import { redirect } from "next/navigation"
 import { auth } from "@/auth"
 import { loginServer } from "../server"
-import dynamic from 'next/dynamic'
-import LoginLoading from "@/app/components/loading/loginLoading"
-
-const EmailLogin = dynamic(() => import('@/app/components/EmailLogin'), { ssr: false })
 
 interface LoginFormValues {
   email: string;
