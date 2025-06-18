@@ -1,6 +1,6 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { GetServerSidePropsContext } from "next";
-import { getServerSession, NextAuthOptions } from "next-auth";
+import NextAuth, { getServerSession as nextAuthGetServerSession, NextAuthOptions } from "next-auth";
 import { eq } from "drizzle-orm";
 import { db } from "@/app/db";
 import { accounts, users } from "@/app/db/schema";
@@ -90,5 +90,5 @@ export const authOptions: NextAuthOptions = {
 }
 
 export function auth(...args: [GetServerSidePropsContext] | []) {
-  return getServerSession(...args, authOptions)
+  return nextAuthGetServerSession(...args, authOptions)
 }
