@@ -1,137 +1,94 @@
-import NextAuth from "next-auth";
-import { ZodError } from "zod";
-import Credentials from "next-auth/providers/credentials";
-import { signInSchema } from "@/app/lib/zod";
-import { verifyPassword } from "@/app/utils/password";
-import { db } from '@/app/db';
-import { users } from '@/app/db/schema';
-import Feishu from "@/app/auth/providers/feishu";
-import Wecom from "@/app/auth/providers/wecom";
-import Dingding from "@/app/auth/providers/dingding";
-import { eq } from 'drizzle-orm';
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { GetServerSidePropsContext } from "next";
+import { getServerSession, NextAuthOptions } from "next-auth";
+import { eq } from "drizzle-orm";
+import { db } from "@/app/db";
+import { accounts, users } from "@/app/db/schema";
+import CredentialsProvider from "next-auth/providers/credentials";
 
-let authProviders: any[] = [];
-if (process.env.FEISHU_AUTH_STATUS === 'ON') {
-  const feishuAuth = Feishu({
-    clientId: process.env.FEISHU_CLIENT_ID!,
-    clientSecret: process.env.FEISHU_CLIENT_SECRET!,
-  });
-  authProviders.push(feishuAuth);
-}
-if (process.env.WECOM_AUTH_STATUS === 'ON') {
-  const wecomAuth = Wecom({
-    clientId: process.env.WECOM_CLIENT_ID!,
-    clientSecret: process.env.WECOM_CLIENT_SECRET!,
-  });
-  authProviders.push(wecomAuth);
-}
-if (process.env.DINGDING_AUTH_STATUS === 'ON') {
-  const dingdingAuth = Dingding({
-    clientId: process.env.DINGDING_CLIENT_ID!,
-    clientSecret: process.env.DINGDING_CLIENT_SECRET!,
-  });
-  authProviders.push(dingdingAuth);
-}
-export const { handlers, signIn, signOut, auth } = NextAuth({
+export const authOptions: NextAuthOptions = {
   providers: [
-    ...authProviders,
-    Credentials({
-      // You can specify which fields should be submitted, by adding keys to the `credentials` object.
-      // e.g. domain, username, password, 2FA token, etc.
+    CredentialsProvider({
+      name: "密码",
       credentials: {
-        email: {},
-        password: {},
+        email: { label: "邮箱", type: "email", placeholder: "example@hivechat.net" },
+        password: { label: "密码", type: "password" }
       },
-      authorize: async (credentials) => {
+      // @ts-expect-error
+      authorize: async ({ email, password, domain }) => {
         try {
-          const { email, password } = await signInSchema.parseAsync(credentials);
-          const user = await db.query.users
-            .findFirst({
-              where: eq(users.email, email)
+          const ret = await fetch(`${process.env.NEXTAUTH_URL}/api/auth/email`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              email,
+              password,
+              domain,
             })
-          if (!user || !user.password) {
-            return null;
-          }
-          const passwordMatch = await verifyPassword(password, user.password);
-          if (passwordMatch) {
-            return {
-              id: user.id,
-              name: user.name,
-              email: user.email,
-              isAdmin: user.isAdmin || false,
-            };
-          } else {
-            return null;
-          }
-        } catch (error) {
-          if (error instanceof ZodError) {
-            // 如果验证失败，返回 null 表示凭据无效
-            return null;
-          }
-          // 处理其他错误
-          throw error;
-        }
-      },
-    }),
+          }).then(res => res.json())
 
+          if (ret?.code === 200) {
+            return ret.user;
+          }
+
+          return null;
+        } catch (e) {
+          console.error(e);
+          return null;
+        }
+      }
+    })
   ],
   pages: {
-    error: '/auth/error', // 自定义错误页面
+    signIn: "/login",
+    error: "/login",
+    newUser: "/setup",
+    verifyRequest: "/verification-request"
+  },
+  session: {
+    strategy: "jwt",
+    maxAge: 604800, // 7 days
   },
   callbacks: {
-    async jwt({ token, user, account }) {
+    signIn: async ({ user, account, profile, email, credentials }) => {
+      const isAllowedToSignIn = true
+      if (isAllowedToSignIn) {
+        return true
+      } else {
+        return false
+      }
+    },
+    async jwt({ token, user, account, profile, isNewUser }) {
       if (user) {
-        token.id = user.id;
-        token.isAdmin = user.isAdmin;
-      }
-      if (account?.provider === "credentials" && token.sub) {
-        token.provider = 'credentials';
-      }
-      if (account?.provider === "feishu" && token.sub) {
-        const dbUser = await db.query.users.findFirst({
-          where: eq(users.feishuUserId, account.providerAccountId)
-        });
-
-        if (dbUser) {
-          token.id = dbUser.id;
-          token.isAdmin = dbUser.isAdmin || false;
+        token = {
+          ...token,
+          id: user.id,
+          email: user.email || "",
+          name: user.name,
+          isAdmin: user.isAdmin,
+          image: user.image,
         }
-        token.provider = 'feishu';
       }
-      if (account?.provider === "wecom" && token.sub) {
-        const dbUser = await db.query.users.findFirst({
-          where: eq(users.wecomUserId, account.providerAccountId)
-        });
 
-        if (dbUser) {
-          token.id = dbUser.id;
-          token.isAdmin = dbUser.isAdmin || false;
-        }
-        token.provider = 'wecom';
-      }
-      if (account?.provider === "dingding" && token.sub) {
-        const dbUser = await db.query.users.findFirst({
-          where: eq(users.dingdingUnionId, account.providerAccountId)
-        });
-
-        if (dbUser) {
-          token.id = dbUser.id;
-          token.isAdmin = dbUser.isAdmin || false;
-        }
-        token.provider = 'dingding';
-      }
       return token;
     },
-    async session({ session, token }) {
-      if (token) {
-        session.user = {
-          ...session.user, // 保留已有的属性
-          id: String(token.id),
-          isAdmin: Boolean(token.isAdmin), // 添加 isAdmin
-          provider: token.provider as string,
-        };
+    async session({ session, token, user }) {
+      session.user = {
+        ...session.user,
+        id: token.id as string,
+        email: token.email as string,
+        name: token.name,
+        isAdmin: token.isAdmin as boolean,
+        image: token.image,
+        provider: token.provider,
       }
-      return session;
-    },
-  },
-})
+      return session
+    }
+  }
+}
+
+export function auth(...args: [GetServerSidePropsContext] | []) {
+  return getServerSession(...args, authOptions)
+}

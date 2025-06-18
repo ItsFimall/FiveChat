@@ -7,13 +7,18 @@ import Link from 'next/link';
 import { Form, Input, Button, Alert } from 'antd';
 import logo from "@/app/images/logo.png";
 import Fivechat from "@/app/images/fivechat.svg";
-import FeishuLogin from "@/app/components/FeishuLoginButton"
-import WecomLogin from "@/app/components/WecomLoginButton"
-import DingdingLogin from "@/app/components/DingdingLoginButton"
 import { fetchAppSettings } from '@/app/admin/system/actions';
 import { getActiveAuthProvides } from '@/app/(auth)/actions';
 import SpinLoading from '@/app/components/loading/SpinLoading';
 import { useTranslations } from 'next-intl';
+import { Suspense } from "react"
+import { redirect } from "next/navigation"
+import { auth } from "@/auth"
+import { loginServer } from "../server"
+import dynamic from 'next/dynamic'
+import LoginLoading from "@/app/components/loading/loginLoading"
+
+const EmailLogin = dynamic(() => import('@/app/components/EmailLogin'), { ssr: false })
 
 interface LoginFormValues {
   email: string;
@@ -124,18 +129,6 @@ export default function LoginPage() {
               }
             </Form>
           </>
-        }
-        {
-          authProviders.includes('wecom') &&
-          <div className='my-2'><WecomLogin /></div>
-        }
-        {
-          authProviders.includes('feishu') &&
-          <div className='my-2'><FeishuLogin /></div>
-        }
-        {
-          authProviders.includes('dingding') &&
-          <div className='my-2'><DingdingLogin /></div>
         }
       </div>
     </div>

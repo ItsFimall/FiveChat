@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react'
-import { Modal, Form, Input, Button, Alert, Skeleton } from 'antd';
+import React, { useState, useEffect, useTransition } from 'react'
+import { Modal, Form, Input, Button, Alert, Skeleton, Tabs } from 'antd';
+import type { TabsProps } from 'antd';
 import { useLoginModal } from '@/app/contexts/loginModalContext';
 import { signIn } from "next-auth/react";
 import { fetchAppSettings } from '@/app/admin/system/actions';
@@ -10,12 +11,17 @@ import logo from "@/app/images/logo.png";
 import Fivechat from "@/app/images/fivechat.svg";
 import Link from 'next/link';
 import Image from "next/image";
-import FeishuLogin from "@/app/components/FeishuLoginButton"
-import WecomLogin from "@/app/components/WecomLoginButton"
-import DingdingLogin from "@/app/components/DingdingLoginButton"
 import { useTranslations } from 'next-intl';
 import useModelListStore from '@/app/store/modelList';
 import { fetchAvailableLlmModels } from '@/app/admin/llm/actions';
+import {
+  LockOutlined,
+  UserOutlined,
+  MailOutlined,
+} from '@ant-design/icons';
+import { useToast } from "@/app/hooks/use-toast";
+import dynamic from "next/dynamic";
+import EmailLogin from './EmailLogin';
 
 interface LoginFormValues {
   email: string;
@@ -89,65 +95,9 @@ export default function LoginModal() {
       {isPending ? <div className='mt-4 mb-6'>
         <Skeleton title={false} active paragraph={{ rows: 3 }} />
       </div> : <>
-        {authProviders.includes('email') &&
-          <div className='px-4 pb-2'>
-            {error && <Alert message={error} style={{ 'marginBottom': '1rem' }} type="error" />}
-            <Form
-              form={form}
-              layout="vertical"
-              onFinish={handleSubmit}
-              requiredMark='optional'
-            >
-              <Form.Item
-                name="email"
-                label={<span className="font-medium">Email</span>}
-                rules={[{ required: true, message: t('emailNotice') }]}
-              >
-                <Input size='large' />
-              </Form.Item>
-              <Form.Item
-                name="password"
-                label={<span className="font-medium">{t('password')}</span>}
-                rules={[{ required: true, message: t('passwordNotice') }]}
-              >
-                <Input.Password size='large' />
-              </Form.Item>
-              <Form.Item>
-                <Button
-                  size='large'
-                  type="primary"
-                  htmlType="submit"
-                  loading={loading}
-                  block
-                >
-                  {t('login')}
-                </Button>
-              </Form.Item>
-              {isRegistrationOpen && <div className='flex -mt-4'>
-                <Link href='/register'>
-                  <Button
-                    type='link'
-                    className='text-sm text-gray-400'
-                    style={{ 'padding': '0' }}
-                  >{t('register')}</Button>
-                </Link>
-              </div>
-              }
-            </Form>
-
-          </div>}
-        {
-          authProviders.includes('wecom') &&
-          <div className='px-4 my-2'><WecomLogin /></div>
-        }
-        {
-          authProviders.includes('feishu') &&
-          <div className='px-4 my-2'><FeishuLogin /></div>
-        }
-        {
-          authProviders.includes('dingding') &&
-          <div className='px-4 my-2'><DingdingLogin /></div>
-        }
+        <div className="px-4">
+          <EmailLogin onSuccess={handleSubmit} />
+        </div>
       </>}
     </Modal>
   );
