@@ -1,49 +1,56 @@
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { GetServerSidePropsContext } from "next";
-import NextAuth, { getServerSession as nextAuthGetServerSession, NextAuthOptions } from "next-auth";
-import { eq } from "drizzle-orm";
-import { db } from "@/app/db";
-import { accounts, users } from "@/app/db/schema";
-import CredentialsProvider from "next-auth/providers/credentials";
+import NextAuth from "next-auth";
+import { ZodError } from "zod";
+import Credentials from "next-auth/providers/credentials";
+import { signInSchema } from "@/app/lib/zod";
+import { verifyPassword } from "@/app/utils/password";
+import { db } from '@/app/db';
+import { users } from '@/app/db/schema';
+import { eq } from 'drizzle-orm';
 
-export const authOptions: NextAuthOptions = {
+export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
-    CredentialsProvider({
-      name: "密码",
+    Credentials({
+      // You can specify which fields should be submitted, by adding keys to the `credentials` object.
+      // e.g. domain, username, password, 2FA token, etc.
       credentials: {
-        email: { label: "邮箱", type: "email", placeholder: "example@hivechat.net" },
-        password: { label: "密码", type: "password" }
+        email: {},
+        password: {},
       },
-      // @ts-expect-error
-      authorize: async ({ email, password, domain }) => {
+      authorize: async (credentials) => {
         try {
-          const ret = await fetch(`${process.env.NEXTAUTH_URL}/api/auth/email`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              email,
-              password,
-              domain,
+          const { email, password } = await signInSchema.parseAsync(credentials);
+          const user = await db.query.users
+            .findFirst({
+              where: eq(users.email, email)
             })
-          }).then(res => res.json())
-
-          if (ret?.code === 200) {
-            return ret.user;
+          if (!user || !user.password) {
+            return null;
           }
-
-          return null;
-        } catch (e) {
-          console.error(e);
-          return null;
+          const passwordMatch = await verifyPassword(password, user.password);
+          if (passwordMatch) {
+            return {
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              isAdmin: user.isAdmin || false,
+            };
+          } else {
+            return null;
+          }
+        } catch (error) {
+          if (error instanceof ZodError) {
+            // 如果验证失败，返回 null 表示凭据无效
+            return null;
+          }
+          // 处理其他错误
+          throw error;
         }
-      }
-    })
+      },
+    }),
   ],
   pages: {
+    error: '/auth/error', // 自定义错误页面
     signIn: "/login",
-    error: "/login",
     newUser: "/setup",
     verifyRequest: "/verification-request"
   },
@@ -60,35 +67,26 @@ export const authOptions: NextAuthOptions = {
         return false
       }
     },
-    async jwt({ token, user, account, profile, isNewUser }) {
+    async jwt({ token, user, account }) {
       if (user) {
-        token = {
-          ...token,
-          id: user.id,
-          email: user.email || "",
-          name: user.name,
-          isAdmin: user.isAdmin,
-          image: user.image,
-        }
+        token.id = user.id;
+        token.isAdmin = user.isAdmin;
       }
-
+      if (account?.provider === "credentials" && token.sub) {
+        token.provider = 'credentials';
+      }
       return token;
     },
-    async session({ session, token, user }) {
-      session.user = {
-        ...session.user,
-        id: token.id as string,
-        email: token.email as string,
-        name: token.name,
-        isAdmin: token.isAdmin as boolean,
-        image: token.image,
-        provider: token.provider,
+    async session({ session, token }) {
+      if (token) {
+        session.user = {
+          ...session.user, // 保留已有的属性
+          id: String(token.id),
+          isAdmin: Boolean(token.isAdmin), // 添加 isAdmin
+          provider: token.provider as string,
+        };
       }
-      return session
-    }
-  }
-}
-
-export function auth(...args: [GetServerSidePropsContext] | []) {
-  return nextAuthGetServerSession(...args, authOptions)
-}
+      return session;
+    },
+  },
+})
