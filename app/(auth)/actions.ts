@@ -3,7 +3,6 @@ import bcrypt from "bcryptjs";
 import { eq } from 'drizzle-orm';
 import { users, groups } from '@/app/db/schema';
 import { db } from '@/app/db';
-import { signIn } from '@/auth';
 import { fetchAppSettings, setAppSettings } from "@/app/admin/system/actions";
 import { auth } from '@/auth';
 
@@ -42,12 +41,7 @@ export async function register(email: string, password: string) {
       password: hashedPassword,
       groupId: groupId
     });
-    // 注册成功后，自动登录
-    const signInResponse = await signIn("credentials", {
-      redirect: false, // 不跳转页面
-      email,
-      password,
-    });
+    
     // 返回成功消息或其他所需数据
     return {
       status: 'success',
@@ -94,12 +88,7 @@ export async function adminSetup(email: string, password: string, adminCode: str
       isAdmin: true,
       groupId: groupId
     });
-    // 注册成功后，自动登录
-    const signInResponse = await signIn("credentials", {
-      redirect: false, // 不跳转页面
-      email,
-      password,
-    });
+    
     await setAppSettings('hasSetup', 'true');
     return {
       status: 'success',
