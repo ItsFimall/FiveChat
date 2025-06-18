@@ -11,7 +11,6 @@ import logo from "@/app/images/logo.png";
 import Fivechat from "@/app/images/fivechat.svg";
 import { useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
-import { checkSetupStatus } from "@/app/(auth)/actions"
 import { redirect } from "next/navigation"
 import { auth } from "@/auth"
 import { getSession } from "next-auth/react";
