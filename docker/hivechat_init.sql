@@ -485,11 +485,6 @@ CREATE TABLE public."user" (
     name text,
     email text,
     password text,
-    "dingdingUnionId" text,
-    "wecomUserId" text,
-    "feishuUserId" text,
-    "feishuOpenId" text,
-    "feishuUnionId" text,
     "emailVerified" timestamp without time zone,
     "isAdmin" boolean DEFAULT false,
     image text,
@@ -722,7 +717,7 @@ COPY public.usage_report (date, user_id, model_id, provider_id, input_tokens, ou
 -- Data for Name: user; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public."user" (id, name, email, password, "dingdingUnionId", "wecomUserId", "feishuUserId", "feishuOpenId", "feishuUnionId", "emailVerified", "isAdmin", image, "groupId", today_total_tokens, current_month_total_tokens, usage_updated_at, created_at) FROM stdin;
+COPY public."user" (id, name, email, password, "emailVerified", "isAdmin", image, "groupId", today_total_tokens, current_month_total_tokens, usage_updated_at, created_at) FROM stdin;
 \.
 
 

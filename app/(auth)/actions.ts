@@ -136,7 +136,6 @@ export async function adminSetupLogined(adminCode: string) {
     .where(eq(users.id, session.user.id));
   // 注册成功后，自动登录
   await setAppSettings('hasSetup', 'true');
-  // await signIn("feishu");
   return {
     status: 'success',
   }
@@ -147,15 +146,6 @@ export async function getActiveAuthProvides() {
   // 兼容历史版本，只要没配置 OFF，就默认启用 Email 登录
   if (!process.env.EMAIL_AUTH_STATUS || (process.env.EMAIL_AUTH_STATUS.toLowerCase() !== 'off')) {
     activeAuthProvides.push('email')
-  }
-  if (process.env.FEISHU_AUTH_STATUS && process.env.FEISHU_AUTH_STATUS.toLowerCase() === 'on') {
-    activeAuthProvides.push('feishu')
-  }
-  if (process.env.WECOM_AUTH_STATUS && process.env.WECOM_AUTH_STATUS.toLowerCase() === 'on') {
-    activeAuthProvides.push('wecom')
-  }
-  if (process.env.DINGDING_AUTH_STATUS && process.env.DINGDING_AUTH_STATUS.toLowerCase() === 'on') {
-    activeAuthProvides.push('dingding')
   }
   return activeAuthProvides;
 }
