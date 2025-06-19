@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, memo, useCallback, useRef, useMemo } from 'react';
+import React, { useState, memo, useCallback, useRef, useMemo, useEffect } from 'react';
 import { Button, Tooltip, Popover, Modal, message } from "antd";
 import { PictureOutlined, ClearOutlined, FieldTimeOutlined, GlobalOutlined, ArrowUpOutlined } from '@ant-design/icons';
 import { Square } from '@icon-park/react';
@@ -31,6 +31,13 @@ const ChatInput = memo(({
 }: ChatInputProps) => {
   const t = useTranslations('Chat');
   const [inputValue, setInputValue] = useState('');
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const userAgent = navigator.userAgent;
+    const mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+    setIsMobile(mobile);
+  }, []);
 
   // Expose setInputValue to parent through ref
   React.useEffect(() => {
@@ -48,6 +55,10 @@ const ChatInput = memo(({
     if (e.nativeEvent.isComposing) return;
 
     if (e.key === 'Enter') {
+      if (isMobile && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+        return;
+      }
+      
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
         // Command/Ctrl + Enter: 插入换行
         e.preventDefault();
@@ -67,7 +78,7 @@ const ChatInput = memo(({
       onSubmit(inputValue);
       setInputValue('');
     }
-  }, [inputValue, responseStatus, onSubmit]);
+  }, [inputValue, responseStatus, onSubmit, isMobile]);
 
   return (
     <div className='flex h-full max-w-3xl w-full relative pl-2 pr-2 pt-2'>
