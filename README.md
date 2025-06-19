@@ -1,8 +1,7 @@
 <div align="center">
    <img width="32" height="32" src="https://jiantuku.oss-cn-beijing.aliyuncs.com/share/logo.png" />
-   <img height="32" alt="HiveChat" src="https://jiantuku.oss-cn-beijing.aliyuncs.com/share/hivechat.png" />
-   <p>中文 ｜ <a href="https://github.com/HiveNexus/HiveChat/blob/main/README_EN.md">English</a><p>
-   <a href="https://deepwiki.com/HiveNexus/HiveChat" target="_blank"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
+   <p>中文 ｜ <a href="https://github.com/ItsFimall/FiveChat/blob/main/README_EN.md">English</a><p>
+   <a href="https://deepwiki.com/ItsFimall/FiveChat" target="_blank"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
    <p>专为中小团队设计的 AI 聊天应用，支持 Deepseek、Open AI、Claude、Gemini 等模型。</p>
 </div>
 
@@ -96,7 +95,7 @@ MCP 使用
 
 1. 克隆本项目到本地
 ```
-git clone https://github.com/HiveNexus/hivechat.git
+git clone https://github.com/ItsFimall/Fivechat.git
 ```
 
 2. 安装依赖库
@@ -118,7 +117,7 @@ cp .env.example .env
 ```env
 # PostgreSQL 数据库连接 URL，此处为示例，需本地安装或连接远程 PostgreSQL
 # 注意，本地安装暂不支持使用 Vercel 或 Neon 提供的 Serverless PostgreSQL
-DATABASE_URL=postgres://postgres:password@localhost/hivechat
+DATABASE_URL=postgres://postgres:password@localhost/fivechat
 
 #用于用户信息等敏感信息的加密，可以使用 openssl rand -base64 32 生成一个随机的 32 位字符串作为密钥，此处为示例，请替换为自己生成的值。
 AUTH_SECRET=hclqD3nBpMphLevxGWsUnGU6BaEa2TjrCQ77weOVpPg=
@@ -131,22 +130,6 @@ NEXTAUTH_URL=http://127.0.0.1:3000
 
 是否开启邮箱登录，开启值设为 ON，关闭时修改为 OFF，未设置时默认开启
 EMAIL_AUTH_STATUS=ON
-
-# 是否开启飞书登录，开启值设为 ON，关闭时修改为 OFF，详细说明见底部附2
-FEISHU_AUTH_STATUS=OFF
-FEISHU_CLIENT_ID="cli_xxxxxxxxxxxxxxxx"
-FEISHU_CLIENT_SECRET="xxxxxxxxHOEWIoE7eDc1Lhc0042OXXXX"
-
-# 是否开启企业微信登录，开启值设为 ON，关闭时修改为 OFF
-WECOM_AUTH_STATUS=OFF
-WECOM_CLIENT_ID="ww728c371c2fXXXXXX"
-WECOM_AGENT_ID="100XXXX"
-WECOM_CLIENT_SECRET="H-7J4jzG0m1axpXLGshaCDlMOZxdjvkX6bIVLuXXXXXX"
-
-# 是否开启钉钉登录，开启值设为 ON，关闭时修改为 OFF
-DINGDING_AUTH_STATUS=OFF
-DINGDING_CLIENT_ID="dingpcfi2kpuplXXXXXX"
-DINGDING_CLIENT_SECRET="3vk9-VFCExNckqNUk_CL2F-HEgz7qGN-BimH0lZ1gUx6hWO7g_an2lnkk6XXXXXX"
 ```
 
 4. 初始化数据库
@@ -168,11 +151,11 @@ npm run start
 
 ### 方法 2：Docker 部署
 
-由于近期更新频繁，暂未提供 Docker 升级数据库的 SQL 脚本，如果是历史版本升级，测试用途的用户可直接删除存储卷下的 `hivechat_postgres_data`，数据库会自动重新初始化。如果正式环境 Docker 部署有升级需求，可联系作者(wechat:wuhaoworld)。 其他部署方式没有此问题。
+由于近期更新频繁，暂未提供 Docker 升级数据库的 SQL 脚本，如果是历史版本升级，测试用途的用户可直接删除存储卷下的 `fivechat_postgres_data`，数据库会自动重新初始化。如果正式环境 Docker 部署有升级需求，可联系作者。 其他部署方式没有此问题。
 
 1. 克隆本项目到本地
 ```
-git clone https://github.com/HiveNexus/hivechat.git
+git clone https://github.com/ItsFimall/Fivechat.git
 ```
 
 2. 修改本地配置文件
@@ -200,22 +183,6 @@ NEXTAUTH_URL=http://127.0.0.1:3000
 
 # 是否开启邮箱登录，开启值设为 ON，关闭时修改为 OFF，未设置时默认开启
 EMAIL_AUTH_STATUS=ON
-
-# 是否开启飞书登录，开启值设为 ON，关闭时修改为 OFF，详细说明见底部附2
-FEISHU_AUTH_STATUS=OFF
-FEISHU_CLIENT_ID="cli_xxxxxxxxxxxxxxxx"
-FEISHU_CLIENT_SECRET="xxxxxxxxHOEWIoE7eDc1Lhc0042OXXXX"
-
-# 是否开启企业微信登录，开启值设为 ON，关闭时修改为 OFF
-WECOM_AUTH_STATUS=OFF
-WECOM_CLIENT_ID="ww728c371c2fXXXXXX"
-WECOM_AGENT_ID="100XXXX"
-WECOM_CLIENT_SECRET="H-7J4jzG0m1axpXLGshaCDlMOZxdjvkX6bIVLuXXXXXX"
-
-# 是否开启钉钉登录，开启值设为 ON，关闭时修改为 OFF
-DINGDING_AUTH_STATUS=OFF
-DINGDING_CLIENT_ID="dingpcfi2kpuplXXXXXX"
-DINGDING_CLIENT_SECRET="3vk9-VFCExNckqNUk_CL2F-HEgz7qGN-BimH0lZ1gUx6hWO7g_an2lnkk6XXXXXX"
 ```
 
 3. 启动容器
@@ -236,7 +203,7 @@ docker compose up -d
 
 点击下面的按钮，即可开始部署。
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/HiveNexus/hivechat.git&project-name=hivechat&env=DATABASE_URL&env=AUTH_SECRET&env=ADMIN_CODE&env=EMAIL_AUTH_STATUS&env=FEISHU_AUTH_STATUS&env=FEISHU_CLIENT_ID&env=FEISHU_CLIENT_SECRET)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/ItsFimall/Fivechat.git&project-name=hivechat&env=DATABASE_URL&env=AUTH_SECRET&env=ADMIN_CODE&env=EMAIL_AUTH_STATUS&env=FEISHU_AUTH_STATUS&env=FEISHU_CLIENT_ID&env=FEISHU_CLIENT_SECRET)
 
 默认将代码克隆的自己的 Github 后，需要填写环境变量：
 
@@ -244,7 +211,7 @@ docker compose up -d
 
 ```
 # PostgreSQL 数据库连接 URL，Vercel 平台提供了免费的托管服务，详情见下面说明
-DATABASE_URL=postgres://postgres:password@localhost/hivechat
+DATABASE_URL=postgres://postgres:password@localhost/fivechat
 
 #用于用户信息等敏感信息的加密，可以使用 openssl rand -base64 32 生成一个随机的 32 位字符串作为密钥，此处为示例，请替换为自己生成的值。
 AUTH_SECRET=hclqD3nBpMphLevxGWsUnGU6BaEa2TjrCQ77weOVpPg=
@@ -254,26 +221,10 @@ ADMIN_CODE=22113344
 
 # 生产环境设置为正式域名，开启飞书等第三方登录时回调时会使用
 # 首次可使用 `https://Vercel中的项目名.vercel.app`
-NEXTAUTH_URL=https://hivechat-xxx.vercel.app
+NEXTAUTH_URL=https://fivechat-xxx.vercel.app
 
 是否开启邮箱登录，开启值设为 ON，关闭时设为 OFF
 EMAIL_AUTH_STATUS=ON
-
-# 是否开启飞书登录，开启值设为 ON，关闭时修改为 OFF，详细说明见底部附2
-FEISHU_AUTH_STATUS=OFF
-FEISHU_CLIENT_ID="cli_xxxxxxxxxxxxxxxx"
-FEISHU_CLIENT_SECRET="xxxxxxxxHOEWIoE7eDc1Lhc0042OXXXX"
-
-# 是否开启企业微信登录，开启值设为 ON，关闭时修改为 OFF
-WECOM_AUTH_STATUS=OFF
-WECOM_CLIENT_ID="ww728c371c2fXXXXXX"
-WECOM_AGENT_ID="100XXXX"
-WECOM_CLIENT_SECRET="H-7J4jzG0m1axpXLGshaCDlMOZxdjvkX6bIVLuXXXXXX"
-
-# 是否开启钉钉登录，开启值设为 ON，关闭时修改为 OFF
-DINGDING_AUTH_STATUS=OFF
-DINGDING_CLIENT_ID="dingpcfi2kpuplXXXXXX"
-DINGDING_CLIENT_SECRET="3vk9-VFCExNckqNUk_CL2F-HEgz7qGN-BimH0lZ1gUx6hWO7g_an2lnkk6XXXXXX"
 ```
 #### 附1：Vercel（Neon）PostgreSQL 配置
 
@@ -287,8 +238,3 @@ DINGDING_CLIENT_SECRET="3vk9-VFCExNckqNUk_CL2F-HEgz7qGN-BimH0lZ1gUx6hWO7g_an2lnk
 4. 初始化管理员账号
 
 按照以上方法安装部署完成后，访问 `http://localhost:3000/setup` (实际使用的域名和端口号)，即可进入管理员账号设置页面，设置完成后，即可正常使用系统。
-
-#### 附2：第三方登录配置说明
-* [企业微信登录配置说明](https://www.hivechat.net/docs/auth/wecom)
-* [钉钉登录配置说明](https://www.hivechat.net/docs/auth/dingding)
-* [飞书登录配置说明](https://www.hivechat.net/docs/auth/feishu)
