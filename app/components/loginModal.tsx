@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useTransition } from 'react'
-import { Modal, Form, Input, Button, Alert, Skeleton, Tabs } from 'antd';
-import type { TabsProps } from 'antd';
+import React, { useState, useEffect } from 'react'
+import { Modal, Form, Input, Button, Alert, Skeleton } from 'antd';
 import { useLoginModal } from '@/app/contexts/loginModalContext';
 import { signIn } from "next-auth/react";
 import { fetchAppSettings } from '@/app/admin/system/actions';
@@ -11,16 +10,12 @@ import logo from "@/app/images/logo.png";
 import Fivechat from "@/app/images/fivechat.svg";
 import Link from 'next/link';
 import Image from "next/image";
+import FeishuLogin from "@/app/components/FeishuLoginButton"
+import WecomLogin from "@/app/components/WecomLoginButton"
+import DingdingLogin from "@/app/components/DingdingLoginButton"
 import { useTranslations } from 'next-intl';
 import useModelListStore from '@/app/store/modelList';
 import { fetchAvailableLlmModels } from '@/app/admin/llm/actions';
-import {
-  LockOutlined,
-  UserOutlined,
-  MailOutlined,
-} from '@ant-design/icons';
-import { useToast } from "@/app/hooks/use-toast";
-import dynamic from "next/dynamic";
 
 interface LoginFormValues {
   email: string;
@@ -139,7 +134,20 @@ export default function LoginModal() {
               </div>
               }
             </Form>
+
           </div>}
+        {
+          authProviders.includes('wecom') &&
+          <div className='px-4 my-2'><WecomLogin /></div>
+        }
+        {
+          authProviders.includes('feishu') &&
+          <div className='px-4 my-2'><FeishuLogin /></div>
+        }
+        {
+          authProviders.includes('dingding') &&
+          <div className='px-4 my-2'><DingdingLogin /></div>
+        }
       </>}
     </Modal>
   );

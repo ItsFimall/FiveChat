@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { eq } from 'drizzle-orm';
 import { users, groups } from '@/app/db/schema';
 import { db } from '@/app/db';
+import { signIn } from '@/auth';
 import { fetchAppSettings, setAppSettings } from "@/app/admin/system/actions";
 import { auth } from '@/auth';
 
@@ -41,7 +42,12 @@ export async function register(email: string, password: string) {
       password: hashedPassword,
       groupId: groupId
     });
-    
+    // 注册成功后，自动登录
+    const signInResponse = await signIn("credentials", {
+      redirect: false, // 不跳转页面
+      email,
+      password,
+    });
     // 返回成功消息或其他所需数据
     return {
       status: 'success',
@@ -88,7 +94,12 @@ export async function adminSetup(email: string, password: string, adminCode: str
       isAdmin: true,
       groupId: groupId
     });
-    
+    // 注册成功后，自动登录
+    const signInResponse = await signIn("credentials", {
+      redirect: false, // 不跳转页面
+      email,
+      password,
+    });
     await setAppSettings('hasSetup', 'true');
     return {
       status: 'success',
@@ -137,5 +148,64 @@ export async function getActiveAuthProvides() {
   if (!process.env.EMAIL_AUTH_STATUS || (process.env.EMAIL_AUTH_STATUS.toLowerCase() !== 'off')) {
     activeAuthProvides.push('email')
   }
+  if (process.env.FEISHU_AUTH_STATUS && process.env.FEISHU_AUTH_STATUS.toLowerCase() === 'on') {
+    activeAuthProvides.push('feishu')
+  }
+  if (process.env.WECOM_AUTH_STATUS && process.env.WECOM_AUTH_STATUS.toLowerCase() === 'on') {
+    activeAuthProvides.push('wecom')
+  }
+  if (process.env.DINGDING_AUTH_STATUS && process.env.DINGDING_AUTH_STATUS.toLowerCase() === 'on') {
+    activeAuthProvides.push('dingding')
+  }
   return activeAuthProvides;
+}
+
+export async function getFeishuAuthInfo() {
+  const session = await auth();
+  if (!session?.user.isAdmin) {
+    return {
+      isActive: false,
+      appId: '',
+      appSecret: '',
+    }
+  }
+  return {
+    isActive: process.env.FEISHU_AUTH_STATUS?.toLowerCase() === 'on',
+    appId: process.env.FEISHU_CLIENT_ID || '',
+    appSecret: process.env.FEISHU_CLIENT_SECRET || '',
+  }
+}
+
+export async function getWecomAuthInfo() {
+  const session = await auth();
+  if (!session?.user.isAdmin) {
+    return {
+      isActive: false,
+      appId: '',
+      agentId: '',
+      appSecret: '',
+    }
+  }
+  return {
+    isActive: process.env.WECOM_AUTH_STATUS?.toLowerCase() === 'on',
+    appId: process.env.WECOM_CLIENT_ID || '',
+    agentId: process.env.WECOM_AGENT_ID || '',
+    appSecret: process.env.WECOM_CLIENT_SECRET || '',
+  }
+}
+
+export async function getDingdingAuthInfo() {
+  const session = await auth();
+  if (!session?.user.isAdmin) {
+    return {
+      isActive: false,
+      appId: '',
+      appSecret: '',
+    }
+  }
+  return {
+    isActive: process.env.DINGDING_AUTH_STATUS?.toLowerCase() === 'on',
+    appId: process.env.DINGDING_CLIENT_ID || '',
+    appSecret: process.env.DINGDING_CLIENT_SECRET || '',
+  }
 }

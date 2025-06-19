@@ -1,7 +1,7 @@
 services:
   app:
     container_name: fivechat
-    image: ghcr.io/itsfimall/fivechat:latest
+    image: hivenexus/fivechat:latest
     ports:
       - "${HOST_PORT}:3000"
     depends_on:
@@ -10,10 +10,19 @@ services:
       DATABASE_URL: "postgres://postgres:postgres@db:5432/fivechat"
       AUTH_SECRET: ${AUTH_SECRET}
       ADMIN_CODE: ${ADMIN_CODE}
-      EMAIL_AUTH_STATUS: ${EMAIL_AUTH_STATUS}
       NEXTAUTH_URL: ${NEXTAUTH_URL}
-      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
       AUTH_TRUST_HOST: ${AUTH_TRUST_HOST}
+      EMAIL_AUTH_STATUS: ${EMAIL_AUTH_STATUS}
+      FEISHU_AUTH_STATUS: ${FEISHU_AUTH_STATUS}
+      FEISHU_CLIENT_ID: ${FEISHU_CLIENT_ID}
+      FEISHU_CLIENT_SECRET: ${FEISHU_CLIENT_SECRET}
+      WECOM_AUTH_STATUS: ${WECOM_AUTH_STATUS}
+      WECOM_CLIENT_ID: ${WECOM_CLIENT_ID}
+      WECOM_AGENT_ID: ${WECOM_AGENT_ID}
+      WECOM_CLIENT_SECRET: ${WECOM_CLIENT_SECRET}
+      DINGDING_AUTH_STATUS: ${DINGDING_AUTH_STATUS}
+      DINGDING_CLIENT_ID: ${DINGDING_CLIENT_ID}
+      DINGDING_CLIENT_SECRET: ${DINGDING_CLIENT_SECRET}
     restart: unless-stopped
     networks:
       - my-network

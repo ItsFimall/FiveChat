@@ -8,13 +8,12 @@ import { adminSetup, adminSetupLogined, getActiveAuthProvides } from '../actions
 import { fetchAppSettings, } from '@/app/admin/system/actions';
 import { Form, Input, Button, Alert } from 'antd';
 import logo from "@/app/images/logo.png";
+import FeishuLogin from "@/app/components/FeishuLoginButton"
+import WecomLogin from "@/app/components/WecomLoginButton"
+import DingdingLogin from "@/app/components/DingdingLoginButton"
 import Fivechat from "@/app/images/fivechat.svg";
 import { useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
-import { redirect } from "next/navigation"
-import { auth } from "@/auth"
-import { getSession } from "next-auth/react";
-import { z } from "zod";
 
 interface SetupFormValues {
   email: string;
@@ -55,7 +54,8 @@ export default function SetupPage() {
     try {
       const result = await adminSetupLogined(values.adminCode);
       if (result?.status === 'success') {
-        window.location.href = "/chat";
+        
+        signIn('feishu');
       } else {
         setError(result?.message || t('registerFail'));
         setLoading(false);
@@ -200,6 +200,15 @@ export default function SetupPage() {
         {
           authProviders.includes('email') && authProviders.length > 1 && !session &&
           <div className="w-full text-center text-gray-500 text-sm">或</div>
+        }
+        {
+          authProviders.includes('wecom') && !session && <div className='my-2'><WecomLogin text="使用企业微信登录后设置" callbackUrl="/setup" /></div>
+        }
+        {
+          authProviders.includes('feishu') && !session && <div className='my-2'><FeishuLogin text="使用飞书登录后设置" callbackUrl="/setup" /></div>
+        }
+        {
+          authProviders.includes('dingding') && !session && <div className='my-2'><DingdingLogin text="使用钉钉登录后设置" callbackUrl="/setup" /></div>
         }
       </div>
     </div >
