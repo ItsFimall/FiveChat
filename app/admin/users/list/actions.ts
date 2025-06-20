@@ -65,8 +65,9 @@ export async function getUserList(groupId?: string) {
     const now = new Date();
     const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
     // 处理每条记录的 todayTotalTokens
-    result = result.map(user => ({
+    const finalResult = result.map(({ group, ...user }) => ({
       ...user,
+      group,
       todayTotalTokens: new Date(user.usageUpdatedAt) >= today
         ? user.todayTotalTokens
         : 0,
@@ -74,7 +75,7 @@ export async function getUserList(groupId?: string) {
         ? user.currentMonthTotalTokens
         : 0,
     }));
-    return result;
+    return finalResult;
   } catch (error) {
     throw new Error('Failed to fetch user list');
   }
