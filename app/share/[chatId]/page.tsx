@@ -1,6 +1,6 @@
 import React from 'react';
 import { db } from '@/app/db';
-import { chats }s from '@/app/db/schema';
+import { chats } from '@/app/db/schema';
 import { eq, and, or, isNull, gt } from 'drizzle-orm';
 import { getTranslations } from 'next-intl/server';
 import { Result } from 'antd';
