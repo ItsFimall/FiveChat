@@ -2,6 +2,7 @@ import { auth } from '@/auth'
 import { db } from '@/app/db'
 import { chats } from '@/app/db/schema'
 import { eq } from 'drizzle-orm'
+import bcrypt from 'bcryptjs'
 import { NextResponse } from 'next/server'
 
 export async function POST(
@@ -30,11 +31,13 @@ export async function POST(
       return new Response('Chat not found or access denied', { status: 404 })
     }
 
+    // Hash the share password if provided
+    const hashedPassword = sharePassword ? await bcrypt.hash(sharePassword, 10) : null
     await db
       .update(chats)
       .set({
         isShared: true,
-        sharePassword: sharePassword || null,
+        sharePassword: hashedPassword,
         shareExpiresAt: shareExpiresAt ? new Date(shareExpiresAt) : null,
         updatedAt: new Date(),
       })

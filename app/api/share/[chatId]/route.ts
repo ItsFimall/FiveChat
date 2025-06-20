@@ -2,6 +2,7 @@ import { db } from '@/app/db'
 import { chats, messages } from '@/app/db/schema'
 import { and, eq, gt, isNull, or } from 'drizzle-orm'
 import { NextResponse } from 'next/server'
+import bcrypt from 'bcryptjs'
 
 async function getSharedChat(chatId: string) {
   return await db.query.chats.findFirst({
@@ -34,10 +35,8 @@ export async function GET(
 
     const hasPassword = !!chat.sharePassword
     // Do not return messages here, only chat info
-    const { messages, ...chatInfo } = chat;
-
     return NextResponse.json({
-      ...chatInfo,
+      ...chat,
       hasPassword,
     })
   } catch (error) {
@@ -69,8 +68,11 @@ export async function POST(
     }
     
     // If chat has a password, verify it
-    if (chat.sharePassword && chat.sharePassword !== password) {
-      return new Response('Incorrect password', { status: 403 })
+    if (chat.sharePassword) {
+      const isValid = await bcrypt.compare(password, chat.sharePassword)
+      if (!isValid) {
+        return new Response('Incorrect password', { status: 403 })
+      }
     }
 
     // Password is correct or not required, return full chat with messages
