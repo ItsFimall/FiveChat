@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { Input, Button, Spin, Result, message } from 'antd';
 import { LockOutlined } from '@ant-design/icons';
-import { ChatType, MessageType } from '@/types/llm';
+import { ChatType, Message } from '@/types/llm';
 import MessageItem from '@/app/components/MessageItem';
 import { useTranslations } from 'next-intl';
 
@@ -16,7 +16,7 @@ const SharedChatPage = () => {
     const chatId = params.chatId as string;
 
     const [chatInfo, setChatInfo] = useState<ChatInfo | null>(null);
-    const [messages, setMessages] = useState<MessageType[]>([]);
+    const [messages, setMessages] = useState<Message[]>([]);
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -145,10 +145,12 @@ const SharedChatPage = () => {
                 {messages.map((msg, index) => (
                     <MessageItem
                         key={msg.id || index}
-                        message={{...msg}}
-                        isLastMessage={index === messages.length - 1}
-                        onRetry={() => {}}
-                        onDelete={() => {}}
+                        item={msg}
+                        index={index}
+                        isConsecutive={false}
+                        role={msg.role as 'assistant' | 'user' | 'system'}
+                        retryMessage={() => {}}
+                        deleteMessage={() => {}}
                     />
                 ))}
             </div>
