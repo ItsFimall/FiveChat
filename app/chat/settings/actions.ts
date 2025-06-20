@@ -72,8 +72,8 @@ export const getUserUsage = async () => {
       }
     }
   });
-  if (userDetail && userDetail.group) {
-    const { tokenLimitType, monthlyTokenLimit } = userDetail.group;
+  if (userDetail && (userDetail as any).group) {
+    const { tokenLimitType, monthlyTokenLimit } = (userDetail as any).group;
     userTokenLimitType = tokenLimitType || 'limited' as const;
     userMonthlyTokenLimit = monthlyTokenLimit || 0;
   }
