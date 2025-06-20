@@ -164,7 +164,7 @@ export const chats = pgTable("chats", {
   userId: text(),
   title: varchar({ length: 255 }).notNull(),
   historyType: historyType('history_type').notNull().default('count'),
-  historyCount: integer('history_count').default(5).notNull(),
+  historyCount: integer('history_count').default(10).notNull(),
   searchEnabled: boolean('search_enabled').default(false),
   defaultModel: varchar('default_model'),
   defaultProvider: varchar('default_provider'),

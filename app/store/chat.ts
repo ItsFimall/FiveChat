@@ -18,7 +18,7 @@ const useChatStore = create<IChatStore>((set) => ({
   chat: null,
   webSearchEnabled: false,
   historyType: 'count',
-  historyCount: 5,
+  historyCount: 10,
   setHistoryType: (chatId: string, newType: 'all' | 'none' | 'count') => {
     set((state) => {
       updateChatInServer(chatId, { historyType: newType })
@@ -44,7 +44,7 @@ const useChatStore = create<IChatStore>((set) => ({
     set({
       chat: chatInfo,
       historyType: chatInfo.historyType || 'count',
-      historyCount: chatInfo.historyCount || 5
+      historyCount: chatInfo.historyCount || 10
     });
   },
 

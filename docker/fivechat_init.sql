@@ -244,7 +244,7 @@ CREATE TABLE public.chats (
     "userId" text,
     title character varying(255) NOT NULL,
     history_type public.history_type DEFAULT 'count'::public.history_type NOT NULL,
-    history_count integer DEFAULT 5 NOT NULL,
+    history_count integer DEFAULT 10 NOT NULL,
     search_enabled boolean DEFAULT false,
     default_model character varying,
     default_provider character varying,
