@@ -80,7 +80,7 @@ export default function LoginModal() {
     >
       <div className="flex items-center justify-center flex-row mb-6 mt-4">
         <Image src={logo} className="ml-1" alt="FiveChat logo" width={28} height={28} />
-        <Fivechat className="ml-1" alt="FiveChat text" width={120} />
+        <Fivechat className="ml-1" alt="FiveChat text" width={100} />
         <span className="text-center text-xl">{t('login')}</span>
       </div>
       {isPending ? <div className='mt-4 mb-6'>
