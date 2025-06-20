@@ -45,7 +45,7 @@ export const isUserWithinQuota = async (userId: string, providerId: string, mode
         }
       }
     }
-  }) as {
+  }) as unknown as {
     group: {
       modelType: 'all' | 'specific',
       tokenLimitType: 'unlimited' | 'limited',
