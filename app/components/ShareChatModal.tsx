@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Input, Radio, Button, message, Space, Tooltip } from 'antd';
 import { useTranslations } from 'next-intl';
 import { CopyOutlined } from '@ant-design/icons';
-import {CopyToClipboard} from 'react-copy-to-clipboard';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 interface ShareChatModalProps {
   chatId: string;
@@ -15,7 +15,28 @@ const ShareChatModal = ({ chatId, open, onClose }: ShareChatModalProps) => {
   const [password, setPassword] = useState('');
   const [expiresIn, setExpiresIn] = useState(0); // 0 for never
   const [loading, setLoading] = useState(false);
+  const [isShared, setIsShared] = useState(false);
   const [sharedLink, setSharedLink] = useState('');
+
+  useEffect(() => {
+    if (open) {
+      const fetchShareStatus = async () => {
+        try {
+          const response = await fetch(`/api/chats/${chatId}/share`);
+          if (response.ok) {
+            const data = await response.json();
+            setIsShared(data.isShared);
+            if (data.isShared) {
+              setSharedLink(`${window.location.origin}/share/${chatId}`);
+            }
+          }
+        } catch (error) {
+          console.error('Failed to fetch share status:', error);
+        }
+      };
+      fetchShareStatus();
+    }
+  }, [open, chatId]);
 
   const handleShare = async () => {
     setLoading(true);
@@ -37,6 +58,7 @@ const ShareChatModal = ({ chatId, open, onClose }: ShareChatModalProps) => {
       if (response.ok) {
         const newSharedLink = `${window.location.origin}/share/${chatId}`;
         setSharedLink(newSharedLink);
+        setIsShared(true);
         message.success(t('shareSuccess'));
       } else {
         throw new Error(t('shareFailed'));
@@ -49,9 +71,30 @@ const ShareChatModal = ({ chatId, open, onClose }: ShareChatModalProps) => {
     }
   };
 
+  const handleStopSharing = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/chats/${chatId}/share`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        setIsShared(false);
+        setSharedLink('');
+        message.success(t('stopSharingSuccess'));
+        onClose();
+      } else {
+        throw new Error(t('stopSharingFailed'));
+      }
+    } catch (error) {
+      message.error(t('stopSharingFailed'));
+      console.error('Failed to stop sharing chat:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleCopy = () => {
     message.success(t('copySuccess'));
-    onClose();
   };
   
   const expirationOptions = [
@@ -65,7 +108,7 @@ const ShareChatModal = ({ chatId, open, onClose }: ShareChatModalProps) => {
     <>
       <Space direction="vertical" style={{ width: '100%' }}>
         <div>
-          <label htmlFor="password">{t('passwordProtection')}</label>
+          <label htmlFor="password" className="block mb-1">{t('passwordProtection')}</label>
           <Input.Password
             id="password"
             placeholder={t('passwordPlaceholder')}
@@ -74,7 +117,7 @@ const ShareChatModal = ({ chatId, open, onClose }: ShareChatModalProps) => {
           />
         </div>
         <div>
-          <label>{t('expirationTime')}</label>
+          <label className="block mb-1">{t('expirationTime')}</label>
           <Radio.Group
             onChange={(e) => setExpiresIn(e.target.value)}
             value={expiresIn}
@@ -110,6 +153,11 @@ const ShareChatModal = ({ chatId, open, onClose }: ShareChatModalProps) => {
                 </CopyToClipboard>
             }
         />
+        <div style={{ marginTop: 24, textAlign: 'right' }}>
+            <Button danger loading={loading} onClick={handleStopSharing}>
+                {t('stopSharing')}
+            </Button>
+        </div>
     </div>
   );
 
@@ -121,7 +169,7 @@ const ShareChatModal = ({ chatId, open, onClose }: ShareChatModalProps) => {
       footer={null}
       destroyOnClose
     >
-        {sharedLink ? renderSharedLinkView() : renderInitialView()}
+        {isShared ? renderSharedLinkView() : renderInitialView()}
     </Modal>
   );
 };

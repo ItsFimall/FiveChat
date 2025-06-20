@@ -68,7 +68,7 @@ export default function LoginPage() {
       <div className="flex items-center flex-row  mb-6">
         <Link href="/" className='flex items-center'>
           <Image src={logo} className="ml-1" alt="FiveChat logo" width={32} height={32} />
-          <Fivechat className="ml-1" alt="FiveChat text" width={156} height={39} />
+          <Fivechat className="ml-2 mr-2" alt="FiveChat text" width={156} height={39} />
         </Link>
       </div>
 
