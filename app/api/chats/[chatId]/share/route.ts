@@ -67,6 +67,7 @@ export async function GET(
       where: eq(chats.id, chatId),
       columns: {
         isShared: true,
+        userId: true
       }
     })
     if (!chat || chat.userId !== session.user.id) {

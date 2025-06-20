@@ -117,6 +117,7 @@ const ShareChatClient = ({ chatId, chatTitle, hasPassword }: ShareChatClientProp
             role={msg.role as 'assistant' | 'user' | 'system'}
             retryMessage={() => {}}
             deleteMessage={() => {}}
+            showActions={false}
           />
         ))}
       </div>

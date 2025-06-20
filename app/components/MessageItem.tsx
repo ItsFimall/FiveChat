@@ -14,13 +14,17 @@ const MessageItem = memo((props: {
   isConsecutive: boolean;
   role: 'assistant' | 'user' | 'system',
   retryMessage: (index: number) => void,
-  deleteMessage: (index: number) => void
+  deleteMessage: (index: number) => void,
+  showActions?: boolean
 }
 ) => {
   const t = useTranslations('Chat');
   const { allProviderListByKey } = useModelListStore();
   const [images, setImages] = useState<string[]>([]);
   const [plainText, setPlainText] = useState('');
+
+  const showActions = props.showActions === undefined ? true : props.showActions;
+
   useEffect(() => {
     if (Array.isArray(props.item.content) && props.item.content.length > 0) {
       const images = props.item.content.filter((item: any) => item.type === 'image').map((item: any) => item.data);
@@ -162,65 +166,61 @@ const MessageItem = memo((props: {
     </div>
   }
   if (props.role === 'user') {
-    return <div className="flex container mx-auto pl-4 pr-2 max-w-screen-md w-full flex-col justify-center items-center" >
+    return <div className="flex container mx-auto px-2 max-w-screen-md w-full flex-col justify-center items-center" >
       <div className='items-start flex max-w-3xl text-justify w-full my-0 pt-0 pb-1 flex-row-reverse'>
-        <div className='flex ml-10 flex-col items-end group'>
-          <div className='flex flex-row gap-2 mb-2'>
-            {images.length > 0 &&
-              images.map((image, index) => {
-                return (
-                  <div key={index} className="flex flex-wrap gap-4">
-                    <AntdImage alt=''
-                      className='block border h-full w-full rounded-md object-cover cursor-pointer'
-                      height={160}
-                      src={image}
-                      preview={{
-                        mask: false
-                      }}
-                    />
-                  </div>
-                );
-              })}
+        <div className='flex flex-col h-full'>
+          <Avatar size={32} className='bg-blue-500 text-white'>U</Avatar>
+          {props.isConsecutive && <div className="flex justify-center h-0 grow">
+            <div className="h-full border-l border-dashed border-gray-300 my-1"></div>
+          </div>}
+        </div>
+        <div className='flex flex-col w-0 grow group items-end'>
+          <div className='pl-3 pr-0 py-2 mr-2 bg-blue-500 text-white w-fit grow markdown-body answer-content rounded-xl'>
+            {images.length > 0 && (
+              <AntdImage.PreviewGroup items={images}>
+                <div className='flex flex-row flex-wrap'>
+                  {images.map((image, index) => (
+                    <div key={index} className='w-24 h-24 m-1 rounded-md overflow-hidden' >
+                      <AntdImage
+                        src={image}
+                        alt="Uploaded image"
+                        className='object-cover w-full h-full'
+                      />
+                    </div>
+                  ))}
+                </div>
+              </AntdImage.PreviewGroup>
+            )}
+            <MarkdownRender content={plainText} />
           </div>
-          {typeof props.item.content === 'string' &&
-            <div
-              className='w-fit px-4 py-3 markdown-body !min-w-4 !bg-gray-100 text-base rounded-xl ml-10'
-              style={{ maxWidth: '44rem' }}
-            >
-              <MarkdownRender content={props.item.content} />
-            </div>}
-          {Array.isArray(props.item.content) &&
-            props.item.content.filter((i) => i.type === 'text').map((it) => it.text).join('') !== '' &&
-            <div
-              className='w-fit px-4 py-3 markdown-body !min-w-4 !bg-gray-100 text-base rounded-xl ml-10'
-              style={{ maxWidth: '44rem' }}
-            >
-              <MarkdownRender content={props.item.content.filter((i) => i.type === 'text').map((it) => it.text).join('')} />
-            </div>}
           <div className='invisible flex flex-row-reverse pr-1 mt-1 group-hover:visible'>
-            <Tooltip title={t('delete')}>
-              <Popconfirm
-                title={t('deleteNotice')}
-                description={t('currentMessageDelete')}
-                onConfirm={() => props.deleteMessage(props.index)}
-                okText={t('confirm')}
-                cancelText={t('cancel')}
-                placement='bottom'
-              >
-                <Button type="text" size='small'>
-                  <DeleteOutlined style={{ color: 'gray' }} />
-                </Button>
-              </Popconfirm>
-            </Tooltip>
-            <Tooltip title={t('retry')}>
-              <Button type="text" size='small'
-                onClick={() => {
-                  props.retryMessage(props.index)
-                }}
-              >
-                <SyncOutlined style={{ color: 'gray' }} />
-              </Button>
-            </Tooltip>
+            {showActions && (
+              <>
+                <Tooltip title={t('delete')}>
+                  <Popconfirm
+                    title={t('deleteNotice')}
+                    description={t('currentMessageDelete')}
+                    onConfirm={() => props.deleteMessage(props.index)}
+                    okText={t('confirm')}
+                    cancelText={t('cancel')}
+                    placement='bottom'
+                  >
+                    <Button type="text" size='small'>
+                      <DeleteOutlined style={{ color: 'gray' }} />
+                    </Button>
+                  </Popconfirm>
+                </Tooltip>
+                <Tooltip title={t('retry')}>
+                  <Button type="text" size='small'
+                    onClick={() => {
+                      props.retryMessage(props.index)
+                    }}
+                  >
+                    <SyncOutlined style={{ color: 'gray' }} />
+                  </Button>
+                </Tooltip>
+              </>
+            )}
             <CopyToClipboard text={plainText} onCopy={() => {
               message.success(t('copySuccess'));
             }}>
@@ -330,8 +330,19 @@ const MessageItem = memo((props: {
                 })
               }
             </div>
-            <div className='invisible flex flex-row items-center pl-1 group-hover:visible'>
-              <CopyToClipboard text={plainText} onCopy={() => {
+            <div className='invisible flex flex-row items-center ml-3 my-1 group-hover:visible'>
+              {showActions && (
+                <Tooltip title={t('retry')}>
+                  <Button type="text" size='small'
+                    onClick={() => {
+                      props.retryMessage(props.index)
+                    }}
+                  >
+                    <SyncOutlined style={{ color: 'gray' }} />
+                  </Button>
+                </Tooltip>
+              )}
+              <CopyToClipboard text={props.item.content as string} onCopy={() => {
                 message.success(t('copySuccess'));
               }}>
                 <Tooltip title={t('copy')}>
@@ -340,38 +351,24 @@ const MessageItem = memo((props: {
                   </Button>
                 </Tooltip>
               </CopyToClipboard>
-              <Tooltip title={t('retry')}>
-                <Button type="text" size='small'
-                  onClick={() => {
-                    props.retryMessage(props.index - 1)
-                  }}
-                >
-                  <SyncOutlined style={{ color: 'gray' }} />
-                </Button>
-              </Tooltip>
-              <Tooltip title={t('delete')}>
-                <Popconfirm
-                  title={t('deleteNotice')}
-                  description={t('currentMessageDelete')}
-                  onConfirm={() => props.deleteMessage(props.index)}
-                  okText={t('confirm')}
-                  cancelText={t('cancel')}
-                  placement='bottom'
-                >
-                  <Button type="text" size='small'>
-                    <DeleteOutlined style={{ color: 'gray' }} />
-                  </Button>
-                </Popconfirm>
-              </Tooltip>
-              {props.item.totalTokens ? <>
-                <span className='text-xs text-gray-500 ml-2'>Tokens:{props.item.totalTokens?.toLocaleString()}</span>
-                <span className='text-xs text-gray-500 ml-2'>↑{props.item.inputTokens?.toLocaleString()}</span>
-                <span className='text-xs text-gray-500 ml-2'>↓{props.item.outputTokens?.toLocaleString()}</span>
-              </> :
-                <Tooltip title={t('unknownUsage')}>
-                  <span className='text-xs text-gray-500 ml-2'>Tokens: - </span>
+              {showActions && (
+                <Tooltip title={t('delete')}>
+                  <Popconfirm
+                    title={t('deleteNotice')}
+                    description={t('currentMessageDelete')}
+                    onConfirm={() => props.deleteMessage(props.index)}
+                    okText={t('confirm')}
+                    cancelText={t('cancel')}
+                    placement='bottom'
+                  >
+                    <Button type="text" size='small'>
+                      <DeleteOutlined style={{ color: 'gray' }} />
+                    </Button>
+                  </Popconfirm>
                 </Tooltip>
-              }
+              )}
+              <div className='grow'></div>
+              <div className='text-xs text-gray-400 mr-4'>{t('Tokens')}: {props.item.totalTokens ?? t('unknownUsage')} </div>
             </div>
           </div>
         </div>
