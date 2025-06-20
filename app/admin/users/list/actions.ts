@@ -65,9 +65,9 @@ export async function getUserList(groupId?: string) {
     const now = new Date();
     const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
     // 处理每条记录的 todayTotalTokens
-    const finalResult = result.map(({ group, ...user }) => ({
+    const finalResult = result.map(user => ({
       ...user,
-      group,
+      group: (user as any).group,
       todayTotalTokens: new Date(user.usageUpdatedAt) >= today
         ? user.todayTotalTokens
         : 0,
