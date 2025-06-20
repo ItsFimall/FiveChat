@@ -4,7 +4,7 @@ import Link from 'next/link';
 import clsx from 'clsx';
 import { Modal, Input, Skeleton } from 'antd';
 import { ChatType } from '@/types/llm';
-import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, PlusOutlined, ShareAltOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { usePathname, useRouter } from 'next/navigation';
 import { message } from 'antd';
@@ -22,6 +22,7 @@ import { getChatListInServer, deleteChatInServer, updateChatInServer } from '@/a
 import { useTranslations } from 'next-intl';
 import useChatStore from '@/app/store/chat';
 import { useSession } from 'next-auth/react';
+import ShareChatModal from './ShareChatModal';
 
 const ChatList = () => {
   const t = useTranslations('Chat');
@@ -32,6 +33,8 @@ const ChatList = () => {
   const [newChatName, setNewChatName] = useState('');
   const [renameChatId, setRenameChatId] = useState('');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [shareChatId, setShareChatId] = useState('');
   const [chatListStatus, setChatListStatus] = useState('init');
 
   const { chatList, setChatList, updateChat, setNewTitle } = useChatListStore();
@@ -136,6 +139,9 @@ const ChatList = () => {
     } else if (action === 'top') {
       const chat = chatList.find(c => c.id === chatId);
       toggleStar(chatId, !chat?.isStar);
+    } else if (action === 'share') {
+      setShareChatId(chatId);
+      setIsShareModalOpen(true);
     }
   };
 
@@ -153,6 +159,11 @@ const ChatList = () => {
         label: t('rename'),
         icon: <EditOutlined />,
         key: 'edit',
+      },
+      {
+        label: t('share'),
+        icon: <ShareAltOutlined />,
+        key: 'share',
       },
       {
         type: 'divider',
@@ -330,6 +341,14 @@ const ChatList = () => {
           style={{ marginTop: '1em', marginBottom: '1em' }}
         />
       </Modal>
+
+      {isShareModalOpen && (
+        <ShareChatModal
+          chatId={shareChatId}
+          open={isShareModalOpen}
+          onClose={() => setIsShareModalOpen(false)}
+        />
+      )}
     </>
   );
 };
