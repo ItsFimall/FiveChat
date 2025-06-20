@@ -52,7 +52,7 @@ const SharedChatPage = () => {
     }, [chatId]);
 
     useEffect(() => {
-        if (isAuthenticated && chatInfo) {
+        if (isAuthenticated && chatInfo && !chatInfo.hasPassword) {
             const fetchChatContent = async () => {
                 setIsLoading(true);
                 try {

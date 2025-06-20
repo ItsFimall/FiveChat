@@ -8,7 +8,7 @@ async function getSharedChat(chatId: string) {
     where: and(
       eq(chats.id, chatId),
       eq(chats.isShared, true),
-      or(isNull(chats.shareExpiresAt), eq(chats.shareExpiresAt, null), gt(chats.shareExpiresAt, new Date()))
+      or(isNull(chats.shareExpiresAt), gt(chats.shareExpiresAt, new Date()))
     ),
   })
 }
