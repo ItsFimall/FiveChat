@@ -368,7 +368,10 @@ const MessageItem = memo((props: {
                 </Tooltip>
               )}
               <div className='grow'></div>
-              <div className='text-xs text-gray-400 mr-4'>{t('Tokens')}: {props.item.totalTokens ?? t('unknownUsage')} </div>
+              <div className='text-xs text-gray-400 mr-4'>
+                {t('Tokens')}: {props.item.totalTokens ?? t('unknownUsage')}
+                {props.item.inputTokens && ` ( ${t('Input')}: ${props.item.inputTokens} ${t('Output')}: ${props.item.outputTokens} )`}
+              </div>
             </div>
           </div>
         </div>
