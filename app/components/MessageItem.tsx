@@ -175,7 +175,7 @@ const MessageItem = memo((props: {
           </div>}
         </div>
         <div className='flex flex-col w-0 grow group items-end'>
-          <div className='pl-3 pr-0 py-2 mr-2 bg-blue-500 text-white w-fit grow markdown-body answer-content rounded-xl'>
+          <div className='pl-3 pr-0 py-2 mr-2 bg-blue-500 text-white w-fit markdown-body answer-content rounded-xl'>
             {images.length > 0 && (
               <AntdImage.PreviewGroup items={images}>
                 <div className='flex flex-row flex-wrap'>
