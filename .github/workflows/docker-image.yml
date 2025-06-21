@@ -5,15 +5,11 @@ on:
     branches: [ main ]
   workflow_dispatch:
     inputs:
-      environment:
-        description: '部署环境'
+      analyze:
+        description: 'Run bundle analyzer and upload artifact'
         required: false
-        default: 'production'
-        type: choice
-        options:
-        - production
-        - staging
-        - development
+        default: false
+        type: boolean
 
 jobs:
   build:
@@ -47,6 +43,26 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       
+      - name: Build for analysis and extract report
+        if: github.event.inputs.analyze == 'true'
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          target: builder
+          push: false
+          outputs: type=local,dest=./build-output
+          build-args: |
+            ANALYZE=true
+          cache-from: type=gha,scope=${{ github.workflow }}-${{ github.ref }}-builder
+          cache-to: type=gha,mode=max,scope=${{ github.workflow }}-${{ github.ref }}-builder
+
+      - name: Upload analysis artifact
+        if: github.event.inputs.analyze == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundle-analysis-report
+          path: ./build-output/app/.next/analyze/
+      
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v4
@@ -66,5 +82,3 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha,scope=${{ github.workflow }}-${{ github.ref }}
           cache-to: type=gha,mode=max,scope=${{ github.workflow }}-${{ github.ref }}
-          build-args: |
-            ENVIRONMENT=${{ github.event.inputs.environment || 'production' }}
