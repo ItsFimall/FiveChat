@@ -19,7 +19,6 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '5mb',
     },
-    optimizeCss: true,
     optimizePackageImports: ['react-icons', 'date-fns', 'lodash', 'antd', '@ant-design/icons'],
   },
   webpack: (config, { dev, isServer }) => {
