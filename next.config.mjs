@@ -18,8 +18,7 @@ const nextConfig = {
   experimental: {
     serverActions: {
       bodySizeLimit: '5mb',
-    },
-    optimizePackageImports: ['lodash', 'antd'],
+    }
   },
   webpack: (config, { dev, isServer }) => {
     config.optimization.moduleIds = 'deterministic';
