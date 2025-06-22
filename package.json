@@ -59,6 +59,7 @@
     "zustand": "^5.0.0-rc.2"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^14.2.25",
     "@types/bcryptjs": "^2.4.6",
     "@types/lodash": "^4.17.13",
     "@types/node": "^20",
