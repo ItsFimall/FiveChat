@@ -6,6 +6,7 @@ const withNextIntl = createNextIntlPlugin();
 const nextConfig = {
   output: 'standalone',
   swcMinify: true,
+  compress: true,
   images: {
     remotePatterns: [
       {
@@ -18,6 +19,17 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '5mb',
     },
+    optimizeCss: true,
+    optimizePackageImports: ['react-icons', 'date-fns', 'lodash', 'antd', '@ant-design/icons'],
+  },
+  webpack: (config, { dev, isServer }) => {
+    config.optimization.moduleIds = 'deterministic';
+    
+    if (!dev) {
+      config.optimization.usedExports = true;
+    }
+    
+    return config;
   },
 }
 
