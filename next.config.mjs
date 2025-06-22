@@ -19,7 +19,7 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '5mb',
     },
-    optimizePackageImports: ['react-icons', 'date-fns', 'lodash', 'antd', '@ant-design/icons'],
+    optimizePackageImports: ['lodash', 'antd'],
   },
   webpack: (config, { dev, isServer }) => {
     config.optimization.moduleIds = 'deterministic';
