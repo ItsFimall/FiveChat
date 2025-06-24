@@ -7,6 +7,7 @@ import useModelListStore from '@/app/store/modelList';
 import ThinkingIcon from '@/app/images/thinking.svg';
 import MarkdownRender from '@/app/components/Markdown';
 import { useTranslations } from 'next-intl';
+import UserAvatar from './UserAvatar';
 
 const MessageItem = memo((props: {
   item: Message,
@@ -169,7 +170,7 @@ const MessageItem = memo((props: {
     return <div className="flex container mx-auto px-2 max-w-screen-md w-full flex-col justify-center items-center" >
       <div className='items-start flex max-w-3xl text-justify w-full my-0 pt-0 pb-1 flex-row-reverse'>
         <div className='flex flex-col h-full'>
-          <Avatar size={32} className='bg-blue-500 text-white'>U</Avatar>
+          <UserAvatar />
           {props.isConsecutive && <div className="flex justify-center h-0 grow">
             <div className="h-full border-l border-dashed border-gray-300 my-1"></div>
           </div>}

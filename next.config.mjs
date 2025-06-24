@@ -5,6 +5,7 @@ const withNextIntl = createNextIntlPlugin();
 const nextConfig = {
   output: 'standalone',
   swcMinify: true,
+  compress: true,
   modularizeImports: {
     'lodash': {
       transform: 'lodash/{{member}}',
@@ -15,6 +16,7 @@ const nextConfig = {
     },
   },
   experimental: {
+    cssChunking: true,
     serverActions: {
       bodySizeLimit: '5mb',
     },

@@ -492,6 +492,7 @@ CREATE TABLE public."user" (
     "isAdmin" boolean DEFAULT false,
     image text,
     "groupId" text,
+    "avatarEmoji" text,
     today_total_tokens integer DEFAULT 0 NOT NULL,
     current_month_total_tokens integer DEFAULT 0 NOT NULL,
     usage_updated_at timestamp without time zone DEFAULT now() NOT NULL,
@@ -720,7 +721,7 @@ COPY public.usage_report (date, user_id, model_id, provider_id, input_tokens, ou
 -- Data for Name: user; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public."user" (id, name, email, password, "emailVerified", "isAdmin", image, "groupId", today_total_tokens, current_month_total_tokens, usage_updated_at, created_at) FROM stdin;
+COPY public."user" (id, name, email, password, "emailVerified", "isAdmin", image, "groupId", "avatarEmoji", today_total_tokens, current_month_total_tokens, usage_updated_at, created_at) FROM stdin;
 \.
 
 

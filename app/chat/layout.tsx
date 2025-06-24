@@ -2,6 +2,7 @@
 import App from "@/app/components/App";
 import ChatPrepare from "@/app/components/ChatPrepare";
 import { App as AntdApp } from 'antd';
+import UserAvatarLoader from "@/app/components/UserAvatarLoader";
 
 export default function ChatLayout({
   children,
@@ -12,6 +13,7 @@ export default function ChatLayout({
   return (
     <div className="flex flex-col h-dvh">
       <ChatPrepare />
+      <UserAvatarLoader />
       <AntdApp>
         <App>{children}</App>
       </AntdApp>

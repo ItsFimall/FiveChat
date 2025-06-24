@@ -29,6 +29,7 @@ export const users = pgTable("user", {
   isAdmin: boolean("isAdmin").default(false),
   image: text("image"),
   groupId: text("groupId"),
+  avatarEmoji: text("avatarEmoji"),
   todayTotalTokens: integer('today_total_tokens').notNull().default(0),
   currentMonthTotalTokens: integer('current_month_total_tokens').notNull().default(0),
   usageUpdatedAt: timestamp('usage_updated_at').notNull().defaultNow(),
