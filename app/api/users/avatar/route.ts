@@ -9,14 +9,14 @@ export async function GET() {
   try {
     const session = await auth();
     
-    if (!session?.user?.email) {
+    if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const userResults = await db
       .select({ avatarEmoji: users.avatarEmoji })
       .from(users)
-      .where(eq(users.email, session.user.email));
+      .where(eq(users.id, session.user.id));
 
     if (userResults.length === 0) {
       return NextResponse.json({ emoji: null });
@@ -35,14 +35,14 @@ export async function PUT(req: NextRequest) {
     const { emoji } = await req.json();
     const session = await auth();
     
-    if (!session?.user?.email) {
+    if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     await db
       .update(users)
       .set({ avatarEmoji: emoji })
-      .where(eq(users.email, session.user.email));
+      .where(eq(users.id, session.user.id));
 
     return NextResponse.json({ success: true });
   } catch (error) {
