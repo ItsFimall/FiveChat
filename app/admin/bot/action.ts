@@ -16,15 +16,36 @@ export const addBotInServer = async (botInfo: {
     throw new Error('not allowed');
   }
 
-  const botResult = await db.insert(bots)
-    .values({
-      ...botInfo,
-      creator: 'public'
-    })
-    .returning();
-  return {
-    status: 'success',
-    data: botResult[0]
+  try {
+    // 检查标题是否重复
+    const existingBot = await db.select()
+      .from(bots)
+      .where(eq(bots.title, botInfo.title));
+
+    if (existingBot.length > 0) {
+      return {
+        status: 'fail',
+        message: '智能体名称已存在，请使用不同的名称'
+      }
+    }
+
+    const botResult = await db.insert(bots)
+      .values({
+        ...botInfo,
+        creator: 'public'
+      })
+      .returning();
+
+    return {
+      status: 'success',
+      data: botResult[0]
+    }
+  } catch (error) {
+    console.error('Failed to create bot:', error);
+    return {
+      status: 'fail',
+      message: '创建智能体失败，请稍后重试'
+    }
   }
 }
 

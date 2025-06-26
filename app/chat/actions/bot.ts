@@ -19,15 +19,41 @@ export const addBotInServer = async (botInfo: {
     }
   }
 
-  const botResult = await db.insert(bots)
-    .values({
-      ...botInfo,
-      creator: session.user.id
-    })
-    .returning();
-  return {
-    status: 'success',
-    data: botResult[0]
+  try {
+    // 检查当前用户是否已有同名智能体
+    const existingBot = await db.select()
+      .from(bots)
+      .where(
+        and(
+          eq(bots.title, botInfo.title),
+          eq(bots.creator, session.user.id)
+        )
+      );
+
+    if (existingBot.length > 0) {
+      return {
+        status: 'fail',
+        message: '您已有同名的智能体，请使用不同的名称'
+      }
+    }
+
+    const botResult = await db.insert(bots)
+      .values({
+        ...botInfo,
+        creator: session.user.id
+      })
+      .returning();
+
+    return {
+      status: 'success',
+      data: botResult[0]
+    }
+  } catch (error) {
+    console.error('Failed to create bot:', error);
+    return {
+      status: 'fail',
+      message: '创建智能体失败，请稍后重试'
+    }
   }
 }
 

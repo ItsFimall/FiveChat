@@ -185,8 +185,6 @@ const MarkdownRender = React.memo((props: {
       </Markdown>
     </>
   );
-};
-
 });
 
 MarkdownRender.displayName = 'MarkdownRender';

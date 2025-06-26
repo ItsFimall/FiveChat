@@ -23,19 +23,26 @@ const CreateBot = () => {
   }
   const onFinish = async (values: FormValues) => {
     setIsPending(true);
-    const result = await addBotInServer({
-      title: values.name,
-      avatar: selectedEmoji,
-      desc: values.desc,
-      prompt: values.prompt,
-      avatarType: 'emoji',
-    });
-    if (result.status === 'success') {
-      router.push(`/chat/bot/${result.data?.id}`)
-    } else {
+    try {
+      const result = await addBotInServer({
+        title: values.name,
+        avatar: selectedEmoji,
+        desc: values.desc,
+        prompt: values.prompt,
+        avatarType: 'emoji',
+      });
+      if (result.status === 'success') {
+        message.success('智能体创建成功！');
+        router.push(`/chat/bot/${result.data?.id}`)
+      } else {
+        message.error(result.message || '创建失败，请稍后重试');
+      }
+    } catch (error) {
+      console.error('Failed to create bot:', error);
       message.error('创建失败，请稍后重试');
+    } finally {
+      setIsPending(false);
     }
-    setIsPending(false);
   };
   return (
     <div className="container max-w-4xl mx-auto items-center flex flex-col p-4">
@@ -57,7 +64,16 @@ const CreateBot = () => {
         onFinish={onFinish}
         className='w-full'
       >
-        <Form.Item label={<span className='font-medium'>{t('botName')}</span>} name='name'>
+        <Form.Item
+          label={<span className='font-medium'>{t('botName')}</span>}
+          name='name'
+          rules={[
+            { required: true, message: '请输入智能体名称' },
+            { min: 2, message: '智能体名称至少需要2个字符' },
+            { max: 50, message: '智能体名称不能超过50个字符' },
+            { pattern: /^[a-zA-Z0-9\u4e00-\u9fa5\s\-_]+$/, message: '智能体名称只能包含中英文、数字、空格、横线和下划线' }
+          ]}
+        >
           <Input size="large" placeholder={t('botNameNotice')} />
         </Form.Item>
 
