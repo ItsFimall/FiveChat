@@ -30,7 +30,7 @@ const nextConfig = {
     },
   },
   experimental: {
-    cssChunking: true,
+    cssChunking: 'strict',
     optimizePackageImports: ['antd', 'lodash'],
     serverActions: {
       bodySizeLimit: '5mb',
