@@ -1,5 +1,8 @@
 import { NextRequest } from 'next/server';
 
+// Force this route to use Node.js runtime instead of Edge Runtime
+export const runtime = 'nodejs'
+
 // 重试函数
 async function fetchWithRetry(url: string, options: RequestInit, maxRetries = 3, timeout = 10000): Promise<Response> {
   for (let i = 0; i < maxRetries; i++) {

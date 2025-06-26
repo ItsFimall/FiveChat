@@ -10,14 +10,14 @@ export const runtime = 'nodejs'
 
 export async function POST(
   req: Request,
-  { params }: { params: { chatId: string } }
+  context: { params: { chatId: string } }
 ) {
   const session = await auth()
   if (!session || !session.user) {
     return new Response('Unauthorized', { status: 401 })
   }
 
-  const { chatId } = params
+  const { chatId } = context?.params || {}
   if (!chatId) {
     return new Response('Missing chatId', { status: 400 })
   }
@@ -55,13 +55,13 @@ export async function POST(
 
 export async function GET(
   req: Request,
-  { params }: { params: { chatId: string } }
+  context: { params: { chatId: string } }
 ) {
   const session = await auth()
   if (!session || !session.user) {
     return new Response('Unauthorized', { status: 401 })
   }
-  const { chatId } = params
+  const { chatId } = context?.params || {}
   if (!chatId) {
     return new Response('Missing chatId', { status: 400 })
   }
@@ -86,13 +86,13 @@ export async function GET(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { chatId: string } }
+  context: { params: { chatId: string } }
 ) {
   const session = await auth()
   if (!session || !session.user) {
     return new Response('Unauthorized', { status: 401 })
   }
-  const { chatId } = params
+  const { chatId } = context?.params || {}
   if (!chatId) {
     return new Response('Missing chatId', { status: 400 })
   }

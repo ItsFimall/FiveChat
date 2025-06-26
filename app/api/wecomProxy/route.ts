@@ -1,5 +1,8 @@
 import { NextRequest } from 'next/server';
 
+// Force this route to use Node.js runtime instead of Edge Runtime
+export const runtime = 'nodejs'
+
 export async function POST(req: NextRequest) {
   const body = await req.text();
   const bodyParams = new URLSearchParams(body);

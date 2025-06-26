@@ -20,9 +20,9 @@ async function getSharedChat(chatId: string) {
 // Get shared chat info (without messages)
 export async function GET(
   req: Request,
-  { params }: { params: { chatId: string } }
+  context: { params: { chatId: string } }
 ) {
-  const { chatId } = params
+  const { chatId } = context?.params || {}
   if (!chatId) {
     return new Response('Missing chatId', { status: 400 })
   }
@@ -51,9 +51,9 @@ export async function GET(
 // Verify password and get full chat content
 export async function POST(
   req: Request,
-  { params }: { params: { chatId: string } }
+  context: { params: { chatId: string } }
 ) {
-  const { chatId } = params
+  const { chatId } = context?.params || {}
   if (!chatId) {
     return new Response('Missing chatId', { status: 400 })
   }
