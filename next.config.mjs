@@ -31,13 +31,24 @@ const nextConfig = {
   },
   experimental: {
     cssChunking: 'strict',
-    optimizePackageImports: ['antd', 'lodash'],
+    optimizePackageImports: ['antd', 'lodash', '@ant-design/icons', '@icon-park/react'],
     serverActions: {
       bodySizeLimit: '5mb',
     },
     // 启用更多实验性优化
     optimizeCss: true,
     scrollRestoration: true,
+    // Turbopack 相关优化
+    turbo: {
+      rules: {
+        '*.svg': {
+          loaders: ['@svgr/webpack'],
+          as: '*.js',
+        },
+      },
+    },
+    // 启用并行构建
+    webVitalsAttribution: ['CLS', 'LCP'],
   },
   webpack(config) {
     // Grab the existing rule that handles SVG imports

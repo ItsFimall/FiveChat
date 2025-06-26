@@ -1,0 +1,74 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "tui",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env.production.local",
+        ".env.local",
+        ".env.production",
+        ".env"
+      ],
+      "outputs": [".next/**", "!.next/cache/**"],
+      "env": [
+        "DATABASE_URL",
+        "AUTH_SECRET",
+        "ADMIN_CODE",
+        "NEXTAUTH_URL",
+        "AUTH_TRUST_HOST",
+        "EMAIL_AUTH_STATUS",
+        "VERCEL",
+        "NODE_ENV"
+      ]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true,
+      "env": [
+        "DATABASE_URL",
+        "AUTH_SECRET",
+        "ADMIN_CODE",
+        "NEXTAUTH_URL",
+        "AUTH_TRUST_HOST",
+        "EMAIL_AUTH_STATUS"
+      ]
+    },
+    "lint": {
+      "dependsOn": ["^lint"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".eslintrc.json",
+        "eslint.config.js"
+      ]
+    },
+    "type-check": {
+      "dependsOn": ["^type-check"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "tsconfig.json"
+      ]
+    },
+    "clean": {
+      "cache": false
+    },
+    "initdb": {
+      "cache": false,
+      "env": [
+        "DATABASE_URL"
+      ]
+    }
+  },
+  "globalDependencies": [
+    "package.json",
+    "tsconfig.json",
+    "next.config.mjs",
+    "tailwind.config.ts",
+    "postcss.config.mjs",
+    ".env",
+    ".env.local",
+    ".env.production",
+    ".env.production.local"
+  ]
+}
