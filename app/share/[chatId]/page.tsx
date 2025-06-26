@@ -6,6 +6,9 @@ import { getTranslations } from 'next-intl/server';
 import { Result } from 'antd';
 import ShareChatClient from './ShareChatClient';
 
+// Force this page to use Node.js runtime instead of Edge Runtime
+export const runtime = 'nodejs'
+
 const SharedChatPage = async ({ params }: { params: { chatId: string } }) => {
   const t = await getTranslations('Chat');
   const { chatId } = params;

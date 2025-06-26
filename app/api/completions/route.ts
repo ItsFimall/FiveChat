@@ -7,6 +7,8 @@ import proxyClaudeStream from './proxyClaudeStream';
 import proxyGeminiStream from './proxyGeminiStream';
 // Vercel Hobby 默认 10s，最大 60
 export const maxDuration = 60;
+// Force this route to use Node.js runtime instead of Edge Runtime
+export const runtime = 'nodejs'
 
 export async function POST(req: NextRequest) {
   const session = await auth();

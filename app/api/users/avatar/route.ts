@@ -4,6 +4,9 @@ import { db } from '@/app/db';
 import { users } from '@/app/db/schema';
 import { eq } from 'drizzle-orm';
 
+// Force this route to use Node.js runtime instead of Edge Runtime
+export const runtime = 'nodejs'
+
 // 获取用户当前的emoji头像
 export async function GET() {
   try {

@@ -5,6 +5,9 @@ import { eq } from 'drizzle-orm'
 import bcrypt from 'bcryptjs'
 import { NextResponse } from 'next/server'
 
+// Force this route to use Node.js runtime instead of Edge Runtime
+export const runtime = 'nodejs'
+
 export async function POST(
   req: Request,
   { params }: { params: { chatId: string } }

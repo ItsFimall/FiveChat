@@ -4,6 +4,9 @@ import { and, eq, gt, isNull, or } from 'drizzle-orm'
 import { NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
 
+// Force this route to use Node.js runtime instead of Edge Runtime
+export const runtime = 'nodejs'
+
 async function getSharedChat(chatId: string) {
   return await db.query.chats.findFirst({
     where: and(
