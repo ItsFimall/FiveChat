@@ -33,7 +33,8 @@ const MessageItem = memo((props: {
       const plainText = props.item.content.filter((i) => i.type === 'text').map((it) => it.text).join('')
       setPlainText(plainText);
     } else {
-      setPlainText(props.item.content as string);
+      // 确保 content 是字符串，如果不是则使用空字符串
+      setPlainText(typeof props.item.content === 'string' ? props.item.content : '');
     }
   }, [props.item]);
 
@@ -280,7 +281,7 @@ const MessageItem = memo((props: {
                     />
                   </summary>
                   <div className='border-l-2 border-gray-200 px-2 mt-2 leading-5 text-gray-400'>
-                    <MarkdownRender content={props.item.reasoninContent as string} />
+                    <MarkdownRender content={typeof props.item.reasoninContent === 'string' ? props.item.reasoninContent : ''} />
                   </div>
                 </details>}
               {typeof props.item.content === 'string' && <MarkdownRender content={props.item.content} />

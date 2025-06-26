@@ -81,7 +81,14 @@ export async function POST(
         orderBy: (messages, { asc }) => [asc(messages.createdAt)],
     });
 
-    return NextResponse.json({ ...chat, messages: chatMessages })
+    // 清理和验证消息数据，确保 content 字段的类型正确
+    const cleanedMessages = chatMessages.map(message => ({
+      ...message,
+      content: message.content || '', // 如果 content 为 null/undefined，使用空字符串
+      reasoninContent: message.reasoninContent || null // 确保 reasoninContent 是字符串或 null
+    }));
+
+    return NextResponse.json({ ...chat, messages: cleanedMessages })
 
   } catch (error) {
     console.error('Failed to fetch shared chat with password:', error)

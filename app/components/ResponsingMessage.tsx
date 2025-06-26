@@ -131,7 +131,7 @@ const ResponsingMessage = (props: {
                   </span>
                 </div>
                 <div className='border-l-2 border-gray-200 px-2 mt-2 leading-5 text-gray-400'>
-                  <MarkdownRender content={props.responseMessage.reasoningContent as string} />
+                  <MarkdownRender content={typeof props.responseMessage.reasoningContent === 'string' ? props.responseMessage.reasoningContent : ''} />
                 </div>
               </div>
             )}

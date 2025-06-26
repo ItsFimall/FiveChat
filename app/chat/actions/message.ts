@@ -61,9 +61,17 @@ export const getMessagesInServer = async (chatId: string) => {
         eq(messages.userId, session.user.id),
       ))
     .orderBy(asc(messages.createdAt));
+
+  // 清理和验证消息数据，确保 content 字段的类型正确
+  const cleanedResult = result.map(message => ({
+    ...message,
+    content: message.content || '', // 如果 content 为 null/undefined，使用空字符串
+    reasoninContent: message.reasoninContent || null // 确保 reasoninContent 是字符串或 null
+  }));
+
   return {
     status: 'success',
-    data: result
+    data: cleanedResult
   }
 }
 

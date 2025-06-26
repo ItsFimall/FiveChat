@@ -16,7 +16,9 @@ const MarkdownRender = (props: {
   content: string,
 }
 ) => {
-  const [processedContent, setProcessedContent] = useState(props.content);
+  // 确保 content 是字符串，如果不是则使用空字符串作为默认值
+  const safeContent = typeof props.content === 'string' ? props.content : '';
+  const [processedContent, setProcessedContent] = useState(safeContent);
   const [svgBlocks, setSvgBlocks] = useState<{ id: string, content: string }[]>([]);
   const [htmlBlocks, setHtmlBlocks] = useState<{ id: string, content: string }[]>([]);
 
@@ -48,7 +50,7 @@ const MarkdownRender = (props: {
 
   // 预处理内容，提取 SVG 和 HTML 代码块
   useEffect(() => {
-    const escaped = escapeBrackets(props.content);
+    const escaped = escapeBrackets(safeContent);
 
     // 匹配 SVG 代码块
     const svgBlockRegex = /```(?:xml|svg)?\s*(<svg[\s\S]*?<\/svg>)\s*```/g;
@@ -92,7 +94,7 @@ const MarkdownRender = (props: {
     });
 
     setProcessedContent(processed);
-  }, [props.content]);
+  }, [safeContent]);
 
   return (
     <>
