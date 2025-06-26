@@ -6,6 +6,16 @@ const nextConfig = {
   output: 'standalone',
   swcMinify: true,
   compress: true,
+  // 启用更多性能优化
+  poweredByHeader: false,
+  reactStrictMode: true,
+  // 优化图片
+  images: {
+    formats: ['image/webp', 'image/avif'],
+    minimumCacheTTL: 60,
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+  },
   modularizeImports: {
     'lodash': {
       transform: 'lodash/{{member}}',
@@ -14,12 +24,20 @@ const nextConfig = {
       transform: '@ant-design/icons/lib/icons/{{member}}',
       preventFullImport: true,
     },
+    'antd': {
+      transform: 'antd/lib/{{member}}',
+      preventFullImport: true,
+    },
   },
   experimental: {
     cssChunking: true,
+    optimizePackageImports: ['antd', 'lodash'],
     serverActions: {
       bodySizeLimit: '5mb',
     },
+    // 启用更多实验性优化
+    optimizeCss: true,
+    scrollRestoration: true,
   },
   webpack(config) {
     // Grab the existing rule that handles SVG imports

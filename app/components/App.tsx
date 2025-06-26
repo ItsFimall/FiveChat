@@ -1,14 +1,16 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { usePathname } from 'next/navigation';
 import { Sidebar } from "@/app/components/Sidebar";
 import { LoginModalProvider } from '@/app/contexts/loginModalContext';
-import LoginModal from '@/app/components/loginModal';
 import useSidebarCollapsedStore from '@/app/store/sidebarCollapsed';
 import usePreviewSidebarStore from '@/app/store/previewSidebar';
-import PreviewSidebar from '@/app/components/artifact/PreviewSidebar';
 import SpinLoading from '@/app/components/loading/SpinLoading';
 import clsx from 'clsx';
+
+// 懒加载非关键组件
+const LoginModal = lazy(() => import('@/app/components/loginModal'));
+const PreviewSidebar = lazy(() => import('@/app/components/artifact/PreviewSidebar'));
 
 const App: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [hasInstalled, setHasInstalled] = useState(false);
@@ -90,9 +92,15 @@ const App: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         >
           {children}
         </div>
-        <PreviewSidebar />
+        {isPreviewSidebarOpen && (
+          <Suspense fallback={<div className="w-96 bg-gray-50 border-l border-gray-200" />}>
+            <PreviewSidebar />
+          </Suspense>
+        )}
       </div>
-      <LoginModal />
+      <Suspense fallback={null}>
+        <LoginModal />
+      </Suspense>
     </LoginModalProvider>
   )
 }

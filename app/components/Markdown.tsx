@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import RemarkMath from "remark-math";
@@ -12,10 +12,9 @@ import "katex/dist/katex.min.css";
 import 'github-markdown-css/github-markdown-light.css';
 import crypto from 'crypto';
 
-const MarkdownRender = (props: {
+const MarkdownRender = React.memo((props: {
   content: string,
-}
-) => {
+}) => {
   // 确保 content 是字符串，如果不是则使用空字符串作为默认值
   const safeContent = typeof props.content === 'string' ? props.content : '';
   const [processedContent, setProcessedContent] = useState(safeContent);
@@ -49,7 +48,7 @@ const MarkdownRender = (props: {
   };
 
   // 预处理内容，提取 SVG 和 HTML 代码块
-  useEffect(() => {
+  const processContent = useCallback(() => {
     const escaped = escapeBrackets(safeContent);
 
     // 匹配 SVG 代码块
@@ -95,6 +94,10 @@ const MarkdownRender = (props: {
 
     setProcessedContent(processed);
   }, [safeContent]);
+
+  useEffect(() => {
+    processContent();
+  }, [processContent]);
 
   return (
     <>
@@ -183,5 +186,9 @@ const MarkdownRender = (props: {
     </>
   );
 };
+
+});
+
+MarkdownRender.displayName = 'MarkdownRender';
 
 export default MarkdownRender;
