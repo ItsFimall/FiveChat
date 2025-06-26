@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Avatar, Modal, message } from 'antd';
 import { EmojiPicker } from './EmojiPicker';
 import useUserAvatarStore from '@/app/store/userAvatar';
@@ -21,14 +21,7 @@ const UserAvatar: React.FC<UserAvatarProps> = ({
   const t = useTranslations('Chat');
   const { status } = useSession();
   
-  // 加载用户的emoji头像
-  useEffect(() => {
-    if (status === 'authenticated') {
-      fetchUserAvatar();
-    }
-  }, [status]);
-
-  const fetchUserAvatar = async () => {
+  const fetchUserAvatar = useCallback(async () => {
     try {
       const response = await fetch('/api/users/avatar');
       const data = await response.json();
@@ -38,7 +31,14 @@ const UserAvatar: React.FC<UserAvatarProps> = ({
     } catch (error) {
       console.error('Error fetching user avatar:', error);
     }
-  };
+  }, [setEmoji]);
+
+  // 加载用户的emoji头像
+  useEffect(() => {
+    if (status === 'authenticated') {
+      fetchUserAvatar();
+    }
+  }, [status, fetchUserAvatar]);
 
   const handleAvatarClick = () => {
     if (status !== 'authenticated') {

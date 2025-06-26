@@ -138,32 +138,32 @@ export function useCachedData<T>(
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<Error | null>(null);
 
+  const fetchData = React.useCallback(async () => {
+    // 先检查缓存
+    const cached = globalCache.get<T>(key);
+    if (cached !== null) {
+      setData(cached);
+      return;
+    }
+
+    // 从网络获取
+    setLoading(true);
+    setError(null);
+
+    try {
+      const result = await fetcher();
+      globalCache.set(key, result, ttl);
+      setData(result);
+    } catch (err) {
+      setError(err as Error);
+    } finally {
+      setLoading(false);
+    }
+  }, [key, ttl, fetcher]);
+
   React.useEffect(() => {
-    const fetchData = async () => {
-      // 先检查缓存
-      const cached = globalCache.get<T>(key);
-      if (cached !== null) {
-        setData(cached);
-        return;
-      }
-
-      // 从网络获取
-      setLoading(true);
-      setError(null);
-      
-      try {
-        const result = await fetcher();
-        globalCache.set(key, result, ttl);
-        setData(result);
-      } catch (err) {
-        setError(err as Error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchData();
-  }, [key, ttl]);
+  }, [fetchData]);
 
   return { data, loading, error };
 }

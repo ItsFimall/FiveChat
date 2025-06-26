@@ -3,10 +3,10 @@ import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { FixedSizeList as List } from 'react-window';
 import MessageItem from '@/app/components/MessageItem';
 import ResponsingMessage from '@/app/components/ResponsingMessage';
-import { MessageType } from '@/types/llm';
+import { Message } from '@/types/llm';
 
 interface VirtualizedMessageListProps {
-  messageList: MessageType[];
+  messageList: Message[];
   responseMessage: any;
   responseStatus: string;
   onDeleteMessage: (messageId: number) => void;
