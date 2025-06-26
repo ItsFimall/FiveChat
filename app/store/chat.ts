@@ -7,8 +7,8 @@ interface IChatStore {
   webSearchEnabled: boolean;
   historyType: 'all' | 'none' | 'count';
   historyCount: number;
-  setHistoryType: (chatId: string, newType: 'all' | 'none' | 'count') => void;
-  setHistoryCount: (chatId: string, newCount: number) => void;
+  setHistoryType: (chatId: string, newType: 'all' | 'none' | 'count') => Promise<void>;
+  setHistoryCount: (chatId: string, newCount: number) => Promise<void>;
   setChat: (chat: ChatType) => void;
   setWebSearchEnabled: (flag: boolean) => void;
   initializeChat: (chatInfo: ChatType) => void;
@@ -19,17 +19,29 @@ const useChatStore = create<IChatStore>((set) => ({
   webSearchEnabled: false,
   historyType: 'count',
   historyCount: 10,
-  setHistoryType: (chatId: string, newType: 'all' | 'none' | 'count') => {
-    set((state) => {
-      updateChatInServer(chatId, { historyType: newType })
-      return { historyType: newType }
-    });
+  setHistoryType: async (chatId: string, newType: 'all' | 'none' | 'count') => {
+    try {
+      const result = await updateChatInServer(chatId, { historyType: newType });
+      if (result.status === 'success') {
+        set((state) => ({ historyType: newType }));
+      } else {
+        console.error('Failed to update history type:', result.message);
+      }
+    } catch (error) {
+      console.error('Error updating history type:', error);
+    }
   },
-  setHistoryCount: (chatId: string, newCount: number) => {
-    set((state) => {
-      updateChatInServer(chatId, { historyCount: newCount })
-      return { historyCount: newCount }
-    });
+  setHistoryCount: async (chatId: string, newCount: number) => {
+    try {
+      const result = await updateChatInServer(chatId, { historyCount: newCount });
+      if (result.status === 'success') {
+        set((state) => ({ historyCount: newCount }));
+      } else {
+        console.error('Failed to update history count:', result.message);
+      }
+    } catch (error) {
+      console.error('Error updating history count:', error);
+    }
   },
 
   setChat: (chat: ChatType) => {

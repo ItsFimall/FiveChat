@@ -136,19 +136,27 @@ export const updateChatInServer = async (chatId: string, newChatInfo: {
       message: 'please login first.'
     }
   }
-  const safeChatInfo = { ...newChatInfo };
-  if (safeChatInfo.title && safeChatInfo.title.length > 255) {
-    safeChatInfo.title = safeChatInfo.title.slice(0, 255);
-  }
-  const result = await db.update(chats)
-    .set(safeChatInfo)
-    .where(
-      and(
-        eq(chats.id, chatId),
-        eq(chats.userId, session.user.id)
-      ));
-  return {
-    status: 'success',
+  try {
+    const safeChatInfo = { ...newChatInfo };
+    if (safeChatInfo.title && safeChatInfo.title.length > 255) {
+      safeChatInfo.title = safeChatInfo.title.slice(0, 255);
+    }
+    const result = await db.update(chats)
+      .set(safeChatInfo)
+      .where(
+        and(
+          eq(chats.id, chatId),
+          eq(chats.userId, session.user.id)
+        ));
+    return {
+      status: 'success',
+    }
+  } catch (error) {
+    console.error('Failed to update chat:', error);
+    return {
+      status: 'fail',
+      message: 'Failed to update chat settings.'
+    }
   }
 }
 

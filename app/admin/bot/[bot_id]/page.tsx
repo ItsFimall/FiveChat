@@ -53,7 +53,7 @@ const BotInfo = ({ params }: { params: { bot_id: string } }) => {
             <>
               {
                 botInfo.avatarType === 'emoji' &&
-                <div className="w-24 h-24 flex rounded-lg  bg-slate-200 text-7xl items-center justify-center overflow-hidden ">
+                <div className="w-24 h-24 flex rounded-lg  bg-white text-7xl items-center justify-center overflow-hidden ">
                   {botInfo.avatar}
                 </div>
               }

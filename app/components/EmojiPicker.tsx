@@ -42,7 +42,7 @@ export const EmojiPicker: React.FC<EmojiPickerProps> = ({ onEmojiSelect, current
       <div
         ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
-        className='flex items-center justify-center cursor-pointer text-6xl w-24 h-24 bg-slate-200 rounded-full relative'
+        className='flex items-center justify-center cursor-pointer text-6xl w-24 h-24 bg-white rounded-full relative'
       >
         {currentEmoji || '😀'}
         <div style={{ backgroundColor: '#3875F6' }} className='w-8 h-8 rounded-full border-2 border-white absolute bottom-0 right-0 flex items-center justify-center'>

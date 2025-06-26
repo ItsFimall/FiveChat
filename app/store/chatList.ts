@@ -19,7 +19,7 @@ interface IChatListStore {
     avatarType?: 'emoji' | 'url' | 'none';
     prompt?: string;
     starAt?: Date;
-  }) => void;
+  }) => Promise<void>;
   addBot: (botId: number) => void;
 }
 
@@ -38,17 +38,25 @@ const useChatListStore = create<IChatListStore>((set) => ({
       return { chatList };
     });
   },
-  updateChat: (chatId: string, newChatInfo) => {
-    set((state) => {
-      updateChatInServer(chatId, newChatInfo);
-      const chatList = state.chatList.map(chat => {
-        if (chat.id === chatId) {
-          return { ...chat, ...newChatInfo };
-        }
-        return chat;
-      });
-      return { chatList };
-    });
+  updateChat: async (chatId: string, newChatInfo) => {
+    try {
+      const result = await updateChatInServer(chatId, newChatInfo);
+      if (result.status === 'success') {
+        set((state) => {
+          const chatList = state.chatList.map(chat => {
+            if (chat.id === chatId) {
+              return { ...chat, ...newChatInfo };
+            }
+            return chat;
+          });
+          return { chatList };
+        });
+      } else {
+        console.error('Failed to update chat:', result.message);
+      }
+    } catch (error) {
+      console.error('Error updating chat:', error);
+    }
   },
   setChatList: (chatList: ChatType[]) => {
     set((state) => {

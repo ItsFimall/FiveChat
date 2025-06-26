@@ -76,7 +76,7 @@ const ServiceCard = (props: { bot: BotType }) => {
     <div className="bg-white rounded-xl border-gray-200 border p-4 shadow-sm hover:shadow-md transition-shadow duration-200 w-full">
       <Link href={`/admin/bot/${props.bot.id}`}>
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-lg flex bg-slate-200 items-center justify-center  overflow-hidden flex-shrink-0">
+          <div className="w-12 h-12 rounded-lg flex bg-white items-center justify-center  overflow-hidden flex-shrink-0">
             {props.bot.avatarType === 'emoji' && <span className="text-4xl">{props.bot.avatar}</span>}
             {props.bot.avatarType === 'url' &&
               <Image

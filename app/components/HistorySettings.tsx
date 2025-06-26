@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Segmented, InputNumber } from "antd";
+import { Button, Segmented, InputNumber, message } from "antd";
 import useChatStore from '@/app/store/chat';
 import { useTranslations } from 'next-intl';
 
@@ -8,10 +8,16 @@ const HistorySettings = (props: { chat_id: string, changeVisible: (open: boolean
   const { historyType, historyCount, setHistoryType, setHistoryCount } = useChatStore();
   const [value, setValue] = useState<string>(historyType);
   const [localCount, setLocalCount] = useState(historyCount);
-  const saveConfig = () => {
-    setHistoryType(props.chat_id, value as 'all' | 'none' | 'count');
-    setHistoryCount(props.chat_id, localCount);
-    props.changeVisible(false);
+  const saveConfig = async () => {
+    try {
+      await setHistoryType(props.chat_id, value as 'all' | 'none' | 'count');
+      await setHistoryCount(props.chat_id, localCount);
+      message.success(t('saveSuccess'));
+      props.changeVisible(false);
+    } catch (error) {
+      console.error('Failed to save history settings:', error);
+      message.error(t('saveFailed'));
+    }
   }
 
   return (

@@ -109,6 +109,8 @@
     "historyMessageCountAllNotice": "All messages will be used as context, resulting in increased token consumption.",
     "historyMessageCountNoneNotice": "Without context, each message is a new beginning, suitable for temporary conversation needs such as translation.",
     "historyMessageCountSpecifyNotice": "History message count:",
+    "saveSuccess": "Saved successfully",
+    "saveFailed": "Save failed",
     "deleteSuccess": "Deleted successfully",
     "deleteFail": "Deletion failed",
     "back": "Back",

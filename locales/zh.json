@@ -109,6 +109,8 @@
     "historyMessageCountAllNotice": "当前所有会话内容会作为上下文，Token 消耗会变多。",
     "historyMessageCountNoneNotice": "无上下文，每次对话都是新的开始，适用于翻译等临时性对话需求。",
     "historyMessageCountSpecifyNotice": "请指定要记录的消息数量：",
+    "saveSuccess": "保存成功",
+    "saveFailed": "保存失败",
     "deleteSuccess": "删除成功",
     "deleteFail": "删除失败",
     "back": "返回",
@@ -228,7 +230,7 @@
       "cancelText": "取消",
       "addModelSuccess": "添加成功",
       "saveSuccess": "保存成功",
-      "saveFailed": "保存成功",
+      "saveFailed": "保存失败",
       "selectModelToCheck": "选择要检测的模型",
       "checkConnectivity": "检查连通性"
     },

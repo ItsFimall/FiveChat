@@ -121,7 +121,7 @@ const ChatList = () => {
       if (currentChatId === chat_id && chat) {
         setChat({ ...chat, isStar: !Boolean(chat.isStar), starAt: new Date() });
       }
-      updateChat(chat_id, { isStar: is_star, starAt: new Date() });
+      await updateChat(chat_id, { isStar: is_star, starAt: new Date() });
     } catch (error) {
       console.error("Failed to toggle star:", error);
       message.error(t('updateFailed'));
@@ -299,7 +299,7 @@ const ChatList = () => {
                   menuItems={getBotActionItems(Boolean(chat.isStar))}
                   className="ml-0 pl-2"
                 >
-                  <div style={{ width: '22px', height: '22px' }} className="flex items-center justify-center bg-slate-200 rounded-full">
+                  <div style={{ width: '22px', height: '22px' }} className="flex items-center justify-center bg-white rounded-full">
                     {chat.avatarType === 'emoji' && (
                       <span className='text-base'>{chat.avatar}</span>
                     )}
