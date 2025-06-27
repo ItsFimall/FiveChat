@@ -11,15 +11,18 @@ interface UserAvatarProps {
   className?: string;
 }
 
-const UserAvatar: React.FC<UserAvatarProps> = ({ 
-  size = 32, 
+const UserAvatar: React.FC<UserAvatarProps> = ({
+  size = 32,
   showPopover = true,
-  className = 'bg-blue-500 text-white'
+  className
 }) => {
   const { emoji, setEmoji, isUpdating, setIsUpdating } = useUserAvatarStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const t = useTranslations('Chat');
   const { status } = useSession();
+
+  // 根据是否有 emoji 来决定背景颜色
+  const avatarClassName = className || (emoji ? 'bg-white text-gray-800' : 'bg-blue-500 text-white');
   
   const fetchUserAvatar = useCallback(async () => {
     try {
@@ -78,9 +81,9 @@ const UserAvatar: React.FC<UserAvatarProps> = ({
 
   return (
     <>
-      <Avatar 
-        size={size} 
-        className={`cursor-pointer ${className}`}
+      <Avatar
+        size={size}
+        className={`cursor-pointer ${avatarClassName}`}
         onClick={handleAvatarClick}
       >
         {emoji || 'U'}
