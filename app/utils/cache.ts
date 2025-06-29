@@ -11,7 +11,9 @@ class MemoryCache<T> {
     // 如果缓存已满，删除最旧的条目
     if (this.cache.size >= this.maxSize) {
       const oldestKey = this.cache.keys().next().value;
-      this.cache.delete(oldestKey);
+      if (oldestKey !== undefined) {
+        this.cache.delete(oldestKey);
+      }
     }
 
     this.cache.set(key, {
@@ -190,12 +192,12 @@ export function cachedAsync<T extends (...args: any[]) => Promise<any>>(
   keyGenerator: (...args: Parameters<T>) => string,
   ttl: number = 5 * 60 * 1000
 ): T {
-  const cache = new MemoryCache<ReturnType<T>>();
+  const cache = new MemoryCache<Awaited<ReturnType<T>>>();
 
   return (async (...args: Parameters<T>): Promise<Awaited<ReturnType<T>>> => {
     const key = keyGenerator(...args);
     const cached = cache.get(key);
-    
+
     if (cached !== null) {
       return cached;
     }

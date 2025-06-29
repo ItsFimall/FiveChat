@@ -9,9 +9,6 @@ const getDbInstance = () => {
   if (process.env.VERCEL) {
     return neon(process.env.DATABASE_URL!, {
       schema: { ...schema, ...relations },
-      // 优化 Neon 连接
-      arrayMode: false,
-      fullResults: true,
     });
   } else {
     // 创建 postgres 连接实例，添加连接池优化

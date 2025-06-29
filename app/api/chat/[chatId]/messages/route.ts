@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from "@/auth";
 import { db } from '@/app/db';
 import { messages, chats } from '@/app/db/schema';
-import { eq, and, desc, count } from 'drizzle-orm';
+import { eq, and, desc, count, lt } from 'drizzle-orm';
 
 // Force this route to use Node.js runtime instead of Edge Runtime
 export const runtime = 'nodejs';
@@ -121,14 +121,16 @@ export async function POST(
     }
 
     let whereCondition = eq(messages.chatId, chatId);
-    
+
     // If lastMessageId is provided, get messages after that ID
     if (lastMessageId) {
-      whereCondition = and(
-        eq(messages.chatId, chatId),
-        // Add condition to get messages after lastMessageId
-        // This would need to be implemented based on your ID strategy
-      );
+      const lastId = parseInt(lastMessageId);
+      if (!isNaN(lastId)) {
+        whereCondition = and(
+          eq(messages.chatId, chatId),
+          lt(messages.id, lastId) // Get messages with ID less than lastMessageId (older messages)
+        )!; // Non-null assertion since we know both conditions are valid
+      }
     }
 
     const messageList = await db.query.messages.findMany({

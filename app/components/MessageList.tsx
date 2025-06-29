@@ -252,6 +252,7 @@ export const MessageList = (props: { chat_id: string }) => {
           ) : shouldUseVirtualization ? (
             <List
               height={600} // Adjust based on your container height
+              width="100%" // Use full width of the container
               itemCount={messageList.length}
               itemSize={150} // Estimated item height, adjust as needed
               itemData={messageList}
