@@ -21,22 +21,21 @@ const MessageItem = memo((props: {
 ) => {
   const t = useTranslations('Chat');
   const { allProviderListByKey } = useModelListStore();
-  const [images, setImages] = useState<string[]>([]);
-  const [plainText, setPlainText] = useState('');
 
   const showActions = props.showActions === undefined ? true : props.showActions;
 
-  useEffect(() => {
+  // Memoize content parsing to avoid recalculation on every render
+  const { images, plainText } = useMemo(() => {
     if (Array.isArray(props.item.content) && props.item.content.length > 0) {
       const images = props.item.content.filter((item: any) => item.type === 'image').map((item: any) => item.data);
-      setImages(images);
-      const plainText = props.item.content.filter((i) => i.type === 'text').map((it) => it.text).join('')
-      setPlainText(plainText);
+      const plainText = props.item.content.filter((i) => i.type === 'text').map((it) => it.text).join('');
+      return { images, plainText };
     } else {
       // 确保 content 是字符串，如果不是则使用空字符串
-      setPlainText(typeof props.item.content === 'string' ? props.item.content : '');
+      const plainText = typeof props.item.content === 'string' ? props.item.content : '';
+      return { images: [], plainText };
     }
-  }, [props.item]);
+  }, [props.item.content]);
 
   const ProviderAvatar = useMemo(() => {
     if (allProviderListByKey) {

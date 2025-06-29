@@ -8,6 +8,7 @@
     "dev:legacy": "next dev",
     "build": "next build",
     "build:turbo": "turbo build",
+    "build:analyze": "ANALYZE=true npm run build",
     "start": "next start -p 3000",
     "initdb": "npx drizzle-kit push --force &&  npm run db:seedProvider && npm run db:seedModel && npm run db:seedBot && npm run db:seedGroup",
     "db:seedModel": "tsx ./app/db/modelSeed.ts",
@@ -18,7 +19,15 @@
     "lint:turbo": "turbo lint",
     "clean": "turbo clean",
     "type-check": "tsc --noEmit",
-    "turbo:cache-status": "turbo run build --dry-run"
+    "turbo:cache-status": "turbo run build --dry-run",
+    "optimize": "node scripts/optimize-performance.js",
+    "perf:check": "npm run optimize",
+    "perf:build": "npm run build && npm run analyze",
+    "analyze": "npx @next/bundle-analyzer",
+    "check-unused": "node scripts/find-unused-components.js",
+    "cleanup": "npm run check-unused",
+    "cleanup:auto": "node scripts/cleanup-unused-components.js",
+    "cleanup:restore": "node scripts/cleanup-unused-components.js --restore"
   },
   "dependencies": {
     "@agentic/tavily": "^7.6.3",

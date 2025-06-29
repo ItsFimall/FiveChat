@@ -1,0 +1,12 @@
+{
+  "timestamp": "2025-06-29T03:43:53.368Z",
+  "summary": {
+    "total": 48,
+    "unused": 0,
+    "suspicious": 0,
+    "used": 48
+  },
+  "unusedComponents": [],
+  "suspiciousComponents": [],
+  "recommendations": []
+}

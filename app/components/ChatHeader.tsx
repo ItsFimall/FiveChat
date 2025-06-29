@@ -68,15 +68,7 @@ const ChatHeader = (props: { isActionsHidden?: boolean }) => {
             icon={<DeleteOutlined style={{ color: 'gray' }} />} />
         </Popconfirm>
 
-        {/* <Popover
-          content={<AdvancedSettingsPopover />}
-          title={<div className='ml-4 mt-2'>高级设置</div>}
-          trigger="click"
-          placement="bottomRight"
-        >
-          <Button type='text' icon={<SettingConfig theme="filled" size="15" fill="#808080" strokeWidth={4} />} />
-        </Popover> */}
-        {/* <Button type='text' icon={<More theme="filled" size="15" fill="#808080" strokeWidth={4} />} /> */}
+
       </div>
       }
 

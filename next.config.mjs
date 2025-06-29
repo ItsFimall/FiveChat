@@ -31,13 +31,21 @@ const nextConfig = {
   },
   experimental: {
     cssChunking: 'strict',
-    optimizePackageImports: ['antd', 'lodash', '@ant-design/icons', '@icon-park/react'],
+    optimizePackageImports: ['antd', 'lodash', '@ant-design/icons', '@icon-park/react', 'react-window', 'react-markdown'],
     serverActions: {
-      bodySizeLimit: '5mb',
+      bodySizeLimit: '10mb',
     },
     // 启用更多实验性优化
     optimizeCss: true,
     scrollRestoration: true,
+    // 启用并行构建和缓存优化
+    webVitalsAttribution: ['CLS', 'LCP', 'FID', 'FCP'],
+    // 启用 React 18 并发特性
+    serverComponentsExternalPackages: ['sharp'],
+    // 优化字体加载
+    fontLoaders: [
+      { loader: '@next/font/google', options: { subsets: ['latin'] } },
+    ],
     // Turbopack 相关优化
     turbo: {
       rules: {
@@ -46,9 +54,13 @@ const nextConfig = {
           as: '*.js',
         },
       },
+      resolveAlias: {
+        // 优化常用库的解析
+        'react-window': 'react-window/dist/index.esm.js',
+      },
     },
-    // 启用并行构建
-    webVitalsAttribution: ['CLS', 'LCP'],
+    // 启用增量静态再生优化
+    isrMemoryCacheSize: 0, // 禁用内存缓存，使用磁盘缓存
   },
   webpack(config) {
     // Grab the existing rule that handles SVG imports
