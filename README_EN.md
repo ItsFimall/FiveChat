@@ -1,7 +1,7 @@
 <div align="center">
    <img width="32" height="32" src="https://jiantuku.oss-cn-beijing.aliyuncs.com/share/logo.png" />
-   <img height="32" alt="HiveChat" src="https://jiantuku.oss-cn-beijing.aliyuncs.com/share/hivechat.png" />
-  <p><a href="https://github.com/HiveNexus/HiveChat">中文</a> ｜ English<p>
+   <img height="32" alt="FiveChat" src="https://jiantuku.oss-cn-beijing.aliyuncs.com/share/fivechat.png" />
+  <p><a href="https://github.com/ItsFimall/FiveChat">中文</a> ｜ English<p>
    <p>An AI chatbot designed specifically for small to medium-sized teams, supporting models such as Deepseek, OpenAI, Claude, and Gemini.</p>
 </div>
 
@@ -52,9 +52,9 @@ Note: The following is a demo site, and data may be cleared at any time.
 
 * **User Portal**：https://chat.yotuku.cn/
     * You can register an account to try it out.
-* **Admin Portal**：https://hivechat-demo.vercel.app/
+* **Admin Portal**：https://fivechat-demo.vercel.app/
     * Email: admin@demo.com
-    * Password: helloHivechat
+    * Password: helloFiveChat
 
 ## 3. Tech stack
 
@@ -69,13 +69,13 @@ Note: The following is a demo site, and data may be cleared at any time.
 ### Method 1: Local Deployment
 1. Clone this project to local.
 ```
-git clone https://github.com/HiveNexus/hivechat.git
+git clone https://github.com/ItsFimall/FiveChat.git
 ```
 
 2. Install the dependencies
 
 ```shell
-cd hivechat
+cd FiveChat
 npm install
 ```
 
@@ -91,7 +91,7 @@ Edit the .env file.
 ```env
 # PostgreSQL Database Connection URL. This is an example; you need to install PostgreSQL locally or connect to a remote PostgreSQL instance.
 # Note: Local installations do not currently support Serverless PostgreSQL provided by Vercel or Neon.
-DATABASE_URL=postgres://postgres:password@localhost/hivechat
+DATABASE_URL=postgres://postgres:password@localhost/fivechat
 
 # Used for encrypting sensitive information such as user data. You can generate a random 32-character string as a key using the command `openssl rand -base64 32`. This is an example; please replace it with the value you generate.
 AUTH_SECRET=hclqD3nBpMphLevxGWsUnGU6BaEa2TjrCQ77weOVpPg=
@@ -123,7 +123,7 @@ Visit `http://localhost:3000/setup` (use the actual domain and port) to access t
 ### Method 2: Docker Deployment
 1. Clone this project to your local machine
 ```
-git clone https://github.com/HiveNexus/hivechat.git
+git clone https://github.com/ItsFimall/FiveChat.git
 ```
 
 2. Modify the local configuration file
@@ -151,7 +151,7 @@ Visit `http://localhost:3000/setup` (use the actual domain and port) to access t
 ### Method 3: Deploy on Vercel
 Click the button below to begin deployment.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/HiveNexus/hivechat.git&project-name=hivechat&env=DATABASE_URL&env=AUTH_SECRET&env=ADMIN_CODE)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/ItsFimall/FiveChat.git&project-name=fivechat&env=DATABASE_URL&env=AUTH_SECRET&env=ADMIN_CODE)
 
 By default, the code is cloned to your own Github. Afterward, fill in the environment variables:
 
@@ -159,7 +159,7 @@ By default, the code is cloned to your own Github. Afterward, fill in the enviro
 
 ```
 # PostgreSQL database connection URL. Vercel offers free hosting services. See further details below.
-DATABASE_URL=postgres://postgres:password@localhost/hivechat
+DATABASE_URL=postgres://postgres:password@localhost/fivechat
 
 #Encryption key for sensitive information like user data. You can generate a random 32-character string using openssl rand -base64 32. This example key should be replaced with your generated value.
 AUTH_SECRET=hclqD3nBpMphLevxGWsUnGU6BaEa2TjrCQ77weOVpPg=

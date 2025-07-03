@@ -48,7 +48,7 @@ const JinaSettings: React.FC<BochaSettingsProps> = ({
           onClick={() => { check() }}
         >{t('check')}</Button>
       </div>
-      <Link href="https://open.bochaai.com/?utm_source=hivechat" target='_blank'>
+      <Link href="https://open.bochaai.com/?utm_source=fivechat" target='_blank'>
         <Button type='link' size='small' style={{ padding: 0 }}>{t('getApikey')}</Button>
       </Link>
     </div>

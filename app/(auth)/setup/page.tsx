@@ -11,7 +11,7 @@ import logo from "@/app/images/logo.png";
 import FeishuLogin from "@/app/components/FeishuLoginButton"
 import WecomLogin from "@/app/components/WecomLoginButton"
 import DingdingLogin from "@/app/components/DingdingLoginButton"
-import Hivechat from "@/app/images/hivechat.svg";
+import FiveChat from "@/app/images/fivechat.svg";
 import { useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 
@@ -100,8 +100,8 @@ export default function SetupPage() {
     <div className="flex flex-col min-h-screen items-center justify-center bg-slate-50">
       <div className="flex items-center flex-row my-6">
         <Link href="/" className='flex items-center'>
-          <Image src={logo} className="ml-1" alt="HiveChat logo" width={32} height={32} />
-          <Hivechat className="ml-1" alt="HiveChat text" width={156} height={39} />
+          <Image src={logo} className="ml-1" alt="FiveChat logo" width={32} height={32} />
+          <FiveChat className="ml-1" alt="FiveChat text" width={156} height={39} />
         </Link>
       </div>
       <div className="w-full max-w-sm rounded-lg bg-white p-6 mb-6 shadow-xl">

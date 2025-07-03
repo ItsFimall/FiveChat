@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from 'next/link';
 import { Form, Input, Button, Alert } from 'antd';
 import logo from "@/app/images/logo.png";
-import Hivechat from "@/app/images/hivechat.svg";
+import FiveChat from "@/app/images/fivechat.svg";
 import FeishuLogin from "@/app/components/FeishuLoginButton"
 import WecomLogin from "@/app/components/WecomLoginButton"
 import DingdingLogin from "@/app/components/DingdingLoginButton"
@@ -70,8 +70,8 @@ export default function LoginPage() {
     <div className="flex flex-col min-h-screen items-center justify-center bg-slate-50">
       <div className="flex items-center flex-row  mb-6">
         <Link href="/" className='flex items-center'>
-          <Image src={logo} className="ml-1" alt="HiveChat logo" width={32} height={32} />
-          <Hivechat className="ml-1" alt="HiveChat text" width={156} height={39} />
+          <Image src={logo} className="ml-1" alt="FiveChat logo" width={32} height={32} />
+          <FiveChat className="ml-1" alt="FiveChat text" width={156} height={39} />
         </Link>
       </div>
 

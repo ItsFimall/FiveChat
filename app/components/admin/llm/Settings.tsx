@@ -77,20 +77,20 @@ const Settings = (props: { providerId: string }) => {
 
   const getHelpLinks = (providerId: string) => {
     const helpLinks = {
-      'openai': 'https://www.hivechat.net/docs/providers/openai',
-      'claude': 'https://www.hivechat.net/docs/providers/claude',
-      'gemini': 'https://www.hivechat.net/docs/providers/gemini',
-      'moonshot': 'https://www.hivechat.net/docs/providers/moonshot',
-      'qwen': 'https://www.hivechat.net/docs/providers/qwen',
-      'deepseek': 'https://www.hivechat.net/docs/providers/deepseek',
-      'volcengine': 'https://www.hivechat.net/docs/providers/volcengine',
-      'qianfan': 'https://www.hivechat.net/docs/providers/qianfan',
-      'siliconflow': 'https://www.hivechat.net/docs/providers/siliconflow',
-      'ollama': 'https://www.hivechat.net/docs/providers/ollama',
-      'hunyuan': 'https://www.hivechat.net/docs/providers/hunyuan',
-      'zhipu': 'https://www.hivechat.net/docs/providers/zhipu',
-      'grok': 'https://www.hivechat.net/docs/providers/xai',
-      'openrouter': 'https://www.hivechat.net/docs/providers/openrouter',
+      'openai': 'https://www.fivechat.net/docs/providers/openai',
+      'claude': 'https://www.fivechat.net/docs/providers/claude',
+      'gemini': 'https://www.fivechat.net/docs/providers/gemini',
+      'moonshot': 'https://www.fivechat.net/docs/providers/moonshot',
+      'qwen': 'https://www.fivechat.net/docs/providers/qwen',
+      'deepseek': 'https://www.fivechat.net/docs/providers/deepseek',
+      'volcengine': 'https://www.fivechat.net/docs/providers/volcengine',
+      'qianfan': 'https://www.fivechat.net/docs/providers/qianfan',
+      'siliconflow': 'https://www.fivechat.net/docs/providers/siliconflow',
+      'ollama': 'https://www.fivechat.net/docs/providers/ollama',
+      'hunyuan': 'https://www.fivechat.net/docs/providers/hunyuan',
+      'zhipu': 'https://www.fivechat.net/docs/providers/zhipu',
+      'grok': 'https://www.fivechat.net/docs/providers/xai',
+      'openrouter': 'https://www.fivechat.net/docs/providers/openrouter',
     };
     const providers = Object.keys(helpLinks);
     if (providers.includes(providerId)) {

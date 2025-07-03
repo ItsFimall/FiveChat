@@ -47,7 +47,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: hivenexus/hivechat
+          images: itsfimall/fivechat
           tags: |
             type=raw,value=${{ github.event.inputs.version || 'latest' }}
             type=raw,value=latest
