@@ -1,0 +1,25 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Deployment Configuration
+
+The application includes configurations for containerization and deployment.
+
+## Docker Configuration
+- [Dockerfile](mdc:Dockerfile): Main Docker configuration for building the application container
+- [docker-compose.yml](mdc:docker-compose.yml): Docker Compose configuration for local development and testing
+- [docker](mdc:docker): Directory containing additional Docker-related configurations
+
+## Deployment Configuration
+- [vercel.json](mdc:vercel.json): Vercel deployment configuration
+- [next.config.mjs](mdc:next.config.mjs): Next.js configuration, which affects build and deployment
+
+## Environment Configuration
+The application requires various environment variables for:
+- Database connections
+- Authentication providers (Feishu, Wecom, Dingding)
+- AI model providers (OpenAI, Anthropic, Google)
+
+Always ensure these environment variables are properly configured when deploying the application.

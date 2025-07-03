@@ -1,0 +1,24 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# API Structure
+
+The application uses Next.js API routes to handle backend functionality.
+
+## Completions API
+The completions API handles interactions with various AI models:
+
+- [app/api/completions/route.ts](mdc:app/api/completions/route.ts): Main API route handler for completions
+- [app/api/completions/actions.ts](mdc:app/api/completions/actions.ts): Actions for handling completions
+- [app/api/completions/proxyOpenAiStream.ts](mdc:app/api/completions/proxyOpenAiStream.ts): Proxy for OpenAI streaming API
+- [app/api/completions/proxyClaudeStream.ts](mdc:app/api/completions/proxyClaudeStream.ts): Proxy for Claude streaming API
+- [app/api/completions/proxyGeminiStream.ts](mdc:app/api/completions/proxyGeminiStream.ts): Proxy for Gemini streaming API
+
+## Authentication APIs
+The application supports multiple authentication methods:
+
+- [app/api/auth](mdc:app/api/auth): Authentication API routes
+- [app/api/wecomProxy](mdc:app/api/wecomProxy): Wecom authentication proxy
+- [app/api/dingdingProxy](mdc:app/api/dingdingProxy): Dingding authentication proxy
