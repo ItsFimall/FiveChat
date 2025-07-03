@@ -10,7 +10,7 @@
 
 管理员一人配置，全团队轻松使用各种 AI 模型。
 
-* 支持配置邮箱登录或企业微信、钉钉、飞书登录
+* 支持邮箱密码登录
 * 支持分组管理用户
     * 针对分组用户设置不同可使用的模型
     * 针对分组用户可分别设置每月 Token 限额
@@ -126,27 +126,13 @@ AUTH_SECRET=hclqD3nBpMphLevxGWsUnGU6BaEa2TjrCQ77weOVpPg=
 # 管理员授权码，初始化后，凭此值设置管理员账号，此处为示例，请替换为自己生成的值。
 ADMIN_CODE=22113344
 
-# 生产环境设置为正式域名，开启飞书等第三方登录时回调时会使用
+# 生产环境设置为正式域名
 NEXTAUTH_URL=http://127.0.0.1:3000
 
 是否开启邮箱登录，开启值设为 ON，关闭时修改为 OFF，未设置时默认开启
 EMAIL_AUTH_STATUS=ON
 
-# 是否开启飞书登录，开启值设为 ON，关闭时修改为 OFF，详细说明见底部附2
-FEISHU_AUTH_STATUS=OFF
-FEISHU_CLIENT_ID="cli_xxxxxxxxxxxxxxxx"
-FEISHU_CLIENT_SECRET="xxxxxxxxHOEWIoE7eDc1Lhc0042OXXXX"
 
-# 是否开启企业微信登录，开启值设为 ON，关闭时修改为 OFF
-WECOM_AUTH_STATUS=OFF
-WECOM_CLIENT_ID="ww728c371c2fXXXXXX"
-WECOM_AGENT_ID="100XXXX"
-WECOM_CLIENT_SECRET="H-7J4jzG0m1axpXLGshaCDlMOZxdjvkX6bIVLuXXXXXX"
-
-# 是否开启钉钉登录，开启值设为 ON，关闭时修改为 OFF
-DINGDING_AUTH_STATUS=OFF
-DINGDING_CLIENT_ID="dingpcfi2kpuplXXXXXX"
-DINGDING_CLIENT_SECRET="3vk9-VFCExNckqNUk_CL2F-HEgz7qGN-BimH0lZ1gUx6hWO7g_an2lnkk6XXXXXX"
 ```
 
 4. 初始化数据库
@@ -195,27 +181,13 @@ AUTH_SECRET=hclqD3nBpMphLevxGWsUnGU6BaEa2TjrCQ77weOVpPg=
 # 管理员授权码，初始化后，凭此值设置管理员账号，此处为示例，请替换为自己生成的值。
 ADMIN_CODE=22113344
 
-# 生产环境设置为正式域名，开启飞书等第三方登录时回调时会使用
+# 生产环境设置为正式域名
 NEXTAUTH_URL=http://127.0.0.1:3000
 
 # 是否开启邮箱登录，开启值设为 ON，关闭时修改为 OFF，未设置时默认开启
 EMAIL_AUTH_STATUS=ON
 
-# 是否开启飞书登录，开启值设为 ON，关闭时修改为 OFF，详细说明见底部附2
-FEISHU_AUTH_STATUS=OFF
-FEISHU_CLIENT_ID="cli_xxxxxxxxxxxxxxxx"
-FEISHU_CLIENT_SECRET="xxxxxxxxHOEWIoE7eDc1Lhc0042OXXXX"
 
-# 是否开启企业微信登录，开启值设为 ON，关闭时修改为 OFF
-WECOM_AUTH_STATUS=OFF
-WECOM_CLIENT_ID="ww728c371c2fXXXXXX"
-WECOM_AGENT_ID="100XXXX"
-WECOM_CLIENT_SECRET="H-7J4jzG0m1axpXLGshaCDlMOZxdjvkX6bIVLuXXXXXX"
-
-# 是否开启钉钉登录，开启值设为 ON，关闭时修改为 OFF
-DINGDING_AUTH_STATUS=OFF
-DINGDING_CLIENT_ID="dingpcfi2kpuplXXXXXX"
-DINGDING_CLIENT_SECRET="3vk9-VFCExNckqNUk_CL2F-HEgz7qGN-BimH0lZ1gUx6hWO7g_an2lnkk6XXXXXX"
 ```
 
 3. 启动容器
@@ -236,7 +208,7 @@ docker compose up -d
 
 点击下面的按钮，即可开始部署。
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/ItsFimall/FiveChat.git&project-name=fivechat&env=DATABASE_URL&env=AUTH_SECRET&env=ADMIN_CODE&env=EMAIL_AUTH_STATUS&env=FEISHU_AUTH_STATUS&env=FEISHU_CLIENT_ID&env=FEISHU_CLIENT_SECRET)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/ItsFimall/FiveChat.git&project-name=fivechat&env=DATABASE_URL&env=AUTH_SECRET&env=ADMIN_CODE&env=EMAIL_AUTH_STATUS)
 
 默认将代码克隆的自己的 Github 后，需要填写环境变量：
 
@@ -252,28 +224,14 @@ AUTH_SECRET=hclqD3nBpMphLevxGWsUnGU6BaEa2TjrCQ77weOVpPg=
 # 管理员授权码，初始化后，凭此值设置管理员账号，此处为示例，请替换为自己生成的值。
 ADMIN_CODE=22113344
 
-# 生产环境设置为正式域名，开启飞书等第三方登录时回调时会使用
+# 生产环境设置为正式域名
 # 首次可使用 `https://Vercel中的项目名.vercel.app`
 NEXTAUTH_URL=https://fivechat-xxx.vercel.app
 
 是否开启邮箱登录，开启值设为 ON，关闭时设为 OFF
 EMAIL_AUTH_STATUS=ON
 
-# 是否开启飞书登录，开启值设为 ON，关闭时修改为 OFF，详细说明见底部附2
-FEISHU_AUTH_STATUS=OFF
-FEISHU_CLIENT_ID="cli_xxxxxxxxxxxxxxxx"
-FEISHU_CLIENT_SECRET="xxxxxxxxHOEWIoE7eDc1Lhc0042OXXXX"
 
-# 是否开启企业微信登录，开启值设为 ON，关闭时修改为 OFF
-WECOM_AUTH_STATUS=OFF
-WECOM_CLIENT_ID="ww728c371c2fXXXXXX"
-WECOM_AGENT_ID="100XXXX"
-WECOM_CLIENT_SECRET="H-7J4jzG0m1axpXLGshaCDlMOZxdjvkX6bIVLuXXXXXX"
-
-# 是否开启钉钉登录，开启值设为 ON，关闭时修改为 OFF
-DINGDING_AUTH_STATUS=OFF
-DINGDING_CLIENT_ID="dingpcfi2kpuplXXXXXX"
-DINGDING_CLIENT_SECRET="3vk9-VFCExNckqNUk_CL2F-HEgz7qGN-BimH0lZ1gUx6hWO7g_an2lnkk6XXXXXX"
 ```
 
 ## 版本升级
@@ -306,10 +264,7 @@ ALTER COLUMN api_style SET NOT NULL;
 
 按照以上方法安装部署完成后，访问 `http://localhost:3000/setup` (实际使用的域名和端口号)，即可进入管理员账号设置页面，设置完成后，即可正常使用系统。
 
-#### 附2：第三方登录配置说明
-* [企业微信登录配置说明](https://www.fivechat.net/docs/auth/wecom)
-* [钉钉登录配置说明](https://www.fivechat.net/docs/auth/dingding)
-* [飞书登录配置说明](https://www.fivechat.net/docs/auth/feishu)
+
 
 ### 交流群
 

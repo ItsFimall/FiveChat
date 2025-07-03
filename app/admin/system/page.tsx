@@ -1,5 +1,5 @@
 'use client';
-import AuthProviderConfig from '@/app/components/admin/AuthProviderConfig';
+
 import { Button } from 'antd';
 import ToggleSidebar from "@/app/images/hideSidebar.svg";
 import useAdminSidebarCollapsed from '@/app/store/adminSidebarCollapsed';
@@ -23,7 +23,7 @@ const Userpage = () => {
         <div className='h-4 w-full mb-10'>
           <h2 className="text-xl font-bold mb-4 mt-6">{t('system')}</h2>
         </div>
-        <AuthProviderConfig />
+
         <div className='h-6'></div>
       </div>
     </div>

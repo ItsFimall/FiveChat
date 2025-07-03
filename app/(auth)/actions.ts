@@ -136,7 +136,7 @@ export async function adminSetupLogined(adminCode: string) {
     .where(eq(users.id, session.user.id));
   // 注册成功后，自动登录
   await setAppSettings('hasSetup', 'true');
-  // await signIn("feishu");
+  // OAuth providers removed
   return {
     status: 'success',
   }
@@ -148,64 +148,6 @@ export async function getActiveAuthProvides() {
   if (!process.env.EMAIL_AUTH_STATUS || (process.env.EMAIL_AUTH_STATUS.toLowerCase() !== 'off')) {
     activeAuthProvides.push('email')
   }
-  if (process.env.FEISHU_AUTH_STATUS && process.env.FEISHU_AUTH_STATUS.toLowerCase() === 'on') {
-    activeAuthProvides.push('feishu')
-  }
-  if (process.env.WECOM_AUTH_STATUS && process.env.WECOM_AUTH_STATUS.toLowerCase() === 'on') {
-    activeAuthProvides.push('wecom')
-  }
-  if (process.env.DINGDING_AUTH_STATUS && process.env.DINGDING_AUTH_STATUS.toLowerCase() === 'on') {
-    activeAuthProvides.push('dingding')
-  }
   return activeAuthProvides;
 }
 
-export async function getFeishuAuthInfo() {
-  const session = await auth();
-  if (!session?.user.isAdmin) {
-    return {
-      isActive: false,
-      appId: '',
-      appSecret: '',
-    }
-  }
-  return {
-    isActive: process.env.FEISHU_AUTH_STATUS?.toLowerCase() === 'on',
-    appId: process.env.FEISHU_CLIENT_ID || '',
-    appSecret: process.env.FEISHU_CLIENT_SECRET || '',
-  }
-}
-
-export async function getWecomAuthInfo() {
-  const session = await auth();
-  if (!session?.user.isAdmin) {
-    return {
-      isActive: false,
-      appId: '',
-      agentId: '',
-      appSecret: '',
-    }
-  }
-  return {
-    isActive: process.env.WECOM_AUTH_STATUS?.toLowerCase() === 'on',
-    appId: process.env.WECOM_CLIENT_ID || '',
-    agentId: process.env.WECOM_AGENT_ID || '',
-    appSecret: process.env.WECOM_CLIENT_SECRET || '',
-  }
-}
-
-export async function getDingdingAuthInfo() {
-  const session = await auth();
-  if (!session?.user.isAdmin) {
-    return {
-      isActive: false,
-      appId: '',
-      appSecret: '',
-    }
-  }
-  return {
-    isActive: process.env.DINGDING_AUTH_STATUS?.toLowerCase() === 'on',
-    appId: process.env.DINGDING_CLIENT_ID || '',
-    appSecret: process.env.DINGDING_CLIENT_SECRET || '',
-  }
-}
