@@ -61,6 +61,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     needs: test  # 只有测试通过后才构建 Docker 镜像
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Checkout code
