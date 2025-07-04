@@ -87,7 +87,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository_owner }}/fivechat
+          images: ghcr.io/itsfimall/fivechat
           tags: |
             # 手动触发时使用指定版本
             type=raw,value=${{ github.event.inputs.version || 'latest' }},enable={{is_default_branch}}
@@ -129,7 +129,7 @@ jobs:
           echo "🔖 Labels: ${{ steps.meta.outputs.labels }}"
           if [ "${{ github.event_name }}" != "pull_request" ]; then
             echo "✅ Image pushed to GitHub Container Registry successfully!"
-            echo "🔗 View at: https://github.com/${{ github.repository_owner }}/FiveChat/pkgs/container/fivechat"
+            echo "🔗 View at: https://github.com/itsfimall/FiveChat/pkgs/container/fivechat"
             if [ "${{ github.ref }}" == "refs/heads/main" ]; then
               echo "📅 Date version: $(date +'%y%m%d') (yymmdd format)"
             fi
