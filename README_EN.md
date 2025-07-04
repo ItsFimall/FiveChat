@@ -121,6 +121,28 @@ npm run start
 Visit `http://localhost:3000/setup` (use the actual domain and port) to access the admin account setup page. Once set up, you can use the system normally.
 
 ### Method 2: Docker Deployment
+
+#### Using Pre-built Image (Recommended)
+
+Use the pre-built image from GitHub Container Registry:
+
+```bash
+# Pull the latest image
+docker pull ghcr.io/itsfimall/fivechat:latest
+
+# Or pull a specific date version (recommended for production)
+docker pull ghcr.io/itsfimall/fivechat:250104  # Example: January 4, 2025 version
+
+# Or use docker-compose
+curl -O https://raw.githubusercontent.com/ItsFimall/FiveChat/main/docker-compose.yml
+curl -O https://raw.githubusercontent.com/ItsFimall/FiveChat/main/.env.example
+cp .env.example .env
+# Edit .env file to configure necessary environment variables
+docker compose up -d
+```
+
+#### Local Build
+
 1. Clone this project to your local machine
 ```
 git clone https://github.com/ItsFimall/FiveChat.git
@@ -138,13 +160,13 @@ Modify `AUTH_SECRET` and `ADMIN_CODE` as needed. Be sure to reset these for prod
 ```
 docker compose build
 ```
-5. Start the container
-```   
+4. Start the container
+```
 docker compose up -d
 ```
 
-6. Initialize the Admin Account
-   
+5. Initialize the Admin Account
+
 Visit `http://localhost:3000/setup` (use the actual domain and port) to access the admin account setup page. Once set up, you can use the system normally.
 
 

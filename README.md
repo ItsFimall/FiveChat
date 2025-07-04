@@ -154,6 +154,27 @@ npm run start
 
 ### 方法 2：Docker 部署
 
+#### 使用预构建镜像（推荐）
+
+直接使用 GitHub Container Registry 中的预构建镜像：
+
+```bash
+# 拉取最新镜像
+docker pull ghcr.io/itsfimall/fivechat:latest
+
+# 或者拉取特定日期版本（推荐用于生产环境）
+docker pull ghcr.io/itsfimall/fivechat:250104  # 示例：2025年1月4日版本
+
+# 或者使用 docker-compose
+curl -O https://raw.githubusercontent.com/ItsFimall/FiveChat/main/docker-compose.yml
+curl -O https://raw.githubusercontent.com/ItsFimall/FiveChat/main/.env.example
+cp .env.example .env
+# 编辑 .env 文件配置必要的环境变量
+docker compose up -d
+```
+
+#### 本地构建镜像
+
 由于近期更新频繁，如果是历史版本升级，测试用途的用户可直接删除存储卷下的 `fivechat_sqlite_data`，数据库会自动重新初始化。如果正式环境 Docker 部署有升级需求，可联系作者(wechat:wuhaoworld)。其他部署方式没有此问题。
 
 1. 克隆本项目到本地
