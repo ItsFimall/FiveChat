@@ -58,7 +58,7 @@ const BotInfo = ({ params }: { params: { bot_id: string } }) => {
                 </div>
               }
               {
-                botInfo.avatarType === 'url' &&
+                botInfo.avatarType === 'url' && botInfo.avatar &&
                 <div className="w-24 h-24 rounded-lg border border-gray-100 overflow-hidden ">
                   <Image
                     src={botInfo.avatar}

@@ -6,7 +6,7 @@ import { auth } from "@/auth";
 import type { InferSelectModel } from 'drizzle-orm';
 
 type GroupWithModels = Awaited<ReturnType<typeof db.query.groups.findMany>>[number] & {
-  models: {
+  groupModels: {
     model: {
       id: number;
       name: string;
@@ -37,7 +37,7 @@ export async function getGroupList() {
   try {
     const result = await db.query.groups.findMany({
       with: {
-        models: {
+        groupModels: {
           with: {
             model: {
               columns: {
@@ -66,11 +66,11 @@ export async function getGroupList() {
     const groupsTableList = result.map(group => ({
       id: group.id,
       name: group.name,
-      tokenLimitType: group.tokenLimitType,
+      tokenLimitType: group.tokenLimitType as 'unlimited' | 'limited',
       monthlyTokenLimit: group.monthlyTokenLimit,
-      modelProviderList: (group as unknown as GroupWithModels).models.filter(m => m.model.provider.isActive).map(m => `${m.model.provider.providerName || 'unknown'} | ${m.model.displayName}`),
-      models: (group as unknown as GroupWithModels).models.filter(m => m.model.provider.isActive).map(m => m.model.id),
-      modelType: group.modelType,
+      modelProviderList: (group as unknown as GroupWithModels).groupModels.filter(m => m.model.provider.isActive).map(m => `${m.model.provider.providerName || 'unknown'} | ${m.model.displayName}`),
+      models: (group as unknown as GroupWithModels).groupModels.filter(m => m.model.provider.isActive).map(m => m.model.id),
+      modelType: group.modelType as 'all' | 'specific',
       createdAt: group.createdAt,
       updatedAt: group.updatedAt,
       isDefault: group.isDefault,

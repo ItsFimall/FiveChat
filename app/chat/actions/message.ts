@@ -1,10 +1,10 @@
 'use server';
 import { db } from '@/app/db';
 import { auth } from "@/auth";
-import { MCPToolResponse, MessageContent } from '@/types/llm';
+import { MCPToolResponse as LLMMCPToolResponse, MessageContent } from '@/types/llm';
 import { eq, and, asc } from 'drizzle-orm';
-import { messages } from '@/app/db/schema';
-import { searchResultType, WebSearchResponse } from '@/types/search';
+import { messages, MCPToolResponse, WebSearchResponse } from '@/app/db/schema';
+import { searchResultType, WebSearchResponse as SearchWebSearchResponse } from '@/types/search';
 
 export const clearMessageInServer = async (chatId: string) => {
   const session = await auth();
@@ -74,7 +74,7 @@ export const addMessageInServer = async (message: {
   reasoninContent?: string,
   searchEnabled?: boolean,
   searchStatus?: searchResultType,
-  mcpTools?: MCPToolResponse[],
+  mcpTools?: LLMMCPToolResponse[],
   providerId: string,
   model: string,
   type: 'text' | 'image' | 'error' | 'break',
@@ -91,8 +91,18 @@ export const addMessageInServer = async (message: {
       message: 'please login first.'
     }
   }
+  // 转换 mcpTools 格式
+  const dbMessage = {
+    ...message,
+    mcpTools: message.mcpTools ? message.mcpTools.map(tool => ({
+      name: tool.tool.name,
+      result: tool.response,
+      error: tool.status === 'error' ? 'Tool execution failed' : undefined
+    })) : undefined
+  };
+
   const [result] = await db.insert(messages)
-    .values({ userId: session.user.id, ...message })
+    .values({ userId: session.user.id, ...dbMessage })
     .returning();
   return result.id;
 }
@@ -101,7 +111,7 @@ export const updateMessageWebSearchInServer = async (
   messageId: number,
   searchEnabled: boolean,
   searchStatus: "none" | "searching" | "error" | "done",
-  webSearch?: WebSearchResponse,
+  webSearch?: SearchWebSearchResponse,
 ) => {
   const session = await auth();
   if (!session?.user.id) {
@@ -112,12 +122,22 @@ export const updateMessageWebSearchInServer = async (
   }
 
   try {
+    // 转换 webSearch 格式
+    const dbWebSearch: WebSearchResponse | undefined = webSearch ? {
+      query: webSearch.query || '',
+      results: webSearch.results.map(result => ({
+        title: result.title,
+        url: result.url,
+        snippet: result.content
+      }))
+    } : undefined;
+
     await db.update(messages)
       .set({
         searchEnabled: searchEnabled,
         searchStatus: searchStatus,
-        webSearch: webSearch,
-        updatedAt: new Date()
+        webSearch: dbWebSearch,
+        updatedAt: Date.now()
       })
       .where(
         and(

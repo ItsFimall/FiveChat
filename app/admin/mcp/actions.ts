@@ -17,7 +17,7 @@ export async function getMcpServerList() {
     });
     return result.map(server => ({
       ...server,
-      type: server.type || 'sse'
+      type: (server.type as 'sse' | 'streamableHttp') || 'sse'
     }));
   } catch (error) {
     throw new Error('query user list fail');

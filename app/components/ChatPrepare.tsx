@@ -17,7 +17,7 @@ const AppPrepare = () => {
         setHasUseMcp(true);
         setMcpServers(mcpServers.map(server => ({
           ...server,
-          type: server.type || 'sse',
+          type: (server.type as 'sse' | 'streamableHttp') || 'sse',
           description: server.description ?? undefined,
         })));
         setAllTools(tools.map(tool => {
@@ -49,7 +49,7 @@ const AppPrepare = () => {
         const processedList = allProviderSettings.map(item => ({
           id: item.provider,
           providerName: item.providerName,
-          apiStyle: item.apiStyle,
+          apiStyle: item.apiStyle as 'openai' | 'claude' | 'gemini' | 'openai_response',
           providerLogo: item.logo || '',
           status: item.isActive || false,
         }));

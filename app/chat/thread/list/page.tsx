@@ -64,7 +64,13 @@ const List = () => {
     if (result.status === 'success') {
       message.success(t('deleteSuccess'));
       const chatListresult = await getChatListInServer();
-      setChatList(chatListresult.data as ChatType[]);
+      const convertedChatList = chatListresult.data.map(chat => ({
+        ...chat,
+        createdAt: chat.createdAt ? new Date(chat.createdAt) : new Date(),
+        updatedAt: chat.updatedAt ? new Date(chat.updatedAt) : new Date(),
+        starAt: chat.starAt ? new Date(chat.starAt) : undefined
+      }));
+      setChatList(convertedChatList as ChatType[]);
     }
   };
 

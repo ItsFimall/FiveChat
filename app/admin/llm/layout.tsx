@@ -37,8 +37,8 @@ export default function LLMLayout({
         id: item.provider,
         providerName: item.providerName,
         providerLogo: item.logo || '',
-        apiStyle: item.apiStyle,
-        type: item.type,
+        apiStyle: item.apiStyle as 'openai' | 'claude' | 'gemini' | 'openai_response',
+        type: item.type as 'default' | 'custom',
         status: item.isActive || false,
       }));
 

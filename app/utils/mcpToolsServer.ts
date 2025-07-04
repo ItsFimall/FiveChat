@@ -26,7 +26,7 @@ export async function callMCPTool(tool: MCPTool): Promise<any> {
     const serverInfo: MCPServer = {
       name: server.name,
       description: server.description || undefined,
-      type: server.type || 'sse',
+      type: (server.type as 'sse' | 'streamableHttp') || 'sse',
       baseUrl: server.baseUrl,
       isActive: true,
     };

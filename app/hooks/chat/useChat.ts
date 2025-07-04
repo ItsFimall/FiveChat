@@ -394,7 +394,32 @@ const useChat = (chatId: string) => {
         let messageList: Message[] = [];
         const result = await getMessagesInServer(chatId);
         if (result.status === 'success') {
-          messageList = result.data as Message[];
+          messageList = result.data.map(msg => ({
+            ...msg,
+            createdAt: msg.createdAt ? new Date(msg.createdAt) : undefined,
+            updatedAt: msg.updatedAt ? new Date(msg.updatedAt) : undefined,
+            deleteAt: msg.deleteAt ? new Date(msg.deleteAt) : undefined,
+            mcpTools: msg.mcpTools ? msg.mcpTools.map(tool => ({
+              id: `${msg.id}-${tool.name}`,
+              tool: {
+                id: tool.name,
+                name: tool.name,
+                serverName: 'unknown',
+                description: '',
+                inputSchema: { type: 'object', properties: {} }
+              },
+              status: tool.error ? 'error' : 'done',
+              response: tool.result
+            })) : undefined,
+            webSearch: msg.webSearch ? {
+              query: msg.webSearch.query,
+              results: msg.webSearch.results.map(result => ({
+                title: result.title,
+                url: result.url,
+                content: result.snippet
+              }))
+            } : undefined
+          })) as Message[];
         }
         setMessageList(messageList);
 

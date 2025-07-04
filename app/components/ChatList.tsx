@@ -70,7 +70,13 @@ const ChatList = () => {
       try {
         const result = await getChatListInServer();
         if (result.status === 'success') {
-          setChatList(result.data as ChatType[]);
+          const convertedChatList = result.data.map(chat => ({
+            ...chat,
+            createdAt: chat.createdAt ? new Date(chat.createdAt) : new Date(),
+            updatedAt: chat.updatedAt ? new Date(chat.updatedAt) : new Date(),
+            starAt: chat.starAt ? new Date(chat.starAt) : undefined
+          }));
+          setChatList(convertedChatList as ChatType[]);
         } else {
           setChatList([]);
         }
@@ -94,7 +100,13 @@ const ChatList = () => {
       if (result.status === 'success') {
         message.success(t('deleteSuccess'));
         const chatListresult = await getChatListInServer();
-        setChatList(chatListresult.data as ChatType[]);
+        const convertedChatList = chatListresult.data.map(chat => ({
+          ...chat,
+          createdAt: chat.createdAt ? new Date(chat.createdAt) : new Date(),
+          updatedAt: chat.updatedAt ? new Date(chat.updatedAt) : new Date(),
+          starAt: chat.starAt ? new Date(chat.starAt) : undefined
+        }));
+        setChatList(convertedChatList as ChatType[]);
 
         if (currentChatId === chat_id) {
           if (chatListresult.data && chatListresult.data?.length > 0) {
@@ -114,7 +126,7 @@ const ChatList = () => {
 
   const toggleStar = async (chat_id: string, is_star: boolean) => {
     try {
-      await updateChatInServer(chat_id, { isStar: is_star, starAt: new Date() })
+      await updateChatInServer(chat_id, { isStar: is_star, starAt: Date.now() })
       if (currentChatId === chat_id && chat) {
         setChat({ ...chat, isStar: !Boolean(chat.isStar), starAt: new Date() });
       }

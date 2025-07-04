@@ -39,14 +39,14 @@ export const setAppSettings = async (key: string, newValue: string): Promise<{
     await db.update(appSettings)
       .set({
         value: newValue,
-        updatedAt: new Date(),
+        updatedAt: Date.now(),
       })
       .where(eq(appSettings.key, key));
   } else {
     await db.insert(appSettings).values({
       key: key,
       value: newValue,
-      updatedAt: new Date()
+      updatedAt: Date.now()
     });
   }
   return {

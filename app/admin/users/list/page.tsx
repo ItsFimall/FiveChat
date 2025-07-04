@@ -174,7 +174,7 @@ const UserListTab = () => {
                   }</td>
                   <td className='border-t border-r text-xs text-right border-slate-300 p-2'>{user.todayTotalTokens.toLocaleString()} Tokens</td>
                   <td className='border-t border-r text-xs text-right border-slate-300 p-2'>{user.currentMonthTotalTokens.toLocaleString()} Tokens</td>
-                  <td className='border-t border-r text-xs text-center w-36 border-slate-300 p-2'>{user.createdAt?.toISOString().slice(0, 19).replace('T', ' ')}</td>
+                  <td className='border-t border-r text-xs text-center w-36 border-slate-300 p-2'>{user.createdAt ? new Date(user.createdAt).toISOString().slice(0, 19).replace('T', ' ') : ''}</td>
                   <td className='border-t text-center text-sm w-32 border-slate-300 p-2'>
                     <Button
                       size='small'

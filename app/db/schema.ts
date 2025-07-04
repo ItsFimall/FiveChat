@@ -41,13 +41,11 @@ export const accounts = sqliteTable("account", {
   id_token: text("id_token"),
   session_state: text("session_state"),
 },
-  (account) => [
-    {
-      compoundKey: primaryKey({
-        columns: [account.provider, account.providerAccountId],
-      }),
-    },
-  ]
+  (account) => ({
+    compoundKey: primaryKey({
+      columns: [account.provider, account.providerAccountId],
+    }),
+  })
 )
 
 export const sessions = sqliteTable("session", {
@@ -63,13 +61,11 @@ export const verificationTokens = sqliteTable("verificationToken", {
   token: text("token").notNull(),
   expires: integer("expires").notNull(),
 },
-  (verificationToken) => [
-    {
-      compositePk: primaryKey({
-        columns: [verificationToken.identifier, verificationToken.token],
-      }),
-    },
-  ]
+  (verificationToken) => ({
+    compositePk: primaryKey({
+      columns: [verificationToken.identifier, verificationToken.token],
+    }),
+  })
 )
 
 export const authenticators = sqliteTable("authenticator", {
@@ -84,13 +80,11 @@ export const authenticators = sqliteTable("authenticator", {
   credentialBackedUp: integer("credentialBackedUp", { mode: "boolean" }).notNull(),
   transports: text("transports"),
 },
-  (authenticator) => [
-    {
-      compositePK: primaryKey({
-        columns: [authenticator.userId, authenticator.credentialID],
-      }),
-    }
-  ]
+  (authenticator) => ({
+    compositePK: primaryKey({
+      columns: [authenticator.userId, authenticator.credentialID],
+    }),
+  })
 )
 
 export const llmSettingsTable = sqliteTable("llm_settings", {
@@ -151,6 +145,26 @@ export const llmModels = sqliteTable("models", {
 }, (table) => ({
   uniqueNameProvider: unique().on(table.name, table.providerId),
 }));
+
+export interface llmModelType {
+  id: number;
+  name: string;
+  displayName: string;
+  maxTokens?: number | null;
+  supportVision?: boolean | null;
+  supportTool?: boolean | null;
+  builtInImageGen?: boolean | null;
+  builtInWebSearch?: boolean | null;
+  selected?: boolean | null;
+  providerId: string;
+  providerName: string;
+  providerLogo?: string;
+  apiStyle: string;
+  type?: string | null;
+  order?: number | null;
+  createdAt?: number | null;
+  updatedAt?: number | null;
+}
 
 export const chats = sqliteTable("chats", {
   id: text("id")
@@ -274,13 +288,11 @@ export const usageReport = sqliteTable("usage_report", {
   outputTokens: integer('output_tokens').notNull().default(0),
   totalTokens: integer('total_tokens').notNull().default(0),
 },
-  (usageReport) => [
-    {
-      compositePK: primaryKey({
-        columns: [usageReport.date, usageReport.userId, usageReport.modelId, usageReport.providerId],
-      }),
-    }
-  ]
+  (usageReport) => ({
+    compositePK: primaryKey({
+      columns: [usageReport.date, usageReport.userId, usageReport.modelId, usageReport.providerId],
+    }),
+  })
 )
 
 export const searchEngineConfig = sqliteTable("search_engine_config", {
@@ -316,13 +328,11 @@ export const groupModels = sqliteTable("group_models", {
   groupId: text("groupId").notNull().references(() => groups.id, { onDelete: 'cascade' }),
   modelId: integer("modelId").notNull().references(() => llmModels.id, { onDelete: 'cascade' }),
 },
-  (groupModels) => [
-    {
-      compositePK: primaryKey({
-        columns: [groupModels.groupId, groupModels.modelId],
-      }),
-    }
-  ]
+  (groupModels) => ({
+    compositePK: primaryKey({
+      columns: [groupModels.groupId, groupModels.modelId],
+    }),
+  })
 )
 
 // Relations
@@ -392,3 +402,4 @@ export const allRelations = {
 
 export type llmSettingsType = typeof llmSettingsTable.$inferSelect;
 export type oauthConfigType = typeof oauthConfigs.$inferSelect;
+export type UserType = typeof users.$inferSelect;

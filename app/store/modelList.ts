@@ -78,11 +78,11 @@ const useModelListStore = create<IModelListStore>((set, get) => ({
       builtInImageGen: model.builtInImageGen || false,
       builtInWebSearch: model.builtInWebSearch || false,
       selected: model.selected || false,
-      type: model.type ?? 'default',
+      type: (model.type as 'default' | 'custom') ?? 'default',
       provider: {
         id: model.providerId,
         providerName: model.providerName,
-        apiStyle: model.apiStyle,
+        apiStyle: model.apiStyle as 'openai' | 'claude' | 'gemini' | 'openai_response',
       }
     }));
 
@@ -94,7 +94,7 @@ const useModelListStore = create<IModelListStore>((set, get) => ({
             id: model.providerId,
             providerName: model.providerName,
             providerLogo: model.providerLogo,
-            apiStyle: model.apiStyle,
+            apiStyle: model.apiStyle as 'openai' | 'claude' | 'gemini' | 'openai_response',
             status: true,
           }
         ])
@@ -117,11 +117,11 @@ const useModelListStore = create<IModelListStore>((set, get) => ({
       supportVision: model.supportVision || undefined,
       supportTool: model.supportTool || undefined,
       selected: model.selected || false,
-      type: model.type ?? 'default',
+      type: (model.type as 'default' | 'custom') ?? 'default',
       provider: {
         id: model.providerId,
         providerName: model.providerName,
-        apiStyle: model.apiStyle,
+        apiStyle: model.apiStyle as 'openai' | 'claude' | 'gemini' | 'openai_response',
         providerLogo: model.providerLogo,
       }
     }));
@@ -134,7 +134,7 @@ const useModelListStore = create<IModelListStore>((set, get) => ({
             id: model.providerId,
             providerName: model.providerName,
             providerLogo: model.providerLogo,
-            apiStyle: model.apiStyle,
+            apiStyle: model.apiStyle as 'openai' | 'claude' | 'gemini' | 'openai_response',
             status: true,
           }
         ])

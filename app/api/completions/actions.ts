@@ -32,7 +32,7 @@ export const isUserWithinQuota = async (userId: string, providerId: string, mode
           modelType: true,
         },
         with: {
-          models: {
+          groupModels: {
             with: {
               model: {
                 columns: {
@@ -50,9 +50,9 @@ export const isUserWithinQuota = async (userId: string, providerId: string, mode
       modelType: 'all' | 'specific',
       tokenLimitType: 'unlimited' | 'limited',
       monthlyTokenLimit: number | null,
-      models?: { model: { name: string, providerId: string } }[]
+      groupModels?: { model: { name: string, providerId: string } }[]
     } | null,
-    usageUpdatedAt: Date,
+    usageUpdatedAt: number,
     currentMonthTotalTokens: number
   } | null;
 
@@ -69,7 +69,7 @@ export const isUserWithinQuota = async (userId: string, providerId: string, mode
       const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
 
       let realMonthlyTotalTokens = 0;
-      if (result.usageUpdatedAt > firstDayOfMonth) {
+      if (result.usageUpdatedAt > firstDayOfMonth.getTime()) {
         realMonthlyTotalTokens = result.currentMonthTotalTokens;
       }
 
@@ -83,7 +83,7 @@ export const isUserWithinQuota = async (userId: string, providerId: string, mode
     if (result.group.modelType === 'all') {
       modelPassFlag = true;
     } else {
-      const hasMatchingModel = result.group.models?.some(
+      const hasMatchingModel = result.group.groupModels?.some(
         (groupModel) =>
           groupModel.model.providerId === providerId &&
           groupModel.model.name === modelId
@@ -132,7 +132,7 @@ export const updateUserUsage = async (userId: string, usage: UsageType) => {
     await db.update(users).set({
       todayTotalTokens: usage.totalTokens,
       currentMonthTotalTokens: usage.totalTokens,
-      usageUpdatedAt: new Date(),
+      usageUpdatedAt: Date.now(),
     })
       .where(eq(users.id, userId));
   } else if (userDetail?.usageUpdatedAt && new Date(userDetail.usageUpdatedAt) < today) {
@@ -140,7 +140,7 @@ export const updateUserUsage = async (userId: string, usage: UsageType) => {
     await db.update(users).set({
       todayTotalTokens: usage.totalTokens,
       currentMonthTotalTokens: sql`${users.currentMonthTotalTokens} + ${usage.totalTokens}`,
-      usageUpdatedAt: new Date(),
+      usageUpdatedAt: Date.now(),
     })
       .where(eq(users.id, userId));
   } else {
@@ -148,7 +148,7 @@ export const updateUserUsage = async (userId: string, usage: UsageType) => {
     await db.update(users).set({
       todayTotalTokens: sql`${users.todayTotalTokens} + ${usage.totalTokens}`,
       currentMonthTotalTokens: sql`${users.currentMonthTotalTokens} + ${usage.totalTokens}`,
-      usageUpdatedAt: new Date(),
+      usageUpdatedAt: Date.now(),
     })
       .where(eq(users.id, userId));
   }

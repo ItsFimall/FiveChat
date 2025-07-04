@@ -2,9 +2,9 @@
 import { db } from '@/app/db';
 import { auth } from "@/auth";
 import { eq, and, desc, asc, inArray } from 'drizzle-orm';
-import { ChatType, MCPToolResponse } from '@/types/llm';
+import { ChatType, MCPToolResponse as LLMMCPToolResponse } from '@/types/llm';
 import WebSearchService from '@/app/services/WebSearchService';
-import { chats, messages, appSettings, mcpServers, mcpTools, searchEngineConfig } from '@/app/db/schema';
+import { chats, messages, appSettings, mcpServers, mcpTools, searchEngineConfig, MCPToolResponse } from '@/app/db/schema';
 import { WebSearchResponse } from '@/types/search';
 
 export const addChatInServer = async (
@@ -75,15 +75,15 @@ export const getChatInfoInServer = async (chatId: string): Promise<{ status: str
         defaultModel: data.defaultModel ?? undefined,
         defaultProvider: data.defaultProvider ?? undefined,
         searchEnabled: data.searchEnabled ?? undefined,
-        historyType: data.historyType ?? undefined,
+        historyType: (data.historyType as 'all' | 'count' | 'none') ?? undefined,
         historyCount: data.historyCount ?? undefined,
         isStar: data.isStar ?? undefined,
         isWithBot: data.isWithBot ?? undefined,
         botId: data.botId ?? undefined,
-        avatarType: data.avatarType ?? undefined,
+        avatarType: (data.avatarType as 'url' | 'none' | 'emoji') ?? undefined,
         prompt: data.prompt ?? undefined,
-        createdAt: data.createdAt!,
-        starAt: data.starAt ?? undefined,
+        createdAt: new Date(data.createdAt!),
+        starAt: data.starAt ? new Date(data.starAt) : undefined,
       }
     }
   } else {
@@ -127,7 +127,7 @@ export const updateChatInServer = async (chatId: string, newChatInfo: {
   avatar?: string;
   avatarType?: 'emoji' | 'url' | 'none';
   prompt?: string;
-  starAt?: Date;
+  starAt?: number;
 }) => {
   const session = await auth();
   if (!session?.user.id) {
@@ -291,12 +291,19 @@ export const getMcpServersAndAvailableTools = async () => {
   }
 }
 
-export const syncMcpTools = async (messageId: number, mcpToolsResponse: MCPToolResponse[]) => {
+export const syncMcpTools = async (messageId: number, mcpToolsResponse: LLMMCPToolResponse[]) => {
   try {
+    // 转换为数据库期望的格式
+    const dbMcpTools: MCPToolResponse[] = mcpToolsResponse.map(tool => ({
+      name: tool.tool.name,
+      result: tool.response,
+      error: tool.status === 'error' ? 'Tool execution failed' : undefined
+    }));
+
     await db.update(messages)
       .set({
-        mcpTools: mcpToolsResponse,
-        updatedAt: new Date()
+        mcpTools: dbMcpTools,
+        updatedAt: Date.now()
       })
       .where(eq(messages.id, messageId));
 

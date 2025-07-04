@@ -134,10 +134,10 @@ export const getProviderById = async (providerId: string): Promise<LLMModelProvi
   return {
     id: dbProvider.provider,
     providerName: dbProvider.providerName,
-    apiStyle: dbProvider.apiStyle,
+    apiStyle: dbProvider.apiStyle as 'openai' | 'claude' | 'gemini' | 'openai_response',
     providerLogo: dbProvider.logo || undefined,
     status: dbProvider.isActive || false,
-    type: dbProvider.type || 'default'
+    type: dbProvider.type as 'default' | 'custom' || 'default'
   };
 }
 

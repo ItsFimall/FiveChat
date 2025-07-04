@@ -81,7 +81,7 @@ export const updateOAuthConfig = async (id: string, values: OAuthConfigFormValue
         description: values.description || null,
         callbackUrl: values.callbackUrl,
         isActive: values.isActive,
-        updatedAt: new Date(),
+        updatedAt: Date.now(),
       })
       .where(eq(oauthConfigs.id, id));
 

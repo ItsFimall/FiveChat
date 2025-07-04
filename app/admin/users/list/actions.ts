@@ -73,6 +73,10 @@ export async function getUserList(groupId?: string) {
       currentMonthTotalTokens: new Date(user.usageUpdatedAt) >= firstDayOfMonth
         ? user.currentMonthTotalTokens
         : 0,
+      group: user.group ? {
+        ...user.group,
+        tokenLimitType: user.group.tokenLimitType as 'unlimited' | 'limited'
+      } : null
     }));
     return result;
   } catch (error) {

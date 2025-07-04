@@ -1,11 +1,12 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { Button, Table, Switch, message, Modal, Space, Tooltip } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, ToggleSidebar } from '@/app/icons';
+import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import ToggleSidebar from "@/app/images/hideSidebar.svg";
 import { fetchAllOAuthConfigs, deleteOAuthConfig, updateOAuthConfig } from './actions';
 import { oauthConfigType } from '@/app/db/schema';
 import OAuthConfigModal from '@/app/components/admin/oauth/OAuthConfigModal';
-import { useAdminSidebarCollapsed } from '@/app/store/adminSidebarCollapsed';
+import useAdminSidebarCollapsed from '@/app/store/adminSidebarCollapsed';
 import { useTranslations } from 'next-intl';
 
 const OAuthConfigPage = () => {
@@ -151,7 +152,7 @@ const OAuthConfigPage = () => {
       title: '操作',
       key: 'actions',
       width: 120,
-      render: (_, record: oauthConfigType) => (
+      render: (_: any, record: oauthConfigType) => (
         <Space size="small">
           <Button
             type="text"

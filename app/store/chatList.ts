@@ -40,7 +40,12 @@ const useChatListStore = create<IChatListStore>((set) => ({
   },
   updateChat: (chatId: string, newChatInfo) => {
     set((state) => {
-      updateChatInServer(chatId, newChatInfo);
+      // 转换 starAt 为时间戳格式
+      const serverChatInfo = {
+        ...newChatInfo,
+        starAt: newChatInfo.starAt ? newChatInfo.starAt.getTime() : undefined
+      };
+      updateChatInServer(chatId, serverChatInfo);
       const chatList = state.chatList.map(chat => {
         if (chat.id === chatId) {
           return { ...chat, ...newChatInfo };
@@ -58,8 +63,14 @@ const useChatListStore = create<IChatListStore>((set) => ({
 
   addBot: async (botId: number) => {
     const result = await addBotToChatInServer(botId);
+    const convertedChat = {
+      ...result.data,
+      createdAt: result.data?.createdAt ? new Date(result.data.createdAt) : new Date(),
+      updatedAt: result.data?.updatedAt ? new Date(result.data.updatedAt) : new Date(),
+      starAt: result.data?.starAt ? new Date(result.data.starAt) : undefined
+    };
     set((state) => ({
-      chatList: [result.data as ChatType, ...state.chatList],
+      chatList: [convertedChat as ChatType, ...state.chatList],
     }));
   },
 
