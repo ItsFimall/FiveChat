@@ -4,10 +4,23 @@ import Credentials from "next-auth/providers/credentials";
 import { signInSchema } from "@/app/lib/zod";
 import { verifyPassword } from "@/app/utils/password";
 import { db } from '@/app/db';
-import { users } from '@/app/db/schema';
-
+import { users, oauthConfigs } from '@/app/db/schema';
 import { eq } from 'drizzle-orm';
+import { createCustomOAuthProvider, oauthProviderTemplates } from "@/app/lib/oauth-provider";
 
+// 获取OAuth配置的辅助函数
+async function getOAuthConfigById(configId: string) {
+  try {
+    const config = await db.query.oauthConfigs
+      .findFirst({
+        where: eq(oauthConfigs.id, configId)
+      });
+    return config;
+  } catch (error) {
+    console.error('Error loading OAuth config:', error);
+    return null;
+  }
+}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -21,6 +34,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       authorize: async (credentials) => {
         try {
           const { email, password } = await signInSchema.parseAsync(credentials);
+
+          // 特殊处理OAuth登录
+          if (password === "oauth_login") {
+            const user = await db.query.users
+              .findFirst({
+                where: eq(users.email, email)
+              });
+            if (user) {
+              return {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                isAdmin: user.isAdmin || false,
+              };
+            }
+            return null;
+          }
+
+          // 正常的密码登录
           const user = await db.query.users
             .findFirst({
               where: eq(users.email, email)

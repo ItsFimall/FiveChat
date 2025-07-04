@@ -61,7 +61,7 @@ Note: The following is a demo site, and data may be cleared at any time.
 * Next.js
 * Tailwindcss
 * Auth.js
-* PostgreSQL
+* SQLite
 * Drizzle ORM
 * Ant Design
 
@@ -89,9 +89,9 @@ cp .env.example .env
 Edit the .env file.
 
 ```env
-# PostgreSQL Database Connection URL. This is an example; you need to install PostgreSQL locally or connect to a remote PostgreSQL instance.
-# Note: Local installations do not currently support Serverless PostgreSQL provided by Vercel or Neon.
-DATABASE_URL=postgres://postgres:password@localhost/fivechat
+# SQLite database file path. Default is ./data/fivechat.db
+# If not set, the default path will be used.
+DATABASE_URL=./data/fivechat.db
 
 # Used for encrypting sensitive information such as user data. You can generate a random 32-character string as a key using the command `openssl rand -base64 32`. This is an example; please replace it with the value you generate.
 AUTH_SECRET=hclqD3nBpMphLevxGWsUnGU6BaEa2TjrCQ77weOVpPg=
@@ -158,8 +158,8 @@ By default, the code is cloned to your own Github. Afterward, fill in the enviro
 <img width="726" alt="image" src="https://jiantuku.oss-cn-beijing.aliyuncs.com/share/vercel01.png" />
 
 ```
-# PostgreSQL database connection URL. Vercel offers free hosting services. See further details below.
-DATABASE_URL=postgres://postgres:password@localhost/fivechat
+# SQLite database file path. Default is ./data/fivechat.db
+DATABASE_URL=./data/fivechat.db
 
 #Encryption key for sensitive information like user data. You can generate a random 32-character string using openssl rand -base64 32. This example key should be replaced with your generated value.
 AUTH_SECRET=hclqD3nBpMphLevxGWsUnGU6BaEa2TjrCQ77weOVpPg=
@@ -167,14 +167,9 @@ AUTH_SECRET=hclqD3nBpMphLevxGWsUnGU6BaEa2TjrCQ77weOVpPg=
 # Admin authorization code. This value is used to set up the admin account. Replace this example with your generated value.
 ADMIN_CODE=22113344
 ```
-#### Appendix: Vercel (Neon) PostgreSQL Configuration
+#### Note: SQLite Configuration
 
-1. In the Vercel dashboard, select the "Storage" tab and click "Create Database".
-2. Choose Neon (Serverless Postgres)
-<img width="400" alt="image" src="https://jiantuku.oss-cn-beijing.aliyuncs.com/share/vercel02.png" />
-
-3. Follow the instructions to complete the setup, then copy the `DATABASE_URL` value from this step and paste it into the `DATABASE_URL` from the previous section.
-<img width="800" alt="image" src="https://jiantuku.oss-cn-beijing.aliyuncs.com/share/vercel03.png" />
+The application now uses SQLite as the database, which is a file-based database that doesn't require a separate database server. The database file will be automatically created when the application starts for the first time. No additional database setup is required.
 
 4. Initialize the Admin Account
 

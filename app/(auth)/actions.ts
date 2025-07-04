@@ -151,3 +151,20 @@ export async function getActiveAuthProvides() {
   return activeAuthProvides;
 }
 
+export async function getActiveOAuthConfigs() {
+  try {
+    const { oauthConfigs } = await import('@/app/db/schema');
+    const { eq } = await import('drizzle-orm');
+
+    const configs = await db.query.oauthConfigs
+      .findMany({
+        where: eq(oauthConfigs.isActive, true)
+      });
+
+    return configs;
+  } catch (error) {
+    console.error('Error fetching OAuth configs:', error);
+    return [];
+  }
+}
+

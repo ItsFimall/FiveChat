@@ -9,9 +9,10 @@ import logo from "@/app/images/logo.png";
 import FiveChat from "@/app/images/fivechat.svg";
 
 import { fetchAppSettings } from '@/app/admin/system/actions';
-import { getActiveAuthProvides } from '@/app/(auth)/actions';
+import { getActiveAuthProvides, getActiveOAuthConfigs } from '@/app/(auth)/actions';
 import SpinLoading from '@/app/components/loading/SpinLoading';
 import { useTranslations } from 'next-intl';
+import { oauthConfigType } from '@/app/db/schema';
 
 interface LoginFormValues {
   email: string;
@@ -26,6 +27,7 @@ export default function LoginPage() {
   const [isFetching, setIsFetching] = useState(true);
   const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
   const [authProviders, setAuthProviders] = useState<string[]>([]);
+  const [oauthConfigs, setOauthConfigs] = useState<oauthConfigType[]>([]);
   const [error, setError] = useState("");
 
   async function handleSubmit(values: LoginFormValues) {
@@ -49,7 +51,9 @@ export default function LoginPage() {
       const resultValue = await fetchAppSettings('isRegistrationOpen');
       setIsRegistrationOpen(resultValue === 'true');
       const activeAuthProvides = await getActiveAuthProvides();
-      setAuthProviders(activeAuthProvides)
+      setAuthProviders(activeAuthProvides);
+      const oauthConfigsData = await getActiveOAuthConfigs();
+      setOauthConfigs(oauthConfigsData);
     }
     fetchSettings().then(() => {
       setIsFetching(false);
@@ -123,6 +127,37 @@ export default function LoginPage() {
             </Form>
           </>
         }
+
+        {/* OAuth登录选项 */}
+        {oauthConfigs.length > 0 && (
+          <div className="mt-4">
+            {authProviders.includes('email') && (
+              <div className="relative my-4">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-gray-500">或</span>
+                </div>
+              </div>
+            )}
+            <div className="space-y-2">
+              {oauthConfigs.map((config) => (
+                <Button
+                  key={config.id}
+                  block
+                  size="large"
+                  onClick={() => {
+                    window.location.href = `/api/auth/oauth-login?config_id=${config.id}`;
+                  }}
+                  className="flex items-center justify-center"
+                >
+                  使用 {config.name} 登录
+                </Button>
+              ))}
+            </div>
+          </div>
+        )}
 
       </div>
     </div>

@@ -4,43 +4,21 @@ services:
     image: itsfimall/fivechat:latest
     ports:
       - "${HOST_PORT}:3000"
-    depends_on:
-      - db
     environment:
-      DATABASE_URL: "postgres://postgres:postgres@db:5432/fivechat"
+      DATABASE_URL: ${DATABASE_URL:-./data/fivechat.db}
       AUTH_SECRET: ${AUTH_SECRET}
       ADMIN_CODE: ${ADMIN_CODE}
       NEXTAUTH_URL: ${NEXTAUTH_URL}
       AUTH_TRUST_HOST: ${AUTH_TRUST_HOST}
       EMAIL_AUTH_STATUS: ${EMAIL_AUTH_STATUS}
-
-
-    restart: unless-stopped
-    networks:
-      - my-network
-
-  db:
-    container_name: fivechat-db
-    image: postgres:16.8-alpine
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: fivechat
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./docker:/docker-entrypoint-initdb.d/
+      - sqlite_data:/app/data
     restart: unless-stopped
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres -d fivechat" ]
-      interval: 5s
-      timeout: 5s
-      retries: 5
     networks:
       - my-network
 
 volumes:
-  postgres_data:
-
+  sqlite_data:
 
 networks:
   my-network:

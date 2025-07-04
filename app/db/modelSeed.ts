@@ -46,14 +46,11 @@ export async function initializeModels() {
     providerId: model.provider.id,
     providerName: model.provider.providerName,
     type: model.type ?? 'default',
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    // 不传递时间戳，让数据库使用默认值
   }));
 
   await db.insert(llmModels).values(modelData)
-    .onConflictDoNothing({
-      target: [llmModels.name, llmModels.providerId], // 指定冲突检测列
-    });
+    .onConflictDoNothing();
 }
 
 initializeModels().then(() => {

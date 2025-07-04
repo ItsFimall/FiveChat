@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Image from "next/image";
 import Link from 'next/link';
 import { Popconfirm, Button } from 'antd';
-import { SettingOutlined, LogoutOutlined, RollbackOutlined, UserOutlined } from '@ant-design/icons';
+import { SettingOutlined, LogoutOutlined, RollbackOutlined, UserOutlined, KeyOutlined } from '@ant-design/icons';
 import clsx from 'clsx';
 import SearchIcon from "@/app/images/searchIcon.svg";
 import { usePathname } from 'next/navigation';
@@ -91,6 +91,11 @@ export default function RootLayout({
         <div className={clsx('hover:bg-gray-200 rounded-lg p-2 mt-1', { 'bg-gray-200': pathname.startsWith('/admin/mcp') })}>
           <Link className='w-full flex items-center' href={"/admin/mcp"}>
             <Mcp style={{ 'marginLeft': '3px' }} /><span className='ml-2 text-sm'>{t('mcpServers')}</span>
+          </Link>
+        </div>
+        <div className={clsx('hover:bg-gray-200 rounded-lg p-2 mt-1', { 'bg-gray-200': pathname.startsWith('/admin/oauth') })}>
+          <Link className='w-full flex items-center' href={"/admin/oauth"}>
+            <KeyOutlined style={{ 'marginLeft': '3px' }} /><span className='ml-2 text-sm'>OAuth 认证</span>
           </Link>
         </div>
         <div className={clsx('hover:bg-gray-200 rounded-lg p-2 mt-1', { 'bg-gray-200': pathname.startsWith('/admin/system') })}>

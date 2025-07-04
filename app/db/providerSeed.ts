@@ -7,8 +7,7 @@ export async function initializeProviders() {
   await db
     .insert(llmSettingsTable)
     .values(providers)
-    .onConflictDoNothing({ target: llmSettingsTable.provider }) // 冲突时忽略
-    .execute();
+    .onConflictDoNothing(); // 冲突时忽略
 }
 
 initializeProviders().then(() => {

@@ -1,42 +1,32 @@
 import {
-  boolean,
-  timestamp,
-  pgTable,
-  pgEnum,
-  text,
-  primaryKey,
   integer,
-  varchar,
-  json,
-  date,
-  uuid,
+  text,
+  sqliteTable,
+  primaryKey,
   unique
-} from "drizzle-orm/pg-core";
+} from "drizzle-orm/sqlite-core";
 import type { AdapterAccountType } from "next-auth/adapters";
-import { customAlphabet } from 'nanoid';
-import { apiStyle, MCPToolResponse } from '@/types/llm'
-import { WebSearchResponse } from '@/types/search'
-const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 10)
+import { nanoid } from 'nanoid';
+import { relations } from 'drizzle-orm';
 
-export const users = pgTable("user", {
+export const users = sqliteTable("user", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   name: text("name"),
   email: text("email").unique(),
   password: text("password"),
-
-  emailVerified: timestamp("emailVerified", { mode: "date" }),
-  isAdmin: boolean("isAdmin").default(false),
+  emailVerified: integer("emailVerified"),
+  isAdmin: integer("isAdmin", { mode: "boolean" }).default(false),
   image: text("image"),
   groupId: text("groupId"),
   todayTotalTokens: integer('today_total_tokens').notNull().default(0),
   currentMonthTotalTokens: integer('current_month_total_tokens').notNull().default(0),
-  usageUpdatedAt: timestamp('usage_updated_at').notNull().defaultNow(),
-  createdAt: timestamp('created_at').defaultNow(),
+  usageUpdatedAt: integer('usage_updated_at').notNull().$defaultFn(() => Date.now()),
+  createdAt: integer('created_at').$defaultFn(() => Date.now()),
 })
 
-export const accounts = pgTable("account", {
+export const accounts = sqliteTable("account", {
   userId: text("userId")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
@@ -60,18 +50,18 @@ export const accounts = pgTable("account", {
   ]
 )
 
-export const sessions = pgTable("session", {
+export const sessions = sqliteTable("session", {
   sessionToken: text("sessionToken").primaryKey(),
   userId: text("userId")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
-  expires: timestamp("expires", { mode: "date" }).notNull(),
+  expires: integer("expires").notNull(),
 })
 
-export const verificationTokens = pgTable("verificationToken", {
+export const verificationTokens = sqliteTable("verificationToken", {
   identifier: text("identifier").notNull(),
   token: text("token").notNull(),
-  expires: timestamp("expires", { mode: "date" }).notNull(),
+  expires: integer("expires").notNull(),
 },
   (verificationToken) => [
     {
@@ -82,7 +72,7 @@ export const verificationTokens = pgTable("verificationToken", {
   ]
 )
 
-export const authenticators = pgTable("authenticator", {
+export const authenticators = sqliteTable("authenticator", {
   credentialID: text("credentialID").notNull().unique(),
   userId: text("userId")
     .notNull()
@@ -91,7 +81,7 @@ export const authenticators = pgTable("authenticator", {
   credentialPublicKey: text("credentialPublicKey").notNull(),
   counter: integer("counter").notNull(),
   credentialDeviceType: text("credentialDeviceType").notNull(),
-  credentialBackedUp: boolean("credentialBackedUp").notNull(),
+  credentialBackedUp: integer("credentialBackedUp", { mode: "boolean" }).notNull(),
   transports: text("transports"),
 },
   (authenticator) => [
@@ -99,101 +89,115 @@ export const authenticators = pgTable("authenticator", {
       compositePK: primaryKey({
         columns: [authenticator.userId, authenticator.credentialID],
       }),
-    },
+    }
   ]
 )
 
-export const APIStyle = pgEnum('api_style', ['openai', 'openai_response', 'claude', 'gemini']);
-export const providerType = pgEnum('provider_type', ['default', 'custom']);
-export const llmSettingsTable = pgTable("llm_settings", {
-  provider: varchar({ length: 255 }).primaryKey().notNull(),
-  providerName: varchar({ length: 255 }).notNull(),
-  apikey: varchar({ length: 255 }),
-  endpoint: varchar({ length: 1024 }),
-  isActive: boolean('is_active').default(false),
-  apiStyle: APIStyle('api_style').notNull().default('openai'),
-  type: providerType('type').notNull().default('default'),
-  logo: varchar({ length: 2048 }),
+export const llmSettingsTable = sqliteTable("llm_settings", {
+  provider: text("provider").primaryKey().notNull(),
+  providerName: text("providerName").notNull(),
+  apikey: text("apikey"),
+  endpoint: text("endpoint"),
+  isActive: integer('is_active', { mode: "boolean" }).default(false),
+  apiStyle: text('api_style').notNull().default('openai'),
+  type: text('type').notNull().default('default'),
+  logo: text("logo"),
   order: integer('order'),
-  createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow()
+  createdAt: integer('created_at').$defaultFn(() => Date.now()),
+  updatedAt: integer('updated_at').$defaultFn(() => Date.now())
 });
 
-export const appSettings = pgTable("app_settings", {
+export const appSettings = sqliteTable("app_settings", {
   key: text("key").primaryKey(),
   value: text('value'),
-  createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow()
+  createdAt: integer('created_at').$defaultFn(() => Date.now()),
+  updatedAt: integer('updated_at').$defaultFn(() => Date.now())
 });
 
-export const modelType = pgEnum('model_type', ['default', 'custom']);
+export const oauthConfigs = sqliteTable("oauth_configs", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  name: text("name").notNull(),
+  clientId: text("client_id").notNull(),
+  clientSecret: text("client_secret").notNull(),
+  homepage: text("homepage"),
+  description: text("description"),
+  callbackUrl: text("callback_url").notNull(),
+  isActive: integer("is_active", { mode: "boolean" }).default(false),
+  createdAt: integer('created_at').$defaultFn(() => Date.now()),
+  updatedAt: integer('updated_at').$defaultFn(() => Date.now())
+});
 
-export const llmModels = pgTable("models", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  name: varchar({ length: 255 }).notNull(),
-  displayName: varchar({ length: 255 }).notNull(),
-  maxTokens: integer(),
-  supportVision: boolean('support_vision').default(false),
-  supportTool: boolean('support_tool').default(false),
-  builtInImageGen: boolean('built_in_image_gen').default(false),
-  builtInWebSearch: boolean('built_in_web_search').default(false),
-  selected: boolean('selected').default(true),
-  providerId: varchar({ length: 255 }).notNull().references(() => llmSettingsTable.provider, {
+export const llmModels = sqliteTable("models", {
+  id: integer().primaryKey({ autoIncrement: true }),
+  name: text("name").notNull(),
+  displayName: text("displayName").notNull(),
+  maxTokens: integer("maxTokens"),
+  supportVision: integer('support_vision', { mode: "boolean" }).default(false),
+  supportTool: integer('support_tool', { mode: "boolean" }).default(false),
+  builtInImageGen: integer('built_in_image_gen', { mode: "boolean" }).default(false),
+  builtInWebSearch: integer('built_in_web_search', { mode: "boolean" }).default(false),
+  selected: integer('selected', { mode: "boolean" }).default(true),
+  providerId: text("providerId").notNull().references(() => llmSettingsTable.provider, {
     onDelete: 'cascade',
     onUpdate: 'cascade'
   }),
-  providerName: varchar({ length: 255 }).notNull(),
-  type: modelType('type').notNull().default('default'),
+  providerName: text("providerName").notNull(),
+  type: text('type').notNull().default('default'),
   order: integer('order').default(1),
-  createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
-},
-  (table) => ({
-    // 创建联合唯一约束
-    uniqueNameProvider: unique('unique_model_provider').on(
-      table.name,
-      table.providerId
-    ),
-  })
-);
+  createdAt: integer('created_at').$defaultFn(() => Date.now()),
+  updatedAt: integer('updated_at').$defaultFn(() => Date.now()),
+}, (table) => ({
+  uniqueNameProvider: unique().on(table.name, table.providerId),
+}));
 
-export const avatarType = pgEnum('avatar_type', ['emoji', 'url', 'none']);
-export const historyType = pgEnum('history_type', ['all', 'count', 'none']);
-
-export const chats = pgTable("chats", {
+export const chats = sqliteTable("chats", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => nanoid()),
-  userId: text(),
-  title: varchar({ length: 255 }).notNull(),
-  historyType: historyType('history_type').notNull().default('count'),
+  userId: text("userId"),
+  title: text("title").notNull(),
+  historyType: text('history_type').notNull().default('count'),
   historyCount: integer('history_count').default(5).notNull(),
-  searchEnabled: boolean('search_enabled').default(false),
-  defaultModel: varchar('default_model'),
-  defaultProvider: varchar('default_provider'),
-  isStar: boolean('is_star').default(false),
-  isWithBot: boolean('is_with_bot').default(false),
+  searchEnabled: integer('search_enabled', { mode: "boolean" }).default(false),
+  defaultModel: text('default_model'),
+  defaultProvider: text('default_provider'),
+  isStar: integer('is_star', { mode: "boolean" }).default(false),
+  isWithBot: integer('is_with_bot', { mode: "boolean" }).default(false),
   botId: integer('bot_id'),
-  avatar: varchar('avatar'),
-  avatarType: avatarType('avatar_type').notNull().default('none'),
-  prompt: text(),
-  starAt: timestamp('star_at'),
+  avatar: text('avatar'),
+  avatarType: text('avatar_type').notNull().default('none'),
+  prompt: text("prompt"),
+  starAt: integer('star_at'),
   inputTokens: integer('input_tokens').notNull().default(0),
   outputTokens: integer('output_tokens').notNull().default(0),
   totalTokens: integer('total_tokens').notNull().default(0),
-  createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
+  createdAt: integer('created_at').$defaultFn(() => Date.now()),
+  updatedAt: integer('updated_at').$defaultFn(() => Date.now()),
 });
 
-export const messageType = pgEnum('message_type', ['text', 'image', 'error', 'break']);
-export const messageSearchStatus = pgEnum('search_status', ['none', 'searching', 'error', 'done']);
+export interface WebSearchResponse {
+  query: string;
+  results: Array<{
+    title: string;
+    url: string;
+    snippet: string;
+  }>;
+}
 
-export const messages = pgTable("messages", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  userId: text().notNull(),
-  chatId: text().notNull(),
-  role: varchar({ length: 255 }).notNull(),
-  content: json('content').$type<string | Array<
+export interface MCPToolResponse {
+  name: string;
+  result: any;
+  error?: string;
+}
+
+export const messages = sqliteTable("messages", {
+  id: integer().primaryKey({ autoIncrement: true }),
+  userId: text("userId").notNull(),
+  chatId: text("chatId").notNull(),
+  role: text("role").notNull(),
+  content: text('content', { mode: 'json' }).$type<string | Array<
     {
       type: 'text';
       text: string;
@@ -205,77 +209,67 @@ export const messages = pgTable("messages", {
     }
   >>(),
   reasoninContent: text('reasonin_content'),
-  model: varchar({ length: 255 }),
-  providerId: varchar({ length: 255 }).notNull(),
-  type: varchar('message_type').notNull().default('text'),
-  searchEnabled: boolean('search_enabled').default(false),
-  webSearch: json('web_search').$type<WebSearchResponse>(),
-  searchStatus: messageSearchStatus('search_status').notNull().default('none'),
-  mcpTools: json('mcp_tools').$type<MCPToolResponse[]>(),
+  model: text("model"),
+  providerId: text("providerId").notNull(),
+  type: text('message_type').notNull().default('text'),
+  searchEnabled: integer('search_enabled', { mode: "boolean" }).default(false),
+  webSearch: text('web_search', { mode: 'json' }).$type<WebSearchResponse>(),
+  searchStatus: text('search_status').notNull().default('none'),
+  mcpTools: text('mcp_tools', { mode: 'json' }).$type<MCPToolResponse[]>(),
   inputTokens: integer('input_tokens'),
   outputTokens: integer('output_tokens'),
   totalTokens: integer('total_tokens'),
-  errorType: varchar('error_type'),
-  errorMessage: varchar('error_message'),
-  createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
-  deleteAt: timestamp('delete_at'),
+  errorType: text('error_type'),
+  errorMessage: text('error_message'),
+  createdAt: integer('created_at').$defaultFn(() => Date.now()),
+  updatedAt: integer('updated_at').$defaultFn(() => Date.now()),
+  deleteAt: integer('delete_at'),
 });
 
-export const bots = pgTable("bots", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  title: varchar({ length: 255 }).notNull(),
+export const bots = sqliteTable("bots", {
+  id: integer().primaryKey({ autoIncrement: true }),
+  title: text("title").notNull(),
   desc: text('desc'),
   prompt: text('prompt'),
-  avatarType: avatarType('avatar_type').notNull().default('none'),
-  avatar: varchar('avatar'),
-  sourceUrl: varchar('source_url'),
-  creator: varchar(),
-  createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
-  deleteAt: timestamp('delete_at'),
+  avatarType: text('avatar_type').notNull().default('none'),
+  avatar: text('avatar'),
+  sourceUrl: text('source_url'),
+  creator: text("creator"),
+  createdAt: integer('created_at').$defaultFn(() => Date.now()),
+  updatedAt: integer('updated_at').$defaultFn(() => Date.now()),
+  deleteAt: integer('delete_at'),
 });
 
 export interface BotType {
   id?: number;
   title: string;
   desc?: string;
-  prompt: string;
-  avatar: string;
-  avatarType: 'emoji' | 'url';
+  prompt?: string;
+  avatarType: 'emoji' | 'url' | 'none';
+  avatar?: string;
   sourceUrl?: string;
-  creator: string;
-  createdAt: Date;
+  creator?: string;
+  createdAt?: number;
+  updatedAt?: number;
+  deleteAt?: number;
 }
 
-export type UserType = typeof users.$inferSelect;
-
-export type llmModelType = typeof llmModels.$inferSelect & {
-  providerLogo?: string;
-  apiStyle: apiStyle;
-};
-
-export type llmSettingsType = typeof llmSettingsTable.$inferSelect;
-
-export const groupModelType = pgEnum('group_model_type', ['all', 'specific'])
-export const tokenLimitType = pgEnum('token_limit_type', ['unlimited', 'limited'])
-
-export const groups = pgTable("groups", {
+export const groups = sqliteTable("groups", {
   id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   name: text("name").notNull(),
-  modelType: groupModelType('model_type').notNull().default('all'),
-  tokenLimitType: tokenLimitType('token_limit_type').notNull().default('unlimited'),
+  modelType: text('model_type').notNull().default('all'),
+  tokenLimitType: text('token_limit_type').notNull().default('unlimited'),
   monthlyTokenLimit: integer('monthly_token_limit'),
-  isDefault: boolean("is_default").default(false),
-  createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
+  isDefault: integer("is_default", { mode: "boolean" }).default(false),
+  createdAt: integer('created_at').$defaultFn(() => Date.now()),
+  updatedAt: integer('updated_at').$defaultFn(() => Date.now()),
 })
 
-export const usageReport = pgTable("usage_report", {
-  date: date("date").notNull(),
+export const usageReport = sqliteTable("usage_report", {
+  date: text("date").notNull(),
   userId: text("user_id"),
-  modelId: varchar('model_id', { length: 255 }),
-  providerId: varchar("provider_id", { length: 255 }),
+  modelId: text('model_id'),
+  providerId: text("provider_id"),
   inputTokens: integer('input_tokens').notNull().default(0),
   outputTokens: integer('output_tokens').notNull().default(0),
   totalTokens: integer('total_tokens').notNull().default(0),
@@ -285,40 +279,40 @@ export const usageReport = pgTable("usage_report", {
       compositePK: primaryKey({
         columns: [usageReport.date, usageReport.userId, usageReport.modelId, usageReport.providerId],
       }),
-    },
-  ])
+    }
+  ]
+)
 
-export const searchEngineConfig = pgTable("search_engine_config", {
+export const searchEngineConfig = sqliteTable("search_engine_config", {
   id: text("id").notNull().primaryKey(),
   name: text("name").notNull(),
   apiKey: text("api_key"),
   maxResults: integer("max_results").default(5).notNull(),
-  extractKeywords: boolean("extract_keywords").default(false).notNull(),
-  isActive: boolean("is_active").default(false).notNull(),
+  extractKeywords: integer("extract_keywords", { mode: "boolean" }).default(false).notNull(),
+  isActive: integer("is_active", { mode: "boolean" }).default(false).notNull(),
 })
 
-export const mcpServerType = pgEnum('mcp_server_type', ['sse', 'streamableHttp'])
-export const mcpServers = pgTable("mcp_servers", {
-  id: uuid("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+export const mcpServers = sqliteTable("mcp_servers", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   name: text("name").notNull().unique(),
   description: text("description"),
-  type: mcpServerType('type').default('sse'),
+  type: text('type').default('sse'),
   baseUrl: text("base_url").notNull(),
-  isActive: boolean("is_active").default(false).notNull(),
-  createdAt: timestamp('created_at').defaultNow(),
+  isActive: integer("is_active", { mode: "boolean" }).default(false).notNull(),
+  createdAt: integer('created_at').$defaultFn(() => Date.now()),
 })
 
-export const mcpTools = pgTable("mcp_tools", {
-  id: uuid("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+export const mcpTools = sqliteTable("mcp_tools", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   name: text("name").notNull(),
-  serverId: uuid("server_id")
+  serverId: text("server_id")
     .notNull()
     .references(() => mcpServers.id, { onDelete: "cascade" }),
   description: text("description"),
   inputSchema: text('input_schema').notNull(),
 })
 
-export const groupModels = pgTable("group_models", {
+export const groupModels = sqliteTable("group_models", {
   groupId: text("groupId").notNull().references(() => groups.id, { onDelete: 'cascade' }),
   modelId: integer("modelId").notNull().references(() => llmModels.id, { onDelete: 'cascade' }),
 },
@@ -331,4 +325,70 @@ export const groupModels = pgTable("group_models", {
   ]
 )
 
+// Relations
+export const usersRelations = relations(users, ({ one, many }) => ({
+  accounts: many(accounts),
+  sessions: many(sessions),
+  group: one(groups, {
+    fields: [users.groupId],
+    references: [groups.id],
+  }),
+}));
 
+export const accountsRelations = relations(accounts, ({ one }) => ({
+  user: one(users, { fields: [accounts.userId], references: [users.id] }),
+}));
+
+export const sessionsRelations = relations(sessions, ({ one }) => ({
+  user: one(users, { fields: [sessions.userId], references: [users.id] }),
+}));
+
+export const groupsRelations = relations(groups, ({ many }) => ({
+  users: many(users),
+  groupModels: many(groupModels),
+}));
+
+export const llmModelsRelations = relations(llmModels, ({ one, many }) => ({
+  provider: one(llmSettingsTable, {
+    fields: [llmModels.providerId],
+    references: [llmSettingsTable.provider],
+  }),
+  groupModels: many(groupModels),
+}));
+
+export const groupModelsRelations = relations(groupModels, ({ one }) => ({
+  group: one(groups, {
+    fields: [groupModels.groupId],
+    references: [groups.id],
+  }),
+  model: one(llmModels, {
+    fields: [groupModels.modelId],
+    references: [llmModels.id],
+  }),
+}));
+
+export const mcpServersRelations = relations(mcpServers, ({ many }) => ({
+  tools: many(mcpTools),
+}));
+
+export const mcpToolsRelations = relations(mcpTools, ({ one }) => ({
+  server: one(mcpServers, {
+    fields: [mcpTools.serverId],
+    references: [mcpServers.id],
+  }),
+}));
+
+// Export relations object
+export const allRelations = {
+  usersRelations,
+  accountsRelations,
+  sessionsRelations,
+  groupsRelations,
+  llmModelsRelations,
+  groupModelsRelations,
+  mcpServersRelations,
+  mcpToolsRelations,
+};
+
+export type llmSettingsType = typeof llmSettingsTable.$inferSelect;
+export type oauthConfigType = typeof oauthConfigs.$inferSelect;
