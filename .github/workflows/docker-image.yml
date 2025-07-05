@@ -1,112 +1,68 @@
 name: Build and Push Docker Image
 
 on:
-  # 自动触发：推送到 main 分支时
-  push:
-    branches: [ main ]
-    paths-ignore:
-      - '**.md'
-      - '.gitignore'
-      - 'LICENSE'
-      - 'docs/**'
-
-  # 自动触发：创建 Pull Request 到 main 分支时
-  pull_request:
-    branches: [ main ]
-    paths-ignore:
-      - '**.md'
-      - '.gitignore'
-      - 'LICENSE'
-      - 'docs/**'
-
-  # 手动触发（保留原有功能）
   workflow_dispatch:
     inputs:
       version:
-        description: '镜像版本号'
+        description: '镜像版本号 (留空使用当前日期 yymmdd 格式)'
         required: false
-        default: 'latest'
+        default: ''
 
 jobs:
-  # Docker 构建作业
   build:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-      id-token: write
-
+    
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@v3
+      
       # 设置 QEMU 以支持多平台构建
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
+        uses: docker/setup-qemu-action@v2
+      
       # 设置 Docker Buildx
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      # 只在推送到 main 分支或手动触发时登录并推送到 GHCR
+        uses: docker/setup-buildx-action@v2
+        with:
+          driver-opts: |
+            image=moby/buildkit:master
+            network=host
+      
       - name: Login to GitHub Container Registry
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@v3
+        uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       
+      - name: Generate version tag
+        id: version
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            echo "tag=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=$(date +'%y%m%d')" >> $GITHUB_OUTPUT
+          fi
+
       - name: Extract metadata
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v4
         with:
           images: ghcr.io/${{ github.repository_owner }}/fivechat
           tags: |
-            # 手动触发时使用指定版本
-            type=raw,value=${{ github.event.inputs.version || 'latest' }},enable={{is_default_branch}}
-            # 推送到 main 分支时使用 latest
-            type=raw,value=latest,enable={{is_default_branch}}
-            # 推送到 main 分支时使用日期版本 (yymmdd)
-            type=raw,value={{date 'YYMMDD'}},enable={{is_default_branch}}
-            # PR 时使用 pr-<number>
-            type=ref,event=pr,prefix=pr-
-            # 分支名称（除了 main）
-            type=ref,event=branch,enable=${{ github.ref != 'refs/heads/main' }}
-            # Git SHA（短版本）
-            type=sha,prefix={{branch}}-,format=short
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
+            type=raw,value=${{ steps.version.outputs.tag }}
+            type=raw,value=latest
+      
+      - name: Build and push
+        uses: docker/build-push-action@v4
         with:
           context: .
-          # 只在非 PR 时推送到 registry
-          push: ${{ github.event_name != 'pull_request' }}
-          # 多平台构建（仅在推送时）
-          platforms: ${{ github.event_name != 'pull_request' && 'linux/amd64,linux/arm64' || 'linux/amd64' }}
+          push: true
+          platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha,scope=${{ github.workflow }}-${{ github.ref }}
           cache-to: type=gha,mode=max,scope=${{ github.workflow }}-${{ github.ref }}
-          build-args: |
-            DATABASE_URL=
-            AUTH_SECRET=
-            ADMIN_CODE=11223344
-            NEXTAUTH_URL=http://localhost:3000
-            AUTH_TRUST_HOST=true
-            EMAIL_AUTH_STATUS=ON
-
-      - name: Output build result
-        run: |
-          echo "🎉 Docker image build completed!"
-          echo "📦 Image tags: ${{ steps.meta.outputs.tags }}"
-          echo "🔖 Labels: ${{ steps.meta.outputs.labels }}"
-          if [ "${{ github.event_name }}" != "pull_request" ]; then
-            echo "✅ Image pushed to GitHub Container Registry successfully!"
-            echo "🔗 View at: https://github.com/${{ github.repository_owner }}/FiveChat/pkgs/container/fivechat"
-            if [ "${{ github.ref }}" == "refs/heads/main" ]; then
-              echo "📅 Date version: $(date +'%y%m%d') (yymmdd format)"
-            fi
-          else
-            echo "ℹ️  Image built but not pushed (PR build)"
-          fi
