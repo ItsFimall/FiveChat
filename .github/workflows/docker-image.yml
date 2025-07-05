@@ -54,7 +54,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/itsfimall/fivechat
+          images: ghcr.io/itsfimall/fivechat/fivechat
           tags: |
             # 手动触发时的版本标签
             type=raw,value=${{ github.event.inputs.version }},enable=${{ github.event_name == 'workflow_dispatch' && github.event.inputs.version != 'latest' }}
