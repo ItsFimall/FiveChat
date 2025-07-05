@@ -16,6 +16,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     
     steps:
       - name: Checkout code
@@ -51,7 +54,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository_owner }}/fivechat
+          images: ghcr.io/itsfimall/fivechat
           tags: |
             # 手动触发时的版本标签
             type=raw,value=${{ github.event.inputs.version }},enable=${{ github.event_name == 'workflow_dispatch' && github.event.inputs.version != 'latest' }}
@@ -64,15 +67,30 @@ jobs:
             type=raw,value=${{ github.ref_name }}-${{ github.sha }},enable=${{ github.ref != 'refs/heads/main' && github.event_name == 'push' }}
           labels: |
             org.opencontainers.image.title=FiveChat
-            org.opencontainers.image.description=HiveChat Docker Image
-            org.opencontainers.image.vendor=${{ github.repository_owner }}
+            org.opencontainers.image.description=FiveChat Docker Image
+            org.opencontainers.image.vendor=itsfimall
             org.opencontainers.image.version=${{ github.event.inputs.version || steps.date.outputs.tag }}
-            org.opencontainers.image.created=${{ steps.meta.outputs.created }}
             org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.url=https://github.com/${{ github.repository }}
       
-      # 构建和推送
-      - name: Build and push
+      # 构建 Docker 镜像
+      - name: Build Docker image
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          platforms: linux/amd64,linux/arm64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=${{ github.workflow }}-${{ github.ref }}
+          cache-to: type=gha,mode=max,scope=${{ github.workflow }}-${{ github.ref }}
+          build-args: |
+            ENVIRONMENT=production
+
+      # 推送 Docker 镜像 (仅在 main 分支或手动触发时)
+      - name: Push Docker image
+        if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -81,12 +99,12 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha,scope=${{ github.workflow }}-${{ github.ref }}
-          cache-to: type=gha,mode=max,scope=${{ github.workflow }}-${{ github.ref }}
           build-args: |
-            ENVIRONMENT=${{ github.event.inputs.environment || 'production' }}
-      
+            ENVIRONMENT=production
+
       # 输出构建信息
       - name: Image digest
+        if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
         run: echo ${{ steps.build.outputs.digest }}
       
       # 显示生成的标签
