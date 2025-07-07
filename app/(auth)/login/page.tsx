@@ -7,9 +7,7 @@ import Link from 'next/link';
 import { Form, Input, Button, Alert } from 'antd';
 import logo from "@/app/images/logo.png";
 import Fivechat from "@/app/images/fivechat.svg";
-import FeishuLogin from "@/app/components/FeishuLoginButton"
-import WecomLogin from "@/app/components/WecomLoginButton"
-import DingdingLogin from "@/app/components/DingdingLoginButton"
+
 import { fetchAppSettings } from '@/app/admin/system/actions';
 import { getActiveAuthProvides } from '@/app/(auth)/actions';
 import SpinLoading from '@/app/components/loading/SpinLoading';
@@ -125,18 +123,7 @@ export default function LoginPage() {
             </Form>
           </>
         }
-        {
-          authProviders.includes('wecom') &&
-          <div className='my-2'><WecomLogin /></div>
-        }
-        {
-          authProviders.includes('feishu') &&
-          <div className='my-2'><FeishuLogin /></div>
-        }
-        {
-          authProviders.includes('dingding') &&
-          <div className='my-2'><DingdingLogin /></div>
-        }
+
       </div>
     </div>
   );

@@ -10,9 +10,7 @@ import logo from "@/app/images/logo.png";
 import Fivechat from "@/app/images/fivechat.svg";
 import Link from 'next/link';
 import Image from "next/image";
-import FeishuLogin from "@/app/components/FeishuLoginButton"
-import WecomLogin from "@/app/components/WecomLoginButton"
-import DingdingLogin from "@/app/components/DingdingLoginButton"
+
 import { useTranslations } from 'next-intl';
 import useModelListStore from '@/app/store/modelList';
 import { fetchAvailableLlmModels } from '@/app/admin/llm/actions';
@@ -136,18 +134,7 @@ export default function LoginModal() {
             </Form>
 
           </div>}
-        {
-          authProviders.includes('wecom') &&
-          <div className='px-4 my-2'><WecomLogin /></div>
-        }
-        {
-          authProviders.includes('feishu') &&
-          <div className='px-4 my-2'><FeishuLogin /></div>
-        }
-        {
-          authProviders.includes('dingding') &&
-          <div className='px-4 my-2'><DingdingLogin /></div>
-        }
+
       </>}
     </Modal>
   );

@@ -1,7 +1,7 @@
 <div align="center">
-   <img width="32" height="32" src="https://jiantuku.oss-cn-beijing.aliyuncs.com/share/logo.png" />
-   <img height="32" alt="FiveChat" src="https://jiantuku.oss-cn-beijing.aliyuncs.com/share/fivechat.png" />
-  <p><a href="https://github.com/HiveNexus/FiveChat">中文</a> ｜ English<p>
+   <img width="32" height="32" src="https://jiantuku.oss-cn-beijing.aliyuncs.com/share/hivechat/logo.png" />
+   <img height="32" alt="FiveChat" src="https://jiantuku.oss-cn-beijing.aliyuncs.com/share/hivechat/fivechat.png" />
+  <p><a href="https://github.com/ItsFimall/FiveChat">中文</a> ｜ English<p>
    <p>An AI chatbot designed specifically for small to medium-sized teams, supporting models such as Deepseek, OpenAI, Claude, and Gemini.</p>
 </div>
 
@@ -29,21 +29,21 @@ One-time configuration by the administrator, easy for the entire team to use var
 ### Regular Users  
 Log in to your account to start chatting.
 
-![image](https://jiantuku.oss-cn-beijing.aliyuncs.com/share/003.png)
+![image](https://jiantuku.oss-cn-beijing.aliyuncs.com/share/hivechat/003.png)
 
 ### Admin Dashboard  
 * Admins can configure AI model providers  
 * Users can be added manually, and account registration can be enabled or disabled, suitable for small teams in companies, schools, or organizations  
 * View and manage all users
 
-![image](https://jiantuku.oss-cn-beijing.aliyuncs.com/share/001.png)
+![image](https://jiantuku.oss-cn-beijing.aliyuncs.com/share/hivechat/001.png)
 
 <details>
   <summary>More Screenshot</summary>
    Users
-   <img src="https://jiantuku.oss-cn-beijing.aliyuncs.com/share/002.png" />
+   <img src="https://jiantuku.oss-cn-beijing.aliyuncs.com/share/hivechat/002.png" />
    Enable or disable user registration.
-   <img src="https://jiantuku.oss-cn-beijing.aliyuncs.com/share/004.png" />
+   <img src="https://jiantuku.oss-cn-beijing.aliyuncs.com/share/hivechat/004.png" />
 </details>
 
 ## 2. Online Demo
@@ -69,7 +69,7 @@ Note: The following is a demo site, and data may be cleared at any time.
 ### Method 1: Local Deployment
 1. Clone this project to local.
 ```
-git clone https://github.com/HiveNexus/fivechat.git
+git clone https://github.com/ItsFimall/FiveChat.git
 ```
 
 2. Install the dependencies
@@ -123,7 +123,7 @@ Visit `http://localhost:3000/setup` (use the actual domain and port) to access t
 ### Method 2: Docker Deployment
 1. Clone this project to your local machine
 ```
-git clone https://github.com/HiveNexus/fivechat.git
+git clone https://github.com/ItsFimall/FiveChat.git
 ```
 
 2. Modify the local configuration file
@@ -151,11 +151,11 @@ Visit `http://localhost:3000/setup` (use the actual domain and port) to access t
 ### Method 3: Deploy on Vercel
 Click the button below to begin deployment.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/HiveNexus/fivechat.git&project-name=fivechat&env=DATABASE_URL&env=AUTH_SECRET&env=ADMIN_CODE)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/ItsFimall/FiveChat.git&project-name=fivechat&env=DATABASE_URL&env=AUTH_SECRET&env=ADMIN_CODE&env=EMAIL_AUTH_STATUS)
 
 By default, the code is cloned to your own Github. Afterward, fill in the environment variables:
 
-<img width="726" alt="image" src="https://jiantuku.oss-cn-beijing.aliyuncs.com/share/vercel01.png" />
+<img width="726" alt="image" src="https://jiantuku.oss-cn-beijing.aliyuncs.com/share/hivechat/vercel01.png" />
 
 ```
 # PostgreSQL database connection URL. Vercel offers free hosting services. See further details below.
@@ -171,10 +171,10 @@ ADMIN_CODE=22113344
 
 1. In the Vercel dashboard, select the "Storage" tab and click "Create Database".
 2. Choose Neon (Serverless Postgres)
-<img width="400" alt="image" src="https://jiantuku.oss-cn-beijing.aliyuncs.com/share/vercel02.png" />
+<img width="400" alt="image" src="https://jiantuku.oss-cn-beijing.aliyuncs.com/share/hivechat/vercel02.png" />
 
 3. Follow the instructions to complete the setup, then copy the `DATABASE_URL` value from this step and paste it into the `DATABASE_URL` from the previous section.
-<img width="800" alt="image" src="https://jiantuku.oss-cn-beijing.aliyuncs.com/share/vercel03.png" />
+<img width="800" alt="image" src="https://jiantuku.oss-cn-beijing.aliyuncs.com/share/hivechat/vercel03.png" />
 
 4. Initialize the Admin Account
 
