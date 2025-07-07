@@ -50,8 +50,8 @@ const FileCard: React.FC<FileCardProps> = ({ content, cardId, contentType }) => 
       className={clsx(
         "my-4 border",
         isActive
-          ? "!border-blue-300"
-          : "border-gray-200 hover:border-blue-300"
+          ? "!border-black"
+          : "border-gray-200 hover:border-gray-400"
       )}
       styles={{ body: { padding: '12px' } }}
     >

@@ -21,7 +21,7 @@ const SearchButton: React.FC<SearchButtonProps> = ({
     <div
       className={clsx('flex h-7 flex-row items-center pr-3 pl-2 search-button-custom py-1 cursor-pointer rounded-2xl border',
         {
-          'bg-blue-100 border-blue-400 text-blue-700 hover:bg-blue-100': localSearchEnable,
+          'bg-gray-100 border-gray-400 text-black hover:bg-gray-200': localSearchEnable,
           'hover:bg-gray-100': !localSearchEnable
         })}
       onClick={onToggle}

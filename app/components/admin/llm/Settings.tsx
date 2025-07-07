@@ -235,7 +235,7 @@ const Settings = (props: { providerId: string }) => {
               />
               :
               <Avatar
-                style={{ backgroundColor: '#1c78fa' }}
+                style={{ backgroundColor: '#000000' }}
               >{provider?.providerName.charAt(0)}</Avatar>
             }
             <div className='flex flex-col ml-2'>

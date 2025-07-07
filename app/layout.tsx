@@ -2,6 +2,7 @@ import React from 'react';
 import type { Metadata } from "next";
 import type { Viewport } from 'next'
 import { AntdRegistry } from '@ant-design/nextjs-registry';
+import { ConfigProvider } from 'antd';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
 import { SessionProvider } from 'next-auth/react';
@@ -33,7 +34,15 @@ export default async function RootLayout({
         <NextIntlClientProvider messages={messages}>
           <SessionProvider>
             <AntdRegistry>
-              {children}
+              <ConfigProvider
+                theme={{
+                  token: {
+                    colorPrimary: '#000000',
+                  },
+                }}
+              >
+                {children}
+              </ConfigProvider>
             </AntdRegistry>
           </SessionProvider>
         </NextIntlClientProvider>

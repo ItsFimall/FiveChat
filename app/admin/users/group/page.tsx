@@ -307,7 +307,7 @@ const GroupManagementTab = () => {
                   <td className='border-t border-r text-sm border-slate-300 p-2 pb-0'>
                     {group.modelType === 'specific' ? group.modelProviderList && group.modelProviderList.map((model, index) => (
                       <Tag color='#f2f2f2' style={{ marginBottom: 8, color: '#626262' }} key={index} bordered={false}>{model}</Tag>
-                    )) : <Tag color='blue' style={{ marginBottom: 8 }}>{ct('all')}</Tag>}
+                    )) : <Tag color='black' style={{ marginBottom: 8 }}>{ct('all')}</Tag>}
                   </td>
                   <td className='border-t border-r p-2 text-sm text-right w-32 border-slate-300'>
                     {(group.tokenLimitType === 'limited') ? <span className='text-xs'>{group.monthlyTokenLimit?.toLocaleString()} Tokens</span> : <Tag>不限</Tag>}

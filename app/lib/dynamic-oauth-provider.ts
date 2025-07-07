@@ -2,10 +2,12 @@ import type { OAuthConfig, OAuthUserConfig } from "next-auth/providers";
 import { getAllOAuthProviders } from '@/app/admin/oauth/actions';
 
 // 动态 OAuth 提供商接口
-interface DynamicOAuthProvider extends OAuthConfig<any> {
+interface DynamicOAuthProvider {
   id: string;
   name: string;
   type: "oauth";
+  clientId: string;
+  clientSecret: string;
   authorization: {
     url: string;
     params: Record<string, any>;
@@ -13,6 +15,12 @@ interface DynamicOAuthProvider extends OAuthConfig<any> {
   token: string;
   userinfo: string;
   profile: (profile: any) => any;
+  style?: {
+    logo?: string;
+    bg?: string;
+    text?: string;
+  };
+  options?: Record<string, any>;
 }
 
 // 创建动态 OAuth 提供商

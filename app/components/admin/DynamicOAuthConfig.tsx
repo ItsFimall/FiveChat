@@ -188,12 +188,11 @@ const DynamicOAuthConfig = () => {
 
                 {/* 状态标签 */}
                 <div className="flex flex-wrap gap-1">
-                  <Tag color={provider.enabled ? 'green' : 'default'} size="small">
+                  <Tag color={provider.enabled ? 'green' : 'default'}>
                     {provider.enabled ? t('enabled') : t('disabled')}
                   </Tag>
                   <Tag
                     color={provider.clientId && provider.clientSecret ? 'green' : 'red'}
-                    size="small"
                   >
                     {provider.clientId && provider.clientSecret ? t('configured') : t('notConfigured')}
                   </Tag>
@@ -212,7 +211,7 @@ const DynamicOAuthConfig = () => {
                       className="p-0 h-auto"
                     />
                   </div>
-                  <code className="text-blue-600 break-all">
+                  <code className="text-black break-all">
                     {getCallbackUrl(provider.name)}
                   </code>
                 </div>

@@ -280,7 +280,7 @@ const AdaptiveTextarea = (props: {
               {(pending || submitBtnDisable) ?
                 <Button
                   type="primary"
-                  style={{ backgroundColor: '#6ba7fc', color: '#fff', border: 'none' }}
+                  style={{ backgroundColor: '#666666', color: '#fff', border: 'none' }}
                   disabled
                   shape="circle"
                   icon={pending ? <Loading3QuartersOutlined spin color='#fff' /> : <ArrowUpOutlined color='#fff' />} />

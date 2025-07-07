@@ -166,7 +166,7 @@ const UserListTab = () => {
                   <td className='border-t border-r text-center text-sm border-slate-300 p-2'>{index + 1}</td>
                   <td className='border-t border-r text-sm border-slate-300 p-2'>{user.name ? user.name : '-'}</td>
                   <td className='border-t border-r text-sm border-slate-300 p-2'>{user.email ? user.email : '-'}</td>
-                  <td className='border-t border-r text-sm text-center border-slate-300 p-2'>{user.isAdmin ? <Tag color="blue">{t('roleAdmin')}</Tag> : <Tag>{t('roleUser')}</Tag>}</td>
+                  <td className='border-t border-r text-sm text-center border-slate-300 p-2'>{user.isAdmin ? <Tag color="black">{t('roleAdmin')}</Tag> : <Tag>{t('roleUser')}</Tag>}</td>
                   <td className='border-t border-r text-sm text-center w-48 border-slate-300 p-2'>{user.groupId ? groupList.filter((group) => group.id === user.groupId)[0]?.name : '-'}</td>
                   <td className='border-t border-r text-sm text-right border-slate-300 p-2'>{
                     user.group?.tokenLimitType === 'unlimited' ? <Tag>不限</Tag> :

@@ -106,7 +106,7 @@ const ResponsingMessage = (props: {
       );
     }
     return (
-      <div className='bg-blue-500 flex mt-1 text-cyan-50 items-center justify-center rounded-full w-8 h-8'>
+      <div className='bg-black flex mt-1 text-white items-center justify-center rounded-full w-8 h-8'>
         {allProviderListByKey && allProviderListByKey[props.currentProvider]?.providerName?.charAt(0)}
       </div>
     );

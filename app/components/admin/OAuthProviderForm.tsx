@@ -212,9 +212,9 @@ const OAuthProviderForm: React.FC<OAuthProviderFormProps> = ({
               { pattern: /^[a-z0-9_-]+$/, message: 'Only lowercase letters, numbers, hyphens and underscores allowed' }
             ]}
           >
-            <Input 
+            <Input
               placeholder={t('providerNamePlaceholder')}
-              disabled={isEditing && provider?.isBuiltIn}
+              disabled={isEditing}
             />
           </Form.Item>
 
@@ -252,10 +252,10 @@ const OAuthProviderForm: React.FC<OAuthProviderFormProps> = ({
 
         {/* 快速配置模板 */}
         {!isEditing && (
-          <div className="space-y-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+          <div className="space-y-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
             <div className="flex items-center space-x-2">
-              <ThunderboltOutlined className="text-blue-600" />
-              <h4 className="font-medium text-blue-900">快速配置</h4>
+              <ThunderboltOutlined className="text-black" />
+              <h4 className="font-medium text-black">快速配置</h4>
             </div>
             <Select
               placeholder="选择常见的 OAuth 服务商模板"
@@ -263,7 +263,7 @@ const OAuthProviderForm: React.FC<OAuthProviderFormProps> = ({
               onChange={applyTemplate}
               options={oauthTemplates}
             />
-            <div className="text-sm text-blue-700">
+            <div className="text-sm text-gray-700">
               选择模板后会自动填充常见的端点 URL，您只需要修改域名部分即可。
             </div>
           </div>

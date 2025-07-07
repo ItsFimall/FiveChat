@@ -53,8 +53,17 @@ export async function getAllOAuthProviders(): Promise<OAuthProvider[]> {
     const providers = await db.select().from(oauthProviders);
 
     return providers.map(provider => ({
-      ...provider,
-      clientSecret: provider.clientSecret ? decryptSecret(provider.clientSecret) : ''
+      id: provider.id,
+      name: provider.name,
+      displayName: provider.displayName,
+      clientId: provider.clientId || undefined,
+      clientSecret: provider.clientSecret ? decryptSecret(provider.clientSecret) : '',
+      logoUrl: provider.logoUrl || undefined,
+      authorizeUrl: provider.authorizeUrl,
+      tokenUrl: provider.tokenUrl,
+      userInfoUrl: provider.userInfoUrl,
+      scope: provider.scope || undefined,
+      enabled: provider.enabled ?? false
     }));
   } catch (error) {
     console.error('Failed to fetch OAuth providers:', error);
@@ -72,8 +81,17 @@ export async function getOAuthProvider(id: string): Promise<OAuthProvider | null
     if (!provider) return null;
 
     return {
-      ...provider,
-      clientSecret: provider.clientSecret ? decryptSecret(provider.clientSecret) : ''
+      id: provider.id,
+      name: provider.name,
+      displayName: provider.displayName,
+      clientId: provider.clientId || undefined,
+      clientSecret: provider.clientSecret ? decryptSecret(provider.clientSecret) : '',
+      logoUrl: provider.logoUrl || undefined,
+      authorizeUrl: provider.authorizeUrl,
+      tokenUrl: provider.tokenUrl,
+      userInfoUrl: provider.userInfoUrl,
+      scope: provider.scope || undefined,
+      enabled: provider.enabled ?? false
     };
   } catch (error) {
     console.error('Failed to fetch OAuth provider:', error);
@@ -91,8 +109,17 @@ export async function getOAuthProviderByName(name: string): Promise<OAuthProvide
     if (!provider) return null;
 
     return {
-      ...provider,
-      clientSecret: provider.clientSecret ? decryptSecret(provider.clientSecret) : ''
+      id: provider.id,
+      name: provider.name,
+      displayName: provider.displayName,
+      clientId: provider.clientId || undefined,
+      clientSecret: provider.clientSecret ? decryptSecret(provider.clientSecret) : '',
+      logoUrl: provider.logoUrl || undefined,
+      authorizeUrl: provider.authorizeUrl,
+      tokenUrl: provider.tokenUrl,
+      userInfoUrl: provider.userInfoUrl,
+      scope: provider.scope || undefined,
+      enabled: provider.enabled ?? false
     };
   } catch (error) {
     console.error('Failed to fetch OAuth provider by name:', error);
