@@ -1,21 +1,10 @@
 name: Build and Push Docker Image
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: '镜像版本号'
-        required: false
-        default: 'latest'
-      environment:
-        description: '部署环境'
-        required: false
-        default: 'production'
-        type: choice
-        options:
-        - production
-        - staging
-        - development
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
 
 jobs:
   build:
@@ -37,20 +26,23 @@ jobs:
             image=moby/buildkit:master
             network=host
       
-      - name: Login to DockerHub
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: hivenexus/fivechat
+          images: ghcr.io/${{ github.repository_owner }}/fivechat
           tags: |
-            type=raw,value=${{ github.event.inputs.version || 'latest' }}
-            type=raw,value=latest
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
       
       - name: Build and push
         uses: docker/build-push-action@v4
@@ -63,4 +55,4 @@ jobs:
           cache-from: type=gha,scope=${{ github.workflow }}-${{ github.ref }}
           cache-to: type=gha,mode=max,scope=${{ github.workflow }}-${{ github.ref }}
           build-args: |
-            ENVIRONMENT=${{ github.event.inputs.environment || 'production' }}
+            ENVIRONMENT=production
