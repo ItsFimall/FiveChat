@@ -56,15 +56,15 @@ export async function getAllOAuthProviders(): Promise<OAuthProvider[]> {
       id: provider.id,
       name: provider.name,
       displayName: provider.displayName,
-      clientId: provider.clientId || undefined,
+      clientId: provider.clientId ?? undefined,
       clientSecret: provider.clientSecret ? decryptSecret(provider.clientSecret) : '',
-      logoUrl: provider.logoUrl || undefined,
+      logoUrl: provider.logoUrl ?? undefined,
       authorizeUrl: provider.authorizeUrl,
       tokenUrl: provider.tokenUrl,
       userInfoUrl: provider.userInfoUrl,
-      scope: provider.scope || undefined,
+      scope: provider.scope ?? undefined,
       enabled: provider.enabled ?? false
-    }));
+    } as OAuthProvider));
   } catch (error) {
     console.error('Failed to fetch OAuth providers:', error);
     return [];
@@ -84,15 +84,15 @@ export async function getOAuthProvider(id: string): Promise<OAuthProvider | null
       id: provider.id,
       name: provider.name,
       displayName: provider.displayName,
-      clientId: provider.clientId || undefined,
+      clientId: provider.clientId ?? undefined,
       clientSecret: provider.clientSecret ? decryptSecret(provider.clientSecret) : '',
-      logoUrl: provider.logoUrl || undefined,
+      logoUrl: provider.logoUrl ?? undefined,
       authorizeUrl: provider.authorizeUrl,
       tokenUrl: provider.tokenUrl,
       userInfoUrl: provider.userInfoUrl,
-      scope: provider.scope || undefined,
+      scope: provider.scope ?? undefined,
       enabled: provider.enabled ?? false
-    };
+    } as OAuthProvider;
   } catch (error) {
     console.error('Failed to fetch OAuth provider:', error);
     return null;
@@ -112,15 +112,15 @@ export async function getOAuthProviderByName(name: string): Promise<OAuthProvide
       id: provider.id,
       name: provider.name,
       displayName: provider.displayName,
-      clientId: provider.clientId || undefined,
+      clientId: provider.clientId ?? undefined,
       clientSecret: provider.clientSecret ? decryptSecret(provider.clientSecret) : '',
-      logoUrl: provider.logoUrl || undefined,
+      logoUrl: provider.logoUrl ?? undefined,
       authorizeUrl: provider.authorizeUrl,
       tokenUrl: provider.tokenUrl,
       userInfoUrl: provider.userInfoUrl,
-      scope: provider.scope || undefined,
+      scope: provider.scope ?? undefined,
       enabled: provider.enabled ?? false
-    };
+    } as OAuthProvider;
   } catch (error) {
     console.error('Failed to fetch OAuth provider by name:', error);
     return null;
