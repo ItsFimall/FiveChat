@@ -144,10 +144,36 @@ export async function adminSetupLogined(adminCode: string) {
 
 export async function getActiveAuthProvides() {
   const activeAuthProvides = [];
+
   // 兼容历史版本，只要没配置 OFF，就默认启用 Email 登录
   if (!process.env.EMAIL_AUTH_STATUS || (process.env.EMAIL_AUTH_STATUS.toLowerCase() !== 'off')) {
     activeAuthProvides.push('email')
   }
+
+  // 获取动态 OAuth 提供商
+  try {
+    const { getDynamicOAuthProviderNames } = await import('@/app/lib/dynamic-oauth-provider');
+    const dynamicProviders = await getDynamicOAuthProviderNames();
+    activeAuthProvides.push(...dynamicProviders);
+  } catch (error) {
+    console.error('Failed to get dynamic OAuth providers:', error);
+
+    // 回退到旧的配置系统
+    const { hasOAuthConfig } = await import('@/app/lib/auth-config');
+
+    if (await hasOAuthConfig('google')) {
+      activeAuthProvides.push('google');
+    }
+
+    if (await hasOAuthConfig('github')) {
+      activeAuthProvides.push('github');
+    }
+
+    if (await hasOAuthConfig('discord')) {
+      activeAuthProvides.push('discord');
+    }
+  }
+
   return activeAuthProvides;
 }
 

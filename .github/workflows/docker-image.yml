@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Docker
 
 on:
   push:
@@ -37,7 +37,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ghcr.io/${{ github.repository_owner }}/fivechat
+          images: ghcr.io/${{ github.repository_owner }}/fivechat/fivechat
           tags: |
             type=ref,event=branch
             type=ref,event=pr

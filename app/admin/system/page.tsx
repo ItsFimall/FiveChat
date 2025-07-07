@@ -1,5 +1,6 @@
 'use client';
 import AuthProviderConfig from '@/app/components/admin/AuthProviderConfig';
+import DynamicOAuthConfig from '@/app/components/admin/DynamicOAuthConfig';
 import { Button } from 'antd';
 import ToggleSidebar from "@/app/images/hideSidebar.svg";
 import useAdminSidebarCollapsed from '@/app/store/adminSidebarCollapsed';
@@ -24,6 +25,8 @@ const Userpage = () => {
           <h2 className="text-xl font-bold mb-4 mt-6">{t('system')}</h2>
         </div>
         <AuthProviderConfig />
+        <div className='h-6'></div>
+        <DynamicOAuthConfig />
         <div className='h-6'></div>
       </div>
     </div>

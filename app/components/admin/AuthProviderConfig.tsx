@@ -16,9 +16,14 @@ const AuthProviderConfig = () => {
     }
     fetchSettings();
   }, []);
+
+
+
   return (
     <div className='flex flex-col mt-6 p-2 rounded-md bg-gray-100'>
       <h3 className='ml-2 my-2'>登录设置</h3>
+
+      {/* 邮箱登录配置 */}
       <div className='flex flex-row items-center m-2 p-4 justify-between bg-white rounded-lg'>
         <div className='flex flex-row items-center'>
           <EmailLogo className='border border-gray-200 p-2 w-10 h-10 rounded-lg' />
@@ -48,7 +53,6 @@ const AuthProviderConfig = () => {
         isModalOpen={isEmailModalOpen}
         setIsModalOpen={setIsEmailModalOpen}
       />
-
 
     </div>
   )

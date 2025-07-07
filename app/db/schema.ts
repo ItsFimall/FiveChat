@@ -125,6 +125,25 @@ export const appSettings = pgTable("app_settings", {
   updatedAt: timestamp('updated_at').defaultNow()
 });
 
+// 动态 OAuth 服务商表
+export const oauthProviders = pgTable("oauth_providers", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  name: varchar("name", { length: 50 }).notNull().unique(), // 服务商标识 (github, google, custom_xxx)
+  displayName: varchar("display_name", { length: 100 }).notNull(), // 显示名称
+  clientId: text("client_id"), // 客户端 ID
+  clientSecret: text("client_secret"), // 客户端密钥 (加密存储)
+  logoUrl: text("logo_url"), // Logo URL
+  authorizeUrl: text("authorize_url").notNull(), // 授权 URL
+  tokenUrl: text("token_url").notNull(), // Token URL
+  userInfoUrl: text("user_info_url").notNull(), // 用户信息 URL
+  scope: text("scope").default("openid profile email"), // OAuth 范围
+  enabled: boolean("enabled").default(false), // 启用状态
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow()
+});
+
 export const modelType = pgEnum('model_type', ['default', 'custom']);
 
 export const llmModels = pgTable("models", {

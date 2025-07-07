@@ -11,6 +11,8 @@ import Fivechat from "@/app/images/fivechat.svg";
 import { fetchAppSettings } from '@/app/admin/system/actions';
 import { getActiveAuthProvides } from '@/app/(auth)/actions';
 import SpinLoading from '@/app/components/loading/SpinLoading';
+import OAuthLoginButton from '@/app/components/OAuthLoginButton';
+import { getAllOAuthProviders } from '@/app/admin/oauth/actions';
 import { useTranslations } from 'next-intl';
 
 interface LoginFormValues {
@@ -26,7 +28,9 @@ export default function LoginPage() {
   const [isFetching, setIsFetching] = useState(true);
   const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
   const [authProviders, setAuthProviders] = useState<string[]>([]);
+  const [oauthProviders, setOauthProviders] = useState<any[]>([]);
   const [error, setError] = useState("");
+  const [oauthLoading, setOauthLoading] = useState<string | null>(null);
 
   async function handleSubmit(values: LoginFormValues) {
     setLoading(true);
@@ -46,10 +50,19 @@ export default function LoginPage() {
 
   useEffect(() => {
     const fetchSettings = async () => {
-      const resultValue = await fetchAppSettings('isRegistrationOpen');
+      const [resultValue, activeAuthProvides, oauthProvidersData] = await Promise.all([
+        fetchAppSettings('isRegistrationOpen'),
+        getActiveAuthProvides(),
+        getAllOAuthProviders()
+      ]);
       setIsRegistrationOpen(resultValue === 'true');
-      const activeAuthProvides = await getActiveAuthProvides();
-      setAuthProviders(activeAuthProvides)
+      setAuthProviders(activeAuthProvides);
+
+      // 过滤出启用的 OAuth 提供商
+      const enabledOAuthProviders = oauthProvidersData.filter(provider =>
+        provider.enabled && provider.clientId && provider.clientSecret
+      );
+      setOauthProviders(enabledOAuthProviders);
     }
     fetchSettings().then(() => {
       setIsFetching(false);
@@ -74,7 +87,35 @@ export default function LoginPage() {
       </div>
 
       <div className="w-full  max-w-md rounded-lg bg-white p-8 shadow-xl">
-        <h2 className="text-center text-2xl">{t('login')}</h2>
+        <h2 className="text-center text-2xl mb-6">{t('login')}</h2>
+
+        {/* OAuth Login Buttons */}
+        <div className="mb-6">
+          {oauthProviders.map((provider) => (
+            <OAuthLoginButton
+              key={provider.id}
+              provider={provider.name}
+              displayName={provider.displayName}
+              logoUrl={provider.logoUrl}
+              authorizeUrl={provider.authorizeUrl}
+              loading={oauthLoading === provider.name}
+              onLoading={(loading) => setOauthLoading(loading ? provider.name : null)}
+            />
+          ))}
+        </div>
+
+        {/* Divider if both OAuth and email are available */}
+        {oauthProviders.length > 0 && authProviders.includes('email') && (
+          <div className="relative mb-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">or</span>
+            </div>
+          </div>
+        )}
+
         {authProviders.includes('email') &&
           <>
             {error && <Alert message={error} type="error" />}
