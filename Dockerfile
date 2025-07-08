@@ -15,12 +15,13 @@ WORKDIR /app
 
 # 设置构建参数
 ARG HOST_PORT=3000
-ARG DATABASE_URL=""
-ARG AUTH_SECRET=""
 ARG ADMIN_CODE=11223344
 ARG NEXTAUTH_URL=http://localhost:3000
-ARG AUTH_TRUST_HOST=true
-ARG EMAIL_AUTH_STATUS=ON
+# 敏感参数将在运行时通过环境变量传入，而不是构建时
+# DATABASE_URL
+# AUTH_SECRET
+# AUTH_TRUST_HOST
+# EMAIL_AUTH_STATUS
 
 # 复制依赖和源代码
 COPY --from=deps /app/node_modules ./node_modules
