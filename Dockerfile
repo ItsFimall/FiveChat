@@ -17,11 +17,11 @@ WORKDIR /app
 ARG HOST_PORT=3000
 ARG ADMIN_CODE=11223344
 ARG NEXTAUTH_URL=http://localhost:3000
-# 敏感参数将在运行时通过环境变量传入，而不是构建时
-# DATABASE_URL
-# AUTH_SECRET
-# AUTH_TRUST_HOST
-# EMAIL_AUTH_STATUS
+# 仅用于构建阶段的默认值，生产环境中这些值会被运行时环境变量覆盖
+ARG DATABASE_URL="postgres://postgres:postgres@localhost:5432/fivechat"
+ARG AUTH_SECRET="PKqQmr74pyUXLR18kx85is9yXguIinaJ40DrOBim+Tg="
+ARG AUTH_TRUST_HOST=true
+ARG EMAIL_AUTH_STATUS=OFF
 
 # 复制依赖和源代码
 COPY --from=deps /app/node_modules ./node_modules
