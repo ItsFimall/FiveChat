@@ -21,7 +21,6 @@ on:
 
 permissions:
   contents: read
-  packages: write
 
 jobs:
   build:
@@ -51,18 +50,17 @@ jobs:
             image=moby/buildkit:master
             network=host
      
-      - name: Login to GitHub Container Registry
+      - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
      
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository_owner }}/fivechat
+          images: ${{ secrets.DOCKERHUB_USERNAME }}/fivechat
           tags: |
             type=raw,value=latest
             type=raw,value=${{ steps.date.outputs.date }}
@@ -87,6 +85,10 @@ jobs:
           cache-to: type=gha,mode=max,scope=${{ github.workflow }}-${{ github.ref }}
           build-args: |
             ENVIRONMENT=${{ github.event.inputs.environment || 'production' }}
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
+            AUTH_SECRET=${{ secrets.AUTH_SECRET }}
+            AUTH_TRUST_HOST=true
+            EMAIL_AUTH_STATUS=OFF
             
       - name: Image digest
         run: echo ${{ steps.build.outputs.digest }}
