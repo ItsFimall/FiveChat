@@ -1,7 +1,7 @@
 services:
   app:
     container_name: fivechat
-    image: ghcr.io/itsfimall/fivechat:latest
+    image: fimall/fivechat:latest
     ports:
       - "${HOST_PORT}:3000"
     depends_on:
