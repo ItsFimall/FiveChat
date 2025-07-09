@@ -75,8 +75,18 @@ export async function register(username: string, email: string | undefined, pass
   }
 }
 
-export async function adminSetup(email: string, password: string, adminCode: string) {
+export async function adminSetup(username: string, email: string, password: string, adminCode: string) {
   try {
+    const existingUserByUsername = await db.query.users
+      .findFirst({
+        where: eq(users.username, username)
+      })
+    if (existingUserByUsername) {
+      return {
+        status: 'fail',
+        message: '该用户名已被注册',
+      };
+    }
     const user = await db.query.users
       .findFirst({
         where: eq(users.email, email)
@@ -106,6 +116,8 @@ export async function adminSetup(email: string, password: string, adminCode: str
     const groupId = defaultGroup?.id || null;
     // 将新用户数据插入数据库
     const result = await db.insert(users).values({
+      username,
+      name: username,
       email,
       password: hashedPassword,
       isAdmin: true,
@@ -195,7 +207,7 @@ export async function getActiveAuthProvides() {
 }
 
 // 请求密码重置
-export async function requestPasswordReset(usernameOrEmail: string) {
+export async function requestPasswordReset(usernameOrEmail: string, adminCode?: string) {
   try {
     // 查找用户（支持用户名或邮箱）
     const user = await db.query.users
@@ -211,6 +223,16 @@ export async function requestPasswordReset(usernameOrEmail: string) {
         status: 'fail',
         message: '用户不存在',
       };
+    }
+
+    if (user.isAdmin) {
+      const envAdminCode = process.env.ADMIN_CODE;
+      if (envAdminCode !== adminCode) {
+        return {
+          status: 'fail',
+          message: 'Admin Code 错误',
+        };
+      }
     }
 
     if (!user.email) {

@@ -11,6 +11,7 @@ import { requestPasswordReset } from '../actions';
 
 interface ForgotPasswordFormValues {
   usernameOrEmail: string;
+  adminCode?: string;
 }
 
 export default function ForgotPasswordPage() {
@@ -25,7 +26,7 @@ export default function ForgotPasswordPage() {
     setError("");
     
     try {
-      const result = await requestPasswordReset(values.usernameOrEmail);
+      const result = await requestPasswordReset(values.usernameOrEmail, values.adminCode);
       if (result.status === 'success') {
         setSuccess(true);
         message.success(t('passwordResetEmailSent'));
@@ -86,6 +87,12 @@ export default function ForgotPasswordPage() {
             rules={[{ required: true, message: t('usernameOrEmailNotice') }]}
           >
             <Input placeholder={t('usernameOrEmailPlaceholder')} />
+          </Form.Item>
+          <Form.Item
+            name="adminCode"
+            label={<span className="font-medium">Admin Code ({t('optional')})</span>}
+          >
+            <Input.Password placeholder={t('adminCodePlaceholder')} />
           </Form.Item>
           <Form.Item>
             <Button

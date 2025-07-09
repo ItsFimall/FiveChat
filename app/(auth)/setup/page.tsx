@@ -14,6 +14,7 @@ import { useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 
 interface SetupFormValues {
+  username: string;
   email: string;
   password: string;
   repeatPassword: string;
@@ -77,7 +78,7 @@ export default function SetupPage() {
       return;
     }
     try {
-      const result = await adminSetup(values.email, values.password, values.adminCode);
+      const result = await adminSetup(values.username, values.email, values.password, values.adminCode);
       if (result?.status === 'success') {
         window.location.href = "/chat";
       } else {
@@ -152,6 +153,19 @@ export default function SetupPage() {
             requiredMark='optional'
           >
             <div className="text-sm text-gray-400 my-2">{t('setupNotice')}</div>
+            <Form.Item
+              name="username"
+              label={<span className="font-medium">{t('username')}</span>}
+              validateTrigger='onBlur'
+              rules={[
+                { required: true, message: t('usernameNotice') },
+                { min: 3, message: t('usernameMinLength') },
+                { max: 20, message: t('usernameMaxLength') },
+                { pattern: /^[a-zA-Z0-9_]+$/, message: t('usernamePattern') }
+              ]}
+            >
+              <Input size="large" placeholder={t('usernamePlaceholder')} />
+            </Form.Item>
             <Form.Item
               name="email"
               label={<span className="font-medium">Email</span>}
