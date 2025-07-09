@@ -455,7 +455,7 @@ ALTER TABLE public.usage_report OWNER TO postgres;
 
 CREATE TABLE public."user" (
     id text NOT NULL,
-    name text,
+    name text NOT NULL,
     email text,
     password text,
     "emailVerified" timestamp without time zone,
