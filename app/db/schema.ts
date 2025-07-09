@@ -132,6 +132,14 @@ export const llmSettingsTable = pgTable("llm_settings", {
   updatedAt: timestamp('updated_at').defaultNow()
 });
 
+export const modelFamilies = pgTable("model_families", {
+  id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+  name: varchar('name', { length: 255 }).notNull().unique(),
+  matchRules: text('match_rules').array().notNull(),
+  order: integer('order').default(1),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
 export const appSettings = pgTable("app_settings", {
   key: text("key").primaryKey(),
   value: text('value'),
@@ -170,6 +178,7 @@ export const llmModels = pgTable("models", {
   builtInImageGen: boolean('built_in_image_gen').default(false),
   builtInWebSearch: boolean('built_in_web_search').default(false),
   selected: boolean('selected').default(true),
+  familyId: integer('family_id').references(() => modelFamilies.id, { onDelete: 'set null' }),
   providerId: varchar({ length: 255 }).notNull().references(() => llmSettingsTable.provider, {
     onDelete: 'cascade',
     onUpdate: 'cascade'

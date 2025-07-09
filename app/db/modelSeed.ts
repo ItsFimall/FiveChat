@@ -3,34 +3,9 @@ import { llmModels } from '@/app/db/schema';
 import { db } from './index';
 
 import { modelList as OpenaiModels } from "@/app/db/data/models/openai";
-import { modelList as ClaudeModels } from "@/app/db/data/models/claude";
-import { modelList as GeminiModels } from "@/app/db/data/models/gemini";
-import { modelList as MoonshotModels } from "@/app/db/data/models/moonshot";
-import { modelList as QwenModels } from "@/app/db/data/models/qwen";
-import { modelList as VolcengineModels } from "@/app/db/data/models/volcengine";
-import { modelList as DeepseekModels } from "@/app/db/data/models/deepseek";
-import { modelList as QianfanModels } from "@/app/db/data/models/qianfan";
-import { modelList as SiliconflowModels } from "@/app/db/data/models/siliconflow";
-import { modelList as OllamaModels } from "@/app/db/data/models/ollama";
-import { modelList as OpenrouterModels } from "@/app/db/data/models/openrouter";
-import { modelList as ZhipuModels } from "@/app/db/data/models/zhipu";
-import { modelList as GrokModels } from "@/app/db/data/models/grok";
-import { modelList as HunyuanModels } from "@/app/db/data/models/hunyuan";
+
 const modelList = [
   ...OpenaiModels,
-  ...ClaudeModels,
-  ...GeminiModels,
-  ...MoonshotModels,
-  ...QwenModels,
-  ...VolcengineModels,
-  ...DeepseekModels,
-  ...QianfanModels,
-  ...SiliconflowModels,
-  ...OllamaModels,
-  ...OpenrouterModels,
-  ...ZhipuModels,
-  ...GrokModels,
-  ...HunyuanModels,
 ];
 
 export async function initializeModels() {

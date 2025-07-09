@@ -4,6 +4,10 @@ import { db } from './index';
 import providers from './data/providers';
 
 export async function initializeProviders() {
+  if (providers.length === 0) {
+    console.log("No default providers to initialize.");
+    return;
+  }
   await db
     .insert(llmSettingsTable)
     .values(providers)

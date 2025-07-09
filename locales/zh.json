@@ -9,6 +9,8 @@
     "ok": "确定"
   },
   "Auth": {
+    "username": "用户名",
+    "usernameNotice": "请输入用户名",
     "login": "登录",
     "emailNotice": "请输入 Email",
     "password": "密码",
@@ -216,6 +218,10 @@
     "logoutNoticeTitle": "提示",
     "logoutNoticeDesc": "确认要退出吗？",
     "Models": {
+      "deleteProviderTitle": "删除提供商",
+      "deleteProviderDesc": "此操作不可逆，确定要删除此提供商吗？",
+      "providerManagement": "提供商管理",
+      "modelManagement": "模型管理",
       "modelSettings": "模型设置",
       "modelSettingsNotice": "← 请在左侧选择一个大模型供应商进行配置",
       "settings": "设置",

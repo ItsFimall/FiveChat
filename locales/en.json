@@ -9,6 +9,8 @@
     "ok": "OK"
   },
   "Auth": {
+    "username": "Username",
+    "usernameNotice": "Enter the username",
     "login": "Login",
     "emailNotice": "Enter the Email.",
     "password": "Password",
@@ -216,6 +218,10 @@
     "logoutNoticeTitle": "Notice",
     "logoutNoticeDesc": "Confirm to logout?",
     "Models": {
+      "deleteProviderTitle": "Delete Provider",
+      "deleteProviderDesc": "This action is irreversible. Are you sure you want to delete this provider?",
+      "providerManagement": "Provider Management",
+      "modelManagement": "Model Management",
       "modelSettings": "Model Settings",
       "modelSettingsNotice": "← Please select a large model provider on the left for configuration.",
       "settings": "Settings",

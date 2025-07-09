@@ -1,5 +1,9 @@
-import { llmModels, llmSettingsTable, groupModels, groups, users, passwordResetTokens } from './schema';
+import { llmModels, llmSettingsTable, groupModels, groups, users, passwordResetTokens, modelFamilies } from './schema';
 import { relations } from 'drizzle-orm';
+
+export const modelFamiliesRelations = relations(modelFamilies, ({ many }) => ({
+    models: many(llmModels),
+}));
 
 export const modelsGroupsRelations = relations(llmModels, ({ many }) => ({
     groups: many(groupModels),
@@ -28,6 +32,10 @@ export const modelsProvidersRelations = relations(llmModels, ({ one }) => ({
     provider: one(llmSettingsTable, {
         fields: [llmModels.providerId],
         references: [llmSettingsTable.provider],
+    }),
+    family: one(modelFamilies, {
+        fields: [llmModels.familyId],
+        references: [modelFamilies.id],
     }),
 }))
 

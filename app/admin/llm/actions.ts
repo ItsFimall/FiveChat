@@ -1,11 +1,12 @@
 'use server';
 import { db } from '@/app/db';
-import { eq, and, asc } from 'drizzle-orm';
-import { LLMModel, LLMModelProvider } from '@/types/llm';
+import { eq, and, asc, desc, sql } from 'drizzle-orm';
+import { LLMModel, LLMModelProvider, llmSettingsType } from '@/types/llm';
 import { llmSettingsTable, llmModels, groupModels, groups, users, messages } from '@/app/db/schema';
 import { llmModelType } from '@/app/db/schema';
 import { getLlmConfigByProvider } from '@/app/utils/llms';
 import { auth } from '@/auth';
+import { modelFamilies } from '@/app/db/schema';
 
 type FormValues = {
   isActive?: boolean;
@@ -60,6 +61,20 @@ export const fetchAllLlmSettings = async () => {
   }
   const settings = await db.select().from(llmSettingsTable).orderBy(asc(llmSettingsTable.order));
   return settings;
+}
+
+export async function fetchAllLlmModels(): Promise<llmModelType[]> {
+  const allModels = await db.select()
+    .from(llmModels)
+    .leftJoin(llmSettingsTable, eq(llmModels.providerId, llmSettingsTable.provider))
+    .where(eq(llmSettingsTable.isActive, true))
+    .orderBy(desc(llmModels.order));
+
+  return allModels.map(m => ({
+    ...m.models,
+    providerLogo: m.llm_settings?.logo || '',
+    apiStyle: m.llm_settings?.apiStyle || 'openai',
+  }));
 }
 
 export const fetchLlmModels = async (providerId?: string): Promise<llmModelType[]> => {
@@ -258,26 +273,22 @@ export const addCustomModelInServer = async (modelInfo: {
   providerId: string,
   providerName: string,
 }) => {
-  const hasExist = await db
-    .select()
-    .from(llmModels)
-    .where(
-      and(
-        eq(llmModels.providerId, modelInfo.providerId),
-        eq(llmModels.name, modelInfo.name)
-      )
-    );
-  if (hasExist.length > 0) {
-    return {
-      status: 'fail',
-      message: '已存在相同名称的模型'
-    }
+  const session = await auth();
+  if (!session?.user.isAdmin) {
+    throw new Error('not allowed');
   }
-  await db.insert(llmModels).values(modelInfo);
-  return {
-    status: 'success',
-  }
-
+  await db.insert(llmModels).values({
+    name: modelInfo.name,
+    displayName: modelInfo.displayName,
+    maxTokens: modelInfo.maxTokens,
+    supportVision: modelInfo.supportVision,
+    supportTool: modelInfo.supportTool,
+    selected: modelInfo.selected,
+    type: modelInfo.type,
+    providerId: modelInfo.providerId,
+    providerName: modelInfo.providerName,
+    order: 100,
+  })
 }
 
 export const updateCustomModelInServer = async (oldModelName: string, modelInfo: {
@@ -291,33 +302,21 @@ export const updateCustomModelInServer = async (oldModelName: string, modelInfo:
   providerId: string,
   providerName: string,
 }) => {
-  const hasExist = await db
-    .select()
-    .from(llmModels)
-    .where(
-      and(
-        eq(llmModels.providerId, modelInfo.providerId),
-        eq(llmModels.name, oldModelName)
-      )
-    );
-  if (hasExist.length = 0) {
-    return {
-      status: 'fail',
-      message: '该模型已经被删除'
-    }
+  const session = await auth();
+  if (!session?.user.isAdmin) {
+    throw new Error('not allowed');
   }
-  const result = await db
-    .update(llmModels)
-    .set(modelInfo)
-    .where(
-      and(
-        eq(llmModels.providerId, modelInfo.providerId),
-        eq(llmModels.name, oldModelName)
-      )
-    );
-  return {
-    status: 'success',
-  }
+  await db.update(llmModels).set({
+    name: modelInfo.name,
+    displayName: modelInfo.displayName,
+    maxTokens: modelInfo.maxTokens,
+    supportVision: modelInfo.supportVision,
+    supportTool: modelInfo.supportTool,
+    selected: modelInfo.selected,
+    type: modelInfo.type,
+    providerId: modelInfo.providerId,
+    providerName: modelInfo.providerName,
+  }).where(eq(llmModels.name, oldModelName));
 }
 
 export const addCustomProviderInServer = async (providerInfo: {
@@ -331,23 +330,22 @@ export const addCustomProviderInServer = async (providerInfo: {
   if (!session?.user.isAdmin) {
     throw new Error('not allowed');
   }
-  const hasExist = await db
+  const existingProvider = await db
     .select()
     .from(llmSettingsTable)
-    .where(
-      eq(llmSettingsTable.provider, providerInfo.provider),
-    );
-  if (hasExist.length > 0) {
-    return {
-      status: 'fail',
-      message: '已存在相同名称的模型'
-    }
+    .where(eq(llmSettingsTable.provider, providerInfo.provider));
+
+  if (existingProvider.length > 0) {
+    throw new Error('Provider already exists');
   }
-  await db.insert(llmSettingsTable).values({ ...providerInfo, type: 'custom', isActive: true });
-  return {
-    status: 'success',
-  }
-}
+
+  await db.insert(llmSettingsTable).values({
+    ...providerInfo,
+    isActive: true,
+    type: 'custom',
+    order: 100,
+  });
+};
 
 export const deleteCustomProviderInServer = async (providerId: string) => {
   const session = await auth();
@@ -355,10 +353,7 @@ export const deleteCustomProviderInServer = async (providerId: string) => {
     throw new Error('not allowed');
   }
   await db.delete(llmSettingsTable).where(eq(llmSettingsTable.provider, providerId));
-  return {
-    status: 'success',
-  }
-}
+};
 
 export const saveModelsOrder = async (
   providerId: string,
@@ -370,20 +365,19 @@ export const saveModelsOrder = async (
   if (!session?.user.isAdmin) {
     throw new Error('not allowed');
   }
-  const updatePromises = newOrderModels.map((item) => {
-    return db
-      .update(llmModels)
-      .set({ order: item.order })
-      .where(
-        and(
-          eq(llmModels.providerId, providerId),
-          eq(llmModels.name, item.modelId),
-        )
-      )
-  });
-
-  // 执行所有更新操作
-  await Promise.all(updatePromises);
+  try {
+    await db.transaction(async (tx) => {
+      for (const item of newOrderModels) {
+        await tx
+          .update(llmModels)
+          .set({ order: item.order })
+          .where(and(eq(llmModels.name, item.modelId), eq(llmModels.providerId, providerId)));
+      }
+    });
+  } catch (error) {
+    console.error('Failed to update models order:', error);
+    throw new Error('Failed to update models order');
+  }
 }
 
 export const saveProviderOrder = async (
@@ -395,18 +389,136 @@ export const saveProviderOrder = async (
   if (!session?.user.isAdmin) {
     throw new Error('not allowed');
   }
-  const updatePromises = newOrderProviders.map((item) => {
-    return db
-      .update(llmSettingsTable)
-      .set({ order: item.order })
-      .where(
-        eq(llmSettingsTable.provider, item.providerId),
-      )
+  try {
+    await db.transaction(async (tx) => {
+      for (const item of newOrderProviders) {
+        await tx
+          .update(llmSettingsTable)
+          .set({ order: item.order })
+          .where(eq(llmSettingsTable.provider, item.providerId));
+      }
+    });
+  } catch (error) {
+    console.error('Failed to update providers order:', error);
+    throw new Error('Failed to update providers order');
+  }
+}
+
+export const updateModelFamilyOrder = async (
+  orders: { id: number; order: number }[]
+) => {
+  const session = await auth();
+  if (!session?.user.isAdmin) {
+    throw new Error('not allowed');
+  }
+  try {
+    await db.transaction(async (tx) => {
+      for (const item of orders) {
+        await tx
+          .update(modelFamilies)
+          .set({ order: item.order })
+          .where(eq(modelFamilies.id, item.id));
+      }
+    });
+  } catch (error) {
+    console.error('Failed to update model families order:', error);
+    throw new Error('Failed to update model families order');
+  }
+};
+
+export const fetchGroupedModels = async () => {
+  const allFamilies = await db.query.modelFamilies.findMany({
+    orderBy: asc(modelFamilies.order),
   });
 
-  // 执行所有更新操作
-  await Promise.all(updatePromises);
-}
+  const allModels = await db.query.llmModels.findMany({
+    orderBy: asc(llmModels.order),
+    with: {
+      provider: {
+        columns: {
+          logo: true,
+          apiStyle: true,
+        }
+      }
+    }
+  });
+
+  const groupedModels = allFamilies.map(family => ({
+    ...family,
+    models: allModels.filter(model => model.familyId === family.id).map(m => ({
+      ...m,
+      providerLogo: m.provider?.logo || '',
+      apiStyle: m.provider?.apiStyle || 'openai',
+    })),
+  }));
+
+  const uncategorizedModels = allModels.filter(model => !model.familyId).map(m => ({
+    ...m,
+    providerLogo: m.provider?.logo || '',
+    apiStyle: m.provider?.apiStyle || 'openai',
+  }));
+
+  return {
+    groupedModels,
+    uncategorizedModels,
+  };
+};
+
+export const syncAndGroupModels = async (providerId: string) => {
+  const session = await auth();
+  if (!session?.user.isAdmin) {
+    throw new Error('Not allowed');
+  }
+
+  // 1. 获取所有模型家族及其规则
+  const families = await db.query.modelFamilies.findMany();
+
+  // 2. 获取远程模型
+  const remoteModels = await getRemoteModelsByProvider(providerId);
+
+  // 3. 准备要插入/更新的数据
+  const modelsToUpsert = remoteModels.map(model => {
+    // 寻找匹配的家族
+    const foundFamily = families.find(family =>
+      family.matchRules.some(rule => model.id.toLowerCase().includes(rule.toLowerCase()))
+    );
+
+    return {
+      name: model.id,
+      displayName: model.id, // 默认显示名称为ID，之后可修改
+      providerId: providerId,
+      providerName: providerId, // 暂时用ID
+      familyId: foundFamily?.id,
+      // 其他默认值
+      selected: true,
+      type: 'default' as const,
+    };
+  });
+
+  if (modelsToUpsert.length === 0) {
+    return { success: true, message: 'No new models found.' };
+  }
+
+  // 4. 使用事务和 upsert 批量写入
+  try {
+    await db.transaction(async (tx) => {
+      await tx.insert(llmModels)
+        .values(modelsToUpsert)
+        .onConflictDoUpdate({
+          target: [llmModels.name, llmModels.providerId],
+          set: {
+            // 在冲突时，可以只更新特定的字段，例如 familyId
+            familyId: sql`excluded.family_id`,
+            displayName: sql`excluded.display_name`,
+          }
+        });
+    });
+    return { success: true, message: `Successfully synchronized ${modelsToUpsert.length} models.` };
+  } catch (error) {
+    console.error('Failed to sync and group models:', error);
+    return { success: false, message: 'Failed to synchronize models.' };
+  }
+};
 
 export const getRemoteModelsByProvider = async (providerId: string): Promise<{
   id: string;
@@ -414,24 +526,23 @@ export const getRemoteModelsByProvider = async (providerId: string): Promise<{
   created: number;
   owned_by: string;
 }[]> => {
-  const { endpoint, apikey } = await getLlmConfigByProvider(providerId);
-  const apiUrl = endpoint + '/models';
-  const headers = new Headers({
-    'Content-Type': 'application/json',
-    'Connection': 'keep-alive',
-    'Authorization': `Bearer ${apikey}`,
-  });
-  try {
-    const response = await fetch(apiUrl, {
-      method: 'GET',
-      headers: headers,
-    });
-    if (!response.ok) {
-      return [];
-    }
-    const body = await response.json();
-    return body.data;
-  } catch {
-    return [];
+  const session = await auth();
+  if (!session?.user.isAdmin) {
+    throw new Error('not allowed');
   }
+  const llmConfig = await getLlmConfigByProvider(providerId);
+  const response = await fetch(`${llmConfig.endpoint}/models`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${llmConfig.apikey}`
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch remote models');
+  }
+
+  const result = await response.json();
+  return result.data;
 }
