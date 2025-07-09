@@ -16,7 +16,7 @@ import { getAllOAuthProviders } from '@/app/admin/oauth/actions';
 import { useTranslations } from 'next-intl';
 
 interface LoginFormValues {
-  email: string;
+  username: string;
   password: string;
 }
 
@@ -35,7 +35,7 @@ export default function LoginPage() {
   async function handleSubmit(values: LoginFormValues) {
     setLoading(true);
     const response = await signIn("credentials", {
-      email: values.email,
+      username: values.username,
       password: values.password,
       redirect: false,
     });
@@ -126,12 +126,12 @@ export default function LoginPage() {
               requiredMark='optional'
             >
               <Form.Item
-                name="email"
-                label={<span className="font-medium">Email</span>}
+                name="username"
+                label={<span className="font-medium">{t('usernameOrEmail')}</span>}
                 validateTrigger='onBlur'
-                rules={[{ required: true, type: 'email', message: t('emailNotice') }]}
+                rules={[{ required: true, message: t('usernameOrEmailNotice') }]}
               >
-                <Input size='large' />
+                <Input size='large' placeholder={t('usernameOrEmailPlaceholder')} />
               </Form.Item>
               <Form.Item
                 name="password"
@@ -151,16 +151,26 @@ export default function LoginPage() {
                   {t('login')}
                 </Button>
               </Form.Item>
-              {isRegistrationOpen && <div className='flex -mt-4'>
-                <Link href='/register'>
+              <div className='flex justify-between items-center -mt-4'>
+                <div className='flex'>
+                  {isRegistrationOpen &&
+                    <Link href='/register'>
+                      <Button
+                        type='link'
+                        className='text-sm text-gray-400'
+                        style={{ 'padding': '0' }}
+                      >{t('register')}</Button>
+                    </Link>
+                  }
+                </div>
+                <Link href='/forgot-password'>
                   <Button
                     type='link'
                     className='text-sm text-gray-400'
                     style={{ 'padding': '0' }}
-                  >{t('register')}</Button>
+                  >{t('forgotPassword')}</Button>
                 </Link>
               </div>
-              }
             </Form>
           </>
         }
