@@ -5,7 +5,8 @@ import { Form, Input, Switch, Button, Space, message, Alert, Select } from 'antd
 import Image from 'next/image';
 import { SaveOutlined, GlobalOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { useTranslations } from 'next-intl';
-import { createOAuthProvider, updateOAuthProvider, validateOAuthProvider, type OAuthProvider } from '@/app/admin/oauth/actions';
+import { createOAuthProvider, updateOAuthProvider, validateOAuthProvider } from '@/app/admin/oauth/actions';
+import type { OAuthProvider } from '@/app/services/OAuthService';
 
 interface OAuthProviderFormProps {
   provider?: OAuthProvider | null;

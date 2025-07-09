@@ -1,7 +1,7 @@
 'use server';
 import { db } from '@/app/db';
-import { eq, and, asc, desc, sql } from 'drizzle-orm';
-import { LLMModel, LLMModelProvider, llmSettingsType } from '@/types/llm';
+import { eq, and, asc, desc, sql, getTableColumns } from 'drizzle-orm';
+import { LLMModel, LLMModelProvider } from '@/types/llm';
 import { llmSettingsTable, llmModels, groupModels, groups, users, messages } from '@/app/db/schema';
 import { llmModelType } from '@/app/db/schema';
 import { getLlmConfigByProvider } from '@/app/utils/llms';
@@ -254,12 +254,17 @@ export const changeModelSelectInServer = async (model: LLMModel, selected: boole
   }
 }
 
-export const deleteCustomModelInServer = async (modelName: string) => {
-  const session = await auth();
-  if (!session?.user.isAdmin) {
-    throw new Error('not allowed');
+export const deleteCustomModelInServer = async (modelName: string): Promise<{ status: string; message?: string; }> => {
+  try {
+    const session = await auth();
+    if (!session?.user.isAdmin) {
+      return { status: 'fail', message: 'not allowed' };
+    }
+    await db.delete(llmModels).where(eq(llmModels.name, modelName));
+    return { status: 'success' };
+  } catch (e: any) {
+    return { status: 'fail', message: e.message };
   }
-  await db.delete(llmModels).where(eq(llmModels.name, modelName));
 }
 
 export const addCustomModelInServer = async (modelInfo: {
@@ -272,23 +277,28 @@ export const addCustomModelInServer = async (modelInfo: {
   type: 'custom',
   providerId: string,
   providerName: string,
-}) => {
-  const session = await auth();
-  if (!session?.user.isAdmin) {
-    throw new Error('not allowed');
+}): Promise<{ status: string; message?: string; }> => {
+  try {
+    const session = await auth();
+    if (!session?.user.isAdmin) {
+      return { status: 'fail', message: 'not allowed' };
+    }
+    await db.insert(llmModels).values({
+      name: modelInfo.name,
+      displayName: modelInfo.displayName,
+      maxTokens: modelInfo.maxTokens,
+      supportVision: modelInfo.supportVision,
+      supportTool: modelInfo.supportTool,
+      selected: modelInfo.selected,
+      type: modelInfo.type,
+      providerId: modelInfo.providerId,
+      providerName: modelInfo.providerName,
+      order: 100,
+    })
+    return { status: 'success' };
+  } catch (e: any) {
+    return { status: 'fail', message: e.message };
   }
-  await db.insert(llmModels).values({
-    name: modelInfo.name,
-    displayName: modelInfo.displayName,
-    maxTokens: modelInfo.maxTokens,
-    supportVision: modelInfo.supportVision,
-    supportTool: modelInfo.supportTool,
-    selected: modelInfo.selected,
-    type: modelInfo.type,
-    providerId: modelInfo.providerId,
-    providerName: modelInfo.providerName,
-    order: 100,
-  })
 }
 
 export const updateCustomModelInServer = async (oldModelName: string, modelInfo: {
@@ -301,22 +311,27 @@ export const updateCustomModelInServer = async (oldModelName: string, modelInfo:
   type: 'custom',
   providerId: string,
   providerName: string,
-}) => {
-  const session = await auth();
-  if (!session?.user.isAdmin) {
-    throw new Error('not allowed');
+}): Promise<{ status:string; message?: string; }> => {
+  try {
+    const session = await auth();
+    if (!session?.user.isAdmin) {
+      return { status: 'fail', message: 'not allowed' };
+    }
+    await db.update(llmModels).set({
+      name: modelInfo.name,
+      displayName: modelInfo.displayName,
+      maxTokens: modelInfo.maxTokens,
+      supportVision: modelInfo.supportVision,
+      supportTool: modelInfo.supportTool,
+      selected: modelInfo.selected,
+      type: modelInfo.type,
+      providerId: modelInfo.providerId,
+      providerName: modelInfo.providerName,
+    }).where(eq(llmModels.name, oldModelName));
+    return { status: 'success' };
+  } catch (e: any) {
+    return { status: 'fail', message: e.message };
   }
-  await db.update(llmModels).set({
-    name: modelInfo.name,
-    displayName: modelInfo.displayName,
-    maxTokens: modelInfo.maxTokens,
-    supportVision: modelInfo.supportVision,
-    supportTool: modelInfo.supportTool,
-    selected: modelInfo.selected,
-    type: modelInfo.type,
-    providerId: modelInfo.providerId,
-    providerName: modelInfo.providerName,
-  }).where(eq(llmModels.name, oldModelName));
 }
 
 export const addCustomProviderInServer = async (providerInfo: {
@@ -325,26 +340,31 @@ export const addCustomProviderInServer = async (providerInfo: {
   endpoint: string,
   apiStyle: 'openai' | 'openai_response' | 'claude' | 'gemini',
   apikey: string,
-}) => {
-  const session = await auth();
-  if (!session?.user.isAdmin) {
-    throw new Error('not allowed');
-  }
-  const existingProvider = await db
-    .select()
-    .from(llmSettingsTable)
-    .where(eq(llmSettingsTable.provider, providerInfo.provider));
+}): Promise<{ status: string; message?: string; }> => {
+  try {
+    const session = await auth();
+    if (!session?.user.isAdmin) {
+      return { status: 'fail', message: 'not allowed' };
+    }
+    const existingProvider = await db
+      .select()
+      .from(llmSettingsTable)
+      .where(eq(llmSettingsTable.provider, providerInfo.provider));
 
-  if (existingProvider.length > 0) {
-    throw new Error('Provider already exists');
-  }
+    if (existingProvider.length > 0) {
+      return { status: 'fail', message: 'Provider already exists' };
+    }
 
-  await db.insert(llmSettingsTable).values({
-    ...providerInfo,
-    isActive: true,
-    type: 'custom',
-    order: 100,
-  });
+    await db.insert(llmSettingsTable).values({
+      ...providerInfo,
+      isActive: true,
+      type: 'custom',
+      order: 100,
+    });
+    return { status: 'success' };
+  } catch (e: any) {
+    return { status: 'fail', message: e.message };
+  }
 };
 
 export const deleteCustomProviderInServer = async (providerId: string) => {
@@ -431,17 +451,16 @@ export const fetchGroupedModels = async () => {
     orderBy: asc(modelFamilies.order),
   });
 
-  const allModels = await db.query.llmModels.findMany({
-    orderBy: asc(llmModels.order),
-    with: {
-      provider: {
-        columns: {
-          logo: true,
-          apiStyle: true,
-        }
-      }
+  const allModels = await db.select({
+    ...getTableColumns(llmModels),
+    provider: {
+      logo: llmSettingsTable.logo,
+      apiStyle: llmSettingsTable.apiStyle,
     }
-  });
+  })
+    .from(llmModels)
+    .leftJoin(llmSettingsTable, eq(llmModels.providerId, llmSettingsTable.provider))
+    .orderBy(asc(llmModels.order));
 
   const groupedModels = allFamilies.map(family => ({
     ...family,

@@ -1,4 +1,4 @@
-import { llmSettingsType } from '@/types/llm';
+import { llmSettingsType } from '@/app/db/schema';
 
 const providers: llmSettingsType[] = [
   {

@@ -4,7 +4,9 @@ import { auth } from '@/auth';
 import { db } from '@/app/db';
 import { oauthProviders } from '@/app/db/schema';
 import { eq, and } from 'drizzle-orm';
-import { OAuthProvider, decryptSecret, encryptSecret } from '@/app/services/OAuthService';
+import { OAuthProvider, decryptSecret, encryptSecret, getAllOAuthProviders as getAllOAuthProvidersFromService } from '@/app/services/OAuthService';
+
+export const getAllOAuthProviders = getAllOAuthProvidersFromService;
 
 // 获取单个 OAuth 服务商
 export async function getOAuthProvider(id: string): Promise<OAuthProvider | null> {
@@ -31,30 +33,6 @@ export async function getOAuthProvider(id: string): Promise<OAuthProvider | null
   } catch (error) {
     console.error('Failed to fetch OAuth provider:', error);
     return null;
-  }
-}
-
-// 获取所有 OAuth 服务商
-export async function getAllOAuthProviders(): Promise<OAuthProvider[]> {
-  try {
-    const providers = await db.query.oauthProviders.findMany();
-
-    return providers.map(provider => ({
-      id: provider.id,
-      name: provider.name,
-      displayName: provider.displayName,
-      clientId: provider.clientId ?? undefined,
-      clientSecret: provider.clientSecret ? decryptSecret(provider.clientSecret) : '',
-      logoUrl: provider.logoUrl ?? undefined,
-      authorizeUrl: provider.authorizeUrl,
-      tokenUrl: provider.tokenUrl,
-      userInfoUrl: provider.userInfoUrl,
-      scope: provider.scope ?? undefined,
-      enabled: provider.enabled ?? false
-    } as OAuthProvider));
-  } catch (error) {
-    console.error('Failed to fetch all OAuth providers:', error);
-    return [];
   }
 }
 

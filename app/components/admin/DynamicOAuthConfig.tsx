@@ -5,7 +5,8 @@ import { Button, Card, Empty, message, Modal, Space, Tag, Tooltip } from 'antd';
 import Image from 'next/image';
 import { PlusOutlined, EditOutlined, DeleteOutlined, CopyOutlined, GlobalOutlined } from '@ant-design/icons';
 import { useTranslations } from 'next-intl';
-import { getAllOAuthProviders, deleteOAuthProvider, type OAuthProvider } from '@/app/admin/oauth/actions';
+import { getAllOAuthProviders, deleteOAuthProvider } from '@/app/admin/oauth/actions';
+import type { OAuthProvider } from '@/app/services/OAuthService';
 import OAuthProviderForm from './OAuthProviderForm';
 
 const DynamicOAuthConfig = () => {

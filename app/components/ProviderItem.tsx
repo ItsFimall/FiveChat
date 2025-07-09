@@ -19,9 +19,9 @@ const ProviderItem = (props: {
   const t = useTranslations('Admin.Models');
   const { allProviderListByKey } = useModelListStore();
 
-  const handleDelete = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
+  const handleDelete = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    e?.preventDefault();
     props.onDelete?.(props.data.id);
   };
 

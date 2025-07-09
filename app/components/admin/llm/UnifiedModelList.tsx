@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { fetchGroupedModels, updateModelFamilyOrder, saveModelsOrder } from "@/app/admin/llm/actions";
 import { Skeleton, Typography, Collapse, List, Avatar, Empty } from "antd";
-import { llmModelType } from "@/types/llm";
+import { llmModelType } from "@/app/db/schema";
 import { modelFamilies } from "@/app/db/schema";
 import Sortable from 'sortablejs';
 
@@ -104,7 +104,7 @@ const UnifiedModelList = () => {
           <div key={family.id} data-family-id={family.id} className="mb-2 family-handle">
             <Collapse defaultActiveKey={['1']}>
               <Panel header={<Title level={5}>{family.name}</Title>} key="1">
-                <div ref={el => modelsContainerRefs.current[family.id] = el}>
+                <div ref={el => { modelsContainerRefs.current[family.id] = el; }}>
                   {family.models.length > 0 ? (
                     family.models.map(item => (
                       <List.Item key={item.id} data-model-id={item.name} data-provider-id={item.providerId} style={{cursor: 'grab'}}>
