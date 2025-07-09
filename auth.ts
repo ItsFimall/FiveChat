@@ -1,15 +1,10 @@
 import NextAuth from "next-auth";
 import { ZodError } from "zod";
 import Credentials from "next-auth/providers/credentials";
-import Google from "next-auth/providers/google";
-import GitHub from "next-auth/providers/github";
-import Discord from "next-auth/providers/discord";
-import { signInSchema } from "@/app/lib/zod";
 import { verifyPassword } from "@/app/utils/password";
 import { db } from '@/app/db';
 import { users } from '@/app/db/schema';
-import { eq } from 'drizzle-orm';
-import { fetchOAuthConfig } from '@/app/admin/system/actions';
+import { eq, or } from 'drizzle-orm';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -17,59 +12,51 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       // You can specify which fields should be submitted, by adding keys to the `credentials` object.
       // e.g. domain, username, password, 2FA token, etc.
       credentials: {
-        email: {},
+        username: {}, // 支持用户名或邮箱
+        email: {}, // 保持兼容性
         password: {},
       },
       authorize: async (credentials) => {
         try {
-          const { email, password } = await signInSchema.parseAsync(credentials);
+          const loginField = credentials?.username || credentials?.email;
+          const password = credentials?.password;
+
+          if (!loginField || !password || typeof loginField !== 'string' || typeof password !== 'string') {
+            return null;
+          }
+
+          // 查找用户：支持用户名或邮箱登录
           const user = await db.query.users
             .findFirst({
-              where: eq(users.email, email)
+              where: or(
+                eq(users.username, loginField),
+                eq(users.email, loginField)
+              )
             })
+
           if (!user || !user.password) {
             return null;
           }
+
           const passwordMatch = await verifyPassword(password, user.password);
           if (passwordMatch) {
             return {
               id: user.id,
-              name: user.name,
+              name: user.name || user.username,
               email: user.email,
+              username: user.username,
               isAdmin: user.isAdmin || false,
             };
           } else {
             return null;
           }
         } catch (error) {
-          if (error instanceof ZodError) {
-            // 如果验证失败，返回 null 表示凭据无效
-            return null;
-          }
-          // 处理其他错误
-          throw error;
+          console.error('Auth error:', error);
+          return null;
         }
       },
     }),
-    // OAuth Providers - 优先从环境变量读取，数据库配置通过 getActiveAuthProvides 检查
-    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET ? [
-      Google({
-        clientId: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      })
-    ] : []),
-    ...(process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET ? [
-      GitHub({
-        clientId: process.env.GITHUB_CLIENT_ID,
-        clientSecret: process.env.GITHUB_CLIENT_SECRET,
-      })
-    ] : []),
-    ...(process.env.DISCORD_CLIENT_ID && process.env.DISCORD_CLIENT_SECRET ? [
-      Discord({
-        clientId: process.env.DISCORD_CLIENT_ID,
-        clientSecret: process.env.DISCORD_CLIENT_SECRET,
-      })
-    ] : []),
+    // 内置OAuth提供商已移除，仅支持动态OAuth提供商
   ],
   pages: {
     error: '/auth/error', // 自定义错误页面
