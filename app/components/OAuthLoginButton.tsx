@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { Button } from 'antd';
+import Image from 'next/image';
 import { GlobalOutlined } from '@ant-design/icons';
 
 interface OAuthLoginButtonProps {
@@ -73,7 +74,7 @@ export default function OAuthLoginButton({
         color: '#374151'
       }}
     >
-      <img
+      <Image
         src={getLogoUrl()}
         alt={displayName}
         width={20}

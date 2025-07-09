@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Form, Input, Switch, Button, Space, message, Alert, Select } from 'antd';
+import Image from 'next/image';
 import { SaveOutlined, GlobalOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { useTranslations } from 'next-intl';
 import { createOAuthProvider, updateOAuthProvider, validateOAuthProvider, type OAuthProvider } from '@/app/admin/oauth/actions';
@@ -238,10 +239,12 @@ const OAuthProviderForm: React.FC<OAuthProviderFormProps> = ({
               className="flex-1"
             />
             {logoPreview && (
-              <img
+              <Image
                 src={logoPreview}
                 alt="Logo Preview"
                 className="w-8 h-8 rounded border"
+                width={32}
+                height={32}
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = '/favicon.ico';
                 }}

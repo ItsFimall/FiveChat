@@ -3,12 +3,16 @@ import React, { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { Sidebar } from "@/app/components/Sidebar";
 import { LoginModalProvider } from '@/app/contexts/loginModalContext';
-import LoginModal from '@/app/components/loginModal';
+import dynamic from 'next/dynamic';
 import useSidebarCollapsedStore from '@/app/store/sidebarCollapsed';
 import usePreviewSidebarStore from '@/app/store/previewSidebar';
 import PreviewSidebar from '@/app/components/artifact/PreviewSidebar';
 import SpinLoading from '@/app/components/loading/SpinLoading';
 import clsx from 'clsx';
+
+const LoginModal = dynamic(() => import('@/app/components/loginModal'), {
+  ssr: false
+});
 
 const App: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [hasInstalled, setHasInstalled] = useState(false);

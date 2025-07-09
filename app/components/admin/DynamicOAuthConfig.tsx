@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Button, Card, Empty, message, Modal, Space, Tag, Tooltip } from 'antd';
+import Image from 'next/image';
 import { PlusOutlined, EditOutlined, DeleteOutlined, CopyOutlined, GlobalOutlined } from '@ant-design/icons';
 import { useTranslations } from 'next-intl';
 import { getAllOAuthProviders, deleteOAuthProvider, type OAuthProvider } from '@/app/admin/oauth/actions';
@@ -165,10 +166,12 @@ const DynamicOAuthConfig = () => {
               <div className="space-y-3">
                 {/* Logo 和标题 */}
                 <div className="flex items-center space-x-3">
-                  <img
+                  <Image
                     src={getLogoUrl(provider)}
                     alt={provider.displayName}
                     className="w-8 h-8 rounded"
+                    width={32}
+                    height={32}
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
                       if (target.src !== window.location.origin + '/default-oauth-icon.svg') {

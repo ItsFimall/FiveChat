@@ -3,10 +3,30 @@ const withNextIntl = createNextIntlPlugin();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  swcMinify: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+        pathname: '/**/favicon.ico',
+      },
+      {
+        protocol: 'http',
+        hostname: '**',
+        pathname: '/**/favicon.ico',
+      },
+    ],
+  },
   output: 'standalone',
   experimental: {
     serverActions: {
       bodySizeLimit: '5mb',
+    },
+  },
+  modularizeImports: {
+    'antd': {
+      transform: 'antd/lib/{{member}}',
     },
   },
   webpack(config) {

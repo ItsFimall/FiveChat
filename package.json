@@ -62,6 +62,7 @@
     "@svgr/webpack": "^8.1.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/lodash": "^4.17.13",
+    "@types/next": "^8.0.7",
     "@types/node": "^20",
     "@types/pg": "^8.11.11",
     "@types/react": "^18",
