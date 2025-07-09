@@ -23,7 +23,8 @@ export const users = pgTable("user", {
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   name: text("name"),
-  email: text("email").unique(),
+  username: text("username").unique(),
+  email: text("email"),
   password: text("password"),
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   isAdmin: boolean("isAdmin").default(false),
@@ -33,6 +34,19 @@ export const users = pgTable("user", {
   currentMonthTotalTokens: integer('current_month_total_tokens').notNull().default(0),
   usageUpdatedAt: timestamp('usage_updated_at').notNull().defaultNow(),
   createdAt: timestamp('created_at').defaultNow(),
+})
+
+// 密码重置token表
+export const passwordResetTokens = pgTable("password_reset_tokens", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  token: text("token").notNull().unique(),
+  expiresAt: timestamp("expires_at", { mode: "date" }).notNull(),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow(),
 })
 
 export const accounts = pgTable("account", {

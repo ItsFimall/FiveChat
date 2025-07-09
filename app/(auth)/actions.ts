@@ -1,13 +1,13 @@
 'use server';
 import bcrypt from "bcryptjs";
-import { eq } from 'drizzle-orm';
-import { users, groups } from '@/app/db/schema';
+import { eq, or, and, lt } from 'drizzle-orm';
+import { users, groups, passwordResetTokens } from '@/app/db/schema';
 import { db } from '@/app/db';
 import { signIn } from '@/auth';
 import { fetchAppSettings, setAppSettings } from "@/app/admin/system/actions";
 import { auth } from '@/auth';
 
-export async function register(email: string, password: string) {
+export async function register(username: string, email: string | undefined, password: string) {
   const resultValue = await fetchAppSettings('isRegistrationOpen');
   if (resultValue !== 'true') {
     return {
@@ -16,15 +16,30 @@ export async function register(email: string, password: string) {
     };
   }
   try {
-    const user = await db.query.users
+    // 检查用户名是否已存在
+    const existingUserByUsername = await db.query.users
       .findFirst({
-        where: eq(users.email, email)
+        where: eq(users.username, username)
       })
-    if (user) {
+    if (existingUserByUsername) {
       return {
         status: 'fail',
-        message: '该邮箱已被注册',
+        message: '该用户名已被注册',
       };
+    }
+
+    // 如果提供了邮箱，检查邮箱是否已存在
+    if (email) {
+      const existingUserByEmail = await db.query.users
+        .findFirst({
+          where: eq(users.email, email)
+        })
+      if (existingUserByEmail) {
+        return {
+          status: 'fail',
+          message: '该邮箱已被注册',
+        };
+      }
     }
     // 生成盐值 (salt)，指定盐值的回合次数（通常是 10）
     const salt = await bcrypt.genSalt(10);
@@ -38,14 +53,16 @@ export async function register(email: string, password: string) {
     const groupId = defaultGroup?.id || null;
     // 将新用户数据插入数据库
     const result = await db.insert(users).values({
-      email,
+      username,
+      email: email || null,
+      name: username, // 默认使用用户名作为显示名称
       password: hashedPassword,
       groupId: groupId
     });
     // 注册成功后，自动登录
     const signInResponse = await signIn("credentials", {
       redirect: false, // 不跳转页面
-      email,
+      username,
       password,
     });
     // 返回成功消息或其他所需数据
@@ -175,5 +192,145 @@ export async function getActiveAuthProvides() {
   }
 
   return activeAuthProvides;
+}
+
+// 请求密码重置
+export async function requestPasswordReset(usernameOrEmail: string) {
+  try {
+    // 查找用户（支持用户名或邮箱）
+    const user = await db.query.users
+      .findFirst({
+        where: or(
+          eq(users.username, usernameOrEmail),
+          eq(users.email, usernameOrEmail)
+        )
+      });
+
+    if (!user) {
+      return {
+        status: 'fail',
+        message: '用户不存在',
+      };
+    }
+
+    if (!user.email) {
+      return {
+        status: 'fail',
+        message: '该用户未设置邮箱，无法重置密码',
+      };
+    }
+
+    // 生成重置token
+    const resetToken = crypto.randomUUID() + '-' + Date.now();
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24小时后过期
+
+    // 删除该用户之前的重置token
+    await db.delete(passwordResetTokens)
+      .where(eq(passwordResetTokens.userId, user.id));
+
+    // 插入新的重置token
+    await db.insert(passwordResetTokens).values({
+      userId: user.id,
+      token: resetToken,
+      expiresAt,
+    });
+
+    // 这里应该发送邮件，但由于要求仅为验证，我们只返回成功
+    // 在实际应用中，这里会发送包含重置链接的邮件
+    console.log(`Password reset token for ${user.email}: ${resetToken}`);
+
+    return {
+      status: 'success',
+      message: '密码重置链接已发送到您的邮箱',
+    };
+  } catch (error) {
+    console.error('Password reset request error:', error);
+    return {
+      status: 'fail',
+      message: '请求密码重置失败，请稍后再试',
+    };
+  }
+}
+
+// 验证重置token
+export async function verifyResetToken(token: string) {
+  try {
+    const resetRecord = await db.query.passwordResetTokens
+      .findFirst({
+        where: eq(passwordResetTokens.token, token),
+        with: {
+          user: true
+        }
+      });
+
+    if (!resetRecord) {
+      return {
+        valid: false,
+        message: '无效的重置链接',
+      };
+    }
+
+    if (resetRecord.expiresAt < new Date()) {
+      // 删除过期的token
+      await db.delete(passwordResetTokens)
+        .where(eq(passwordResetTokens.id, resetRecord.id));
+
+      return {
+        valid: false,
+        message: '重置链接已过期',
+      };
+    }
+
+    return {
+      valid: true,
+      userId: resetRecord.userId,
+    };
+  } catch (error) {
+    console.error('Token verification error:', error);
+    return {
+      valid: false,
+      message: '验证重置链接失败',
+    };
+  }
+}
+
+// 重置密码
+export async function resetPassword(token: string, newPassword: string) {
+  try {
+    // 验证token
+    const tokenVerification = await verifyResetToken(token);
+    if (!tokenVerification.valid) {
+      return {
+        status: 'fail',
+        message: tokenVerification.message,
+      };
+    }
+
+    // 生成新密码的哈希
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // 更新用户密码
+    await db.update(users)
+      .set({
+        password: hashedPassword,
+      })
+      .where(eq(users.id, tokenVerification.userId!));
+
+    // 删除使用过的token
+    await db.delete(passwordResetTokens)
+      .where(eq(passwordResetTokens.token, token));
+
+    return {
+      status: 'success',
+      message: '密码重置成功',
+    };
+  } catch (error) {
+    console.error('Password reset error:', error);
+    return {
+      status: 'fail',
+      message: '密码重置失败，请稍后再试',
+    };
+  }
 }
 

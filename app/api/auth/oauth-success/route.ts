@@ -9,6 +9,9 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const userId = searchParams.get('userId');
   const provider = searchParams.get('provider');
+  const isNewUser = searchParams.get('isNewUser') === 'true';
+  const username = searchParams.get('username');
+  const password = searchParams.get('password');
 
   if (!userId) {
     return Response.redirect(new URL('/login?error=invalid_session', request.url));
@@ -48,6 +51,14 @@ export async function GET(request: NextRequest) {
       maxAge: 30 * 24 * 60 * 60, // 30 days
       path: '/',
     });
+
+    // 如果是新用户，重定向到凭据显示页面
+    if (isNewUser && username && password) {
+      const credentialsUrl = new URL('/oauth-credentials', request.url);
+      credentialsUrl.searchParams.set('username', username);
+      credentialsUrl.searchParams.set('password', password);
+      return Response.redirect(credentialsUrl);
+    }
 
     // 重定向到聊天页面
     return Response.redirect(new URL('/chat', request.url));

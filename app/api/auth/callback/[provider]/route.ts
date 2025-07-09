@@ -4,6 +4,24 @@ import { db } from '@/app/db';
 import { users } from '@/app/db/schema';
 import { eq } from 'drizzle-orm';
 import { signIn } from '@/auth';
+import bcrypt from 'bcryptjs';
+
+// 生成随机用户名
+function generateUsername(email: string): string {
+  const baseUsername = email.split('@')[0];
+  const randomSuffix = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+  return `${baseUsername}_${randomSuffix}`;
+}
+
+// 生成随机密码
+function generatePassword(): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+  let password = '';
+  for (let i = 0; i < 12; i++) {
+    password += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return password;
+}
 
 export async function GET(
   request: NextRequest,
@@ -91,16 +109,29 @@ export async function GET(
       where: eq(users.email, profile.email)
     });
 
+    let isNewUser = false;
+    let generatedCredentials: { username: string; password: string } | null = null;
+
     if (!user) {
-      // 创建新用户
+      // 创建新用户 - 生成用户名和密码
+      isNewUser = true;
+      const username = generateUsername(profile.email);
+      const password = generatePassword();
+
+      // 哈希密码
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+
       const newUsers = await db.insert(users).values({
+        username,
         email: profile.email,
-        name: profile.name || profile.email.split('@')[0],
+        name: profile.name || username,
         image: profile.image,
-        password: null, // OAuth 用户没有密码
+        password: hashedPassword,
       }).returning();
-      
+
       user = newUsers[0];
+      generatedCredentials = { username, password };
     } else {
       // 更新用户信息
       await db.update(users)
@@ -116,7 +147,14 @@ export async function GET(
     const successUrl = new URL('/api/auth/oauth-success', request.url);
     successUrl.searchParams.set('userId', user.id);
     successUrl.searchParams.set('provider', provider);
-    
+
+    // 如果是新用户，传递生成的凭据信息
+    if (isNewUser && generatedCredentials) {
+      successUrl.searchParams.set('isNewUser', 'true');
+      successUrl.searchParams.set('username', generatedCredentials.username);
+      successUrl.searchParams.set('password', generatedCredentials.password);
+    }
+
     return Response.redirect(successUrl);
 
   } catch (error) {

@@ -18,7 +18,7 @@ const InPageCollapsed = () => {
         />
         <Link href='/chat'>
           <div className="w-28 border ml-4 h-8 rounded-full text-center p-2 text-xs new-chat-button whitespace-nowrap">
-            <PlusOutlined className='mr-2 ' style={{ color: '#0057ff' }} />{t('newChat')}
+            <PlusOutlined className='mr-2 ' style={{ color: '#000000' }} />{t('newChat')}
           </div>
         </Link>
       </div>

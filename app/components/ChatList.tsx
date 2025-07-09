@@ -189,7 +189,7 @@ const ChatList = () => {
       <div className="flex flex-col box-border pt-2 pl-0 pr-4">
         <Link href='/chat'>
           <div className="w-full border rounded-xl text-center p-2 text-sm new-chat-button whitespace-nowrap">
-            <PlusOutlined className='mr-2' style={{ color: '#0057ff' }} />{t('newChat')}
+            <PlusOutlined className='mr-2' style={{ color: '#000000' }} />{t('newChat')}
           </div>
         </Link>
       </div>

@@ -11,7 +11,8 @@ import Fivechat from "@/app/images/fivechat.svg";
 import { useTranslations } from 'next-intl';
 
 interface RegisterFormValues {
-  email: string;
+  username: string;
+  email?: string;
   password: string;
   repeatPassword: string;
 }
@@ -51,7 +52,7 @@ export default function RegisterPage() {
       return;
     }
     try {
-      const result = await register(values.email, values.password);
+      const result = await register(values.username, values.email, values.password);
       if (result.status === 'success') {
         window.location.href = "/chat";
       } else {
@@ -90,12 +91,25 @@ export default function RegisterPage() {
           requiredMark='optional'
         >
           <Form.Item
-            name="email"
-            label={<span className="font-medium">Email</span>}
+            name="username"
+            label={<span className="font-medium">{t('username')}</span>}
             validateTrigger='onBlur'
-            rules={[{ required: true, type: 'email', message: t('emailNotice') }]}
+            rules={[
+              { required: true, message: t('usernameNotice') },
+              { min: 3, message: t('usernameMinLength') },
+              { max: 20, message: t('usernameMaxLength') },
+              { pattern: /^[a-zA-Z0-9_]+$/, message: t('usernamePattern') }
+            ]}
           >
-            <Input />
+            <Input placeholder={t('usernamePlaceholder')} />
+          </Form.Item>
+          <Form.Item
+            name="email"
+            label={<span className="font-medium">Email ({t('optional')})</span>}
+            validateTrigger='onBlur'
+            rules={[{ type: 'email', message: t('emailNotice') }]}
+          >
+            <Input placeholder={t('emailPlaceholder')} />
           </Form.Item>
           <Form.Item
             name="password"

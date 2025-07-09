@@ -1,4 +1,4 @@
-import { llmModels, llmSettingsTable, groupModels, groups, users } from './schema';
+import { llmModels, llmSettingsTable, groupModels, groups, users, passwordResetTokens } from './schema';
 import { relations } from 'drizzle-orm';
 
 export const modelsGroupsRelations = relations(llmModels, ({ many }) => ({
@@ -36,9 +36,18 @@ export const usersGroupsRelations = relations(groups, ({ many }) => ({
     users: many(users),
 }))
 
-export const groupsUsersRelations = relations(users, ({ one }) => ({
+export const groupsUsersRelations = relations(users, ({ one, many }) => ({
     group: one(groups, {
         fields: [users.groupId],
         references: [groups.id],
+    }),
+    passwordResetTokens: many(passwordResetTokens),
+}))
+
+// password reset tokens relations
+export const passwordResetTokensUsersRelations = relations(passwordResetTokens, ({ one }) => ({
+    user: one(users, {
+        fields: [passwordResetTokens.userId],
+        references: [users.id],
     }),
 }))
