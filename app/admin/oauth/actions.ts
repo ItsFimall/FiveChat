@@ -34,6 +34,30 @@ export async function getOAuthProvider(id: string): Promise<OAuthProvider | null
   }
 }
 
+// 获取所有 OAuth 服务商
+export async function getAllOAuthProviders(): Promise<OAuthProvider[]> {
+  try {
+    const providers = await db.query.oauthProviders.findMany();
+
+    return providers.map(provider => ({
+      id: provider.id,
+      name: provider.name,
+      displayName: provider.displayName,
+      clientId: provider.clientId ?? undefined,
+      clientSecret: provider.clientSecret ? decryptSecret(provider.clientSecret) : '',
+      logoUrl: provider.logoUrl ?? undefined,
+      authorizeUrl: provider.authorizeUrl,
+      tokenUrl: provider.tokenUrl,
+      userInfoUrl: provider.userInfoUrl,
+      scope: provider.scope ?? undefined,
+      enabled: provider.enabled ?? false
+    } as OAuthProvider));
+  } catch (error) {
+    console.error('Failed to fetch all OAuth providers:', error);
+    return [];
+  }
+}
+
 // 根据名称获取 OAuth 服务商
 export async function getOAuthProviderByName(name: string): Promise<OAuthProvider | null> {
   try {
