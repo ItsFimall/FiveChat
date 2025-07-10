@@ -11,6 +11,7 @@
   "Auth": {
     "username": "用户名",
     "usernameNotice": "请输入用户名",
+    "usernamePlaceholder": "请输入用户名",
     "login": "登录",
     "emailNotice": "请输入 Email",
     "password": "密码",

@@ -11,6 +11,7 @@
   "Auth": {
     "username": "Username",
     "usernameNotice": "Enter the username",
+    "usernamePlaceholder": "Enter a user name",
     "login": "Login",
     "emailNotice": "Enter the Email.",
     "password": "Password",
